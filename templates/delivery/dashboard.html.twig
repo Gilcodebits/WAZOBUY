@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/styles/livreur.css') }}">
+{% endblock %}
+
+{% block body %}
+    <header class="header">
+        <div class="nav-left">
+            <div class="logo">WAZOBUY</div>
+            <nav class="nav-menu">
+                <a href="{{ path('app_delivery_dashboard') }}" class="nav-item active">Tableau de bord</a>
+                <a href="#" class="nav-item">Commandes</a>
+                <a href="#" class="nav-item">Historique</a>
+                <a href="#" class="nav-item">Support</a>
+            </nav>
+        </div>
+        <div class="nav-right">
+            <button class="notification-btn">
+                <i class="fas fa-bell"></i>
+            </button>
+            <div class="user-profile">
+                <div class="user-avatar">J</div>
+                <span class="user-name">Jean</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="left-panel">
+            <div class="deliveries-card">
+                <div class="deliveries-header">
+                    <h2 class="section-title">Commandes disponibles à livrer</h2>
+                    <span class="status-badge">Disponible</span>
+                </div>
+
+                <div class="delivery-item">
+                    <div class="delivery-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="delivery-info">
+                        <div class="delivery-location">Akpakpa</div>
+                        <div class="delivery-details">Fer à repasser</div>
+                    </div>
+                    <div class="delivery-time">15:30</div>
+                </div>
+
+                <div class="delivery-item">
+                    <div class="delivery-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="delivery-info">
+                        <div class="delivery-location">Cadjèhoun</div>
+                        <div class="delivery-details">Colis (2 kg)</div>
+                    </div>
+                    <div class="delivery-time">16:00</div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-accept">Accepter la livraison</button>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <div class="map-overlay"></div>
+                    <div class="map-route"></div>
+                    <div class="map-marker marker-start"></div>
+                    <div class="map-marker marker-end"></div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 12px;">
+                <button class="btn-confirm">Livraison confirmée</button>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <h3 class="section-title">Statistiques</h3>
+            
+            <div class="stats-grid">
+                <div class="stat-card stat-green">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">Livraisons du jour</div>
+                </div>
+                <div class="stat-card stat-orange">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Taux de satisfaction</div>
+                </div>
+                <div class="stat-card stat-blue">
+                    <div class="stat-number">45km</div>
+                    <div class="stat-label">Distance parcourue</div>
+                </div>
+                <div class="stat-card stat-purple">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">En attente</div>
+                </div>
+            </div>
+
+            <div class="zones-card">
+                <h3 class="zones-title">Zones de livraison actives</h3>
+                <div class="zones-map">
+                    <div class="zones-overlay"></div>
+                    <div class="zone-area zone-1"></div>
+                    <div class="zone-area zone-2"></div>
+                    <div class="zone-area zone-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulation d'interactions
+        document.querySelector('.btn-accept').addEventListener('click', function() {
+            this.textContent = 'Livraison acceptée';
+            this.style.background = '#10b981';
+            this.disabled = true;
+        });
+
+        document.querySelector('.btn-confirm').addEventListener('click', function() {
+            this.textContent = 'Confirmée ✓';
+            this.style.background = '#059669';
+            this.disabled = true;
+        });
+
+        // Animation des statistiques
+        function animateNumbers() {
+            const stats = document.querySelectorAll('.stat-number');
+            stats.forEach(stat => {
+                const text = stat.textContent;
+                const number = parseInt(text.replace(/\D/g, ''));
+                if (number) {
+                    let current = 0;
+                    const increment = number / 50;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= number) {
+                            stat.textContent = text;
+                            clearInterval(timer);
+                        } else {
+                            stat.textContent = Math.floor(current) + text.replace(/\d/g, '').replace(/\./g, '');
+                        }
+                    }, 20);
+                }
+            });
+        }
+
+        // Lancer l'animation au chargement
+        window.addEventListener('load', animateNumbers);
+
+        // Gestion du menu responsive
+        function toggleMobileMenu() {
+            const menu = document.querySelector('.nav-menu');
+            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        // Mise à jour de l'heure toutes les minutes
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            document.querySelectorAll('.delivery-time').forEach((el, index) => {
+                if (index === 0) el.textContent = timeStr;
+            });
+        }
+
+        setInterval(updateTime, 60000);
+    </script>
+{% endblock %}

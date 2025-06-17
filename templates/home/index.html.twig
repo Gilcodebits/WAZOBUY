@@ -3,7 +3,7 @@
 
 
 {% block body %}
-    <header class="header">
+    <header id="accueil" class="header">
         <nav class="nav-container">
             <div class="logo">
                 <div class="logo-icon">W</div>
@@ -57,7 +57,7 @@
     </section>
 
     <!-- Categories Section -->
-    <section class="categories">
+    <section id="categories" class="categories">
         <div class="container">
             <h2 class="section-title">Explorez nos catégories</h2>
             <p class="section-subtitle">Découvrez une large gamme de produits dans différentes catégories pour répondre à tous vos besoins.</p>
@@ -226,7 +226,7 @@
     </section>
 
     <!-- Vendors Section -->
-    <section class="vendors">
+    <section id="vendeurs" class="vendors">
         <div class="container">
             <h2 class="section-title">Nos meilleurs vendeurs</h2>
             <p class="section-subtitle">Découvrez nos vendeurs vérifiés qui proposent des produits de qualité sur notre plateforme.</p>
@@ -257,7 +257,7 @@
     </section>
 
     <!-- Mobile App Section -->
-    <section class="mobile-app">
+    <section id="application" class="mobile-app">
         <div class="container">
             <div class="mobile-app-container">
                 <div class="mobile-app-content">
@@ -310,7 +310,7 @@
     </section>
 
     <!-- Testimonials Section -->
-    <section class="testimonials">
+    <section id="apropos" class="testimonials">
         <div class="container">
             <h2 class="section-title">Ce que disent nos clients</h2>
             <p class="section-subtitle">Découvrez les témoignages de nos clients satisfaits qui utilisent WAZOBUY pour leurs achats quotidiens.</p>
@@ -364,7 +364,7 @@
             <div class="cta-buttons">
                 <a href="{{ path('app_register') }}" class="cta-btn primary">S'inscrire comme client</a>
                 <a href="{{ path('app_become_seller') }}" class="cta-btn secondary">Devenir vendeur</a>
-                <a href="#" class="cta-btn tertiary">Rejoindre l'équipe de livraison</a>
+                <a href="{{ path('app_delivery_dashboard') }}" class="cta-btn tertiary">Rejoindre l'équipe de livraison</a>
             </div>
         </div>
     </section>
