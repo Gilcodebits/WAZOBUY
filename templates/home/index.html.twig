@@ -1,0 +1,462 @@
+{% extends 'base.html.twig' %}
+
+
+
+{% block body %}
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">W</div>
+                WAZOBUY
+            </div>
+            <ul class="nav-links">
+                <li><a href="#accueil">Accueil</a></li>
+                <li><a href="#categories">Catégories</a></li>
+                <li><a href="#vendeurs">Vendeurs</a></li>
+                <li><a href="#application">Application</a></li>
+                <li><a href="#apropos">À propos</a></li>
+            </ul>
+            <div class="search-bar">
+                <input type="text" placeholder="Rechercher...">
+                <span>🔍</span>
+            </div>
+            <div class="header-actions">
+                <div class="cart-icon">
+                    🛒
+                    <span class="cart-badge">3</span>
+                </div>
+                <a href="{{ path('app_login') }}" class="connect-btn" style="text-decoration: none;">Se connecter</a>
+                <a href="#cta" class="connect-btn" style="text-decoration: none;">S'inscrire</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>E-commerce Marketplace</h1>
+                <p>Achetez local, livré rapidement</p>
+                <p>WAZOBUY connecte les vendeurs locaux aux clients avec une <br/>
+                livraison intégrée. Découvrez une nouvelle façon de faire vos achats <br/> au Bénin.</p>
+            </div>
+            <div class="hero-illustration">
+                <div class="store-building">
+                    <div class="packages">
+                        <div class="package"></div>
+                        <div class="package"></div>
+                        <div class="package"></div>
+                        <div class="package"></div>
+                        <div class="package"></div>
+                        <div class="package"></div>
+                    </div>
+                </div>
+                <div class="delivery-bike">🚴‍♂️</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories">
+        <div class="container">
+            <h2 class="section-title">Explorez nos catégories</h2>
+            <p class="section-subtitle">Découvrez une large gamme de produits dans différentes catégories pour répondre à tous vos besoins.</p>
+            
+            <div class="categories-grid">
+                <div class="category-card">
+                    <div class="category-icon">📱</div>
+                    <h3>Électronique</h3>
+                    <p>Smartphones, ordinateurs et accessoires</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">👕</div>
+                    <h3>Mode</h3>
+                    <p>Vêtements, chaussures et accessoires</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🏠</div>
+                    <h3>Maison</h3>
+                    <p>Meubles, décoration et électroménager</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">💄</div>
+                    <h3>Santé & Beauté</h3>
+                    <p>Cosmétiques, parfums et soins personnels</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🎮</div>
+                    <h3>Jeux & Loisirs</h3>
+                    <p>Jeux vidéo, jouets et activités</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🍎</div>
+                    <h3>Alimentation</h3>
+                    <p>Produits frais, épicerie et boissons</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">👶</div>
+                    <h3>Enfants</h3>
+                    <p>Vêtements, jouets et accessoires pour enfants</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">➕</div>
+                    <h3>Autres</h3>
+                    <p>Découvrez plus de catégories</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products">
+        <div class="container">
+            <h2 class="section-title">Produits populaires</h2>
+            
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="product-badge discount">-15%</div>
+                    </div>
+                    <div class="product-content">
+                        <div class="product-rating">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span class="rating-count">(42)</span>
+                        </div>
+                        <h3 class="product-title">Samsung Galaxy A54</h3>
+                        <p class="product-description">Smartphone 128Go, 6Go RAM, Noir</p>
+                        <div class="product-price">
+                            <div>
+                                <span class="price">189.000 FCFA</span>
+                                <span class="old-price">220.000 FCFA</span>
+                            </div>
+                            <button class="add-to-cart">🛒</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="product-badge">Nouveau</div>
+                    </div>
+                    <div class="product-content">
+                        <div class="product-rating">
+                            <span class="stars">⭐⭐⭐⭐</span>
+                            <span class="rating-count">(28)</span>
+                        </div>
+                        <h3 class="product-title">Écouteurs Bluetooth Pro</h3>
+                        <p class="product-description">Sans fil, réduction de bruit active</p>
+                        <div class="product-price">
+                            <div>
+                                <span class="price">45.000 FCFA</span>
+                            </div>
+                            <button class="add-to-cart">🛒</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="product-badge">Nouveau</div>
+                    </div>
+                    <div class="product-content">
+                        <div class="product-rating">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span class="rating-count">(56)</span>
+                        </div>
+                        <h3 class="product-title">Montre Classique Homme</h3>
+                        <p class="product-description">Bracelet cuir, étanche, quartz</p>
+                        <div class="product-price">
+                            <div>
+                                <span class="price">35.000 FCFA</span>
+                            </div>
+                            <button class="add-to-cart">🛒</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image">
+                        <div class="product-badge">Nouveau</div>
+                    </div>
+                    <div class="product-content">
+                        <div class="product-rating">
+                            <span class="stars">⭐⭐⭐⭐</span>
+                            <span class="rating-count">(37)</span>
+                        </div>
+                        <h3 class="product-title">Baskets Urban Style</h3>
+                        <p class="product-description">Confort, respirant, toutes tailles</p>
+                        <div class="product-price">
+                            <div>
+                                <span class="price">28.000 FCFA</span>
+                                <span class="old-price">35.000 FCFA</span>
+                            </div>
+                            <button class="add-to-cart">🛒</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="products-more">
+                <a href="{{ path('products') }}" class="btn-secondary">Voir tous les produits</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🚚</div>
+                    <h3>Livraison rapide</h3>
+                    <p>Notre service de livraison intégré assure une livraison rapide et fiable partout au Bénin, avec suivi en temps réel.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3>Paiement sécurisé</h3>
+                    <p>Paiement sécurisé via Mobile Money (MTN et Moov) ou en espèces à la livraison pour votre tranquillité d'esprit.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎧</div>
+                    <h3>Service client réactif</h3>
+                    <p>Notre équipe de support est disponible 7j/7 pour répondre à vos questions et résoudre rapidement vos problèmes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vendors Section -->
+    <section class="vendors">
+        <div class="container">
+            <h2 class="section-title">Nos meilleurs vendeurs</h2>
+            <p class="section-subtitle">Découvrez nos vendeurs vérifiés qui proposent des produits de qualité sur notre plateforme.</p>
+            
+            <div class="vendors-grid">
+                {% for vendor in vendors %}
+                <div class="vendor-card">
+                    <div class="vendor-info">
+                        <div class="vendor-badge">
+                            ✓ Vérifié
+                        </div>
+                        <h3 class="vendor-name">{{ vendor.name }}</h3>
+                        <p class="vendor-category">{{ vendor.category }}</p>
+                        <div class="vendor-rating">
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                            <span>({{ vendor.rating }}/5)</span>
+                        </div>
+                        <p class="vendor-description">{{ vendor.description }}</p>
+                        <button class="visit-store-btn">Visiter la boutique</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="vendors-more">
+                <a href="{{ path('vendors') }}" class="btn-secondary">Voir tous les vendeurs</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile App Section -->
+    <section class="mobile-app">
+        <div class="container">
+            <div class="mobile-app-container">
+                <div class="mobile-app-content">
+                    <h2>Téléchargez notre application mobile</h2>
+                    <p>Profitez d'une expérience d'achat optimisée avec notre application mobile. Commandez, suivez vos livraisons et recevez des offres exclusives directement sur votre smartphone.</p>
+                    
+                    <ul class="app-features">
+                        <li>Parcourez des milliers de produits</li>
+                        <li>Recevez des notifications en temps réel</li>
+                        <li>Suivez vos livraisons en direct</li>
+                    </ul>
+                    
+                    <button class="download-btn">
+                        📱 Télécharger l'APK
+                    </button>
+                </div>
+                
+                <div class="mobile-mockup">
+                    <div class="phone">
+                        <div class="phone-screen">
+                            <div class="phone-content">
+                                <div style="text-align: center; padding: 2rem 0;">
+                                    <div style="width: 60px; height: 60px; background: #3b82f6; border-radius: 15px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">W</div>
+                                    <h4 style="margin-bottom: 1rem;">WAZOBUY</h4>
+                                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2rem;">
+                                        <div style="background: #374151; padding: 1rem; border-radius: 10px; text-align: center;">
+                                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📱</div>
+                                            <div style="font-size: 0.8rem;">Électronique</div>
+                                        </div>
+                                        <div style="background: #374151; padding: 1rem; border-radius: 10px; text-align: center;">
+                                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">👕</div>
+                                            <div style="font-size: 0.8rem;">Mode</div>
+                                        </div>
+                                        <div style="background: #374151; padding: 1rem; border-radius: 10px; text-align: center;">
+                                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🏠</div>
+                                            <div style="font-size: 0.8rem;">Maison</div>
+                                        </div>
+                                        <div style="background: #374151; padding: 1rem; border-radius: 10px; text-align: center;">
+                                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💄</div>
+                                            <div style="font-size: 0.8rem;">Beauté</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title">Ce que disent nos clients</h2>
+            <p class="section-subtitle">Découvrez les témoignages de nos clients satisfaits qui utilisent WAZOBUY pour leurs achats quotidiens.</p>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"J'utilise WAZOBUY depuis 6 mois et je suis très satisfait. La livraison est rapide et les produits sont de qualité. L'application est facile à utiliser et le service client est très réactif."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">KD</div>
+                        <div class="author-info">
+                            <h4>Kouassi Didier</h4>
+                            <p>Client depuis Juin 2024</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"En tant que vendeur sur WAZOBUY, j'apprécie la simplicité de la plateforme et la visibilité qu'elle offre à ma boutique. Les commissions sont raisonnables et le système de livraison intégré est un vrai plus."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">FA</div>
+                        <div class="author-info">
+                            <h4>Fatou Amadou</h4>
+                            <p>Vendeuse depuis Février 2025</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Je suis livreur pour WAZOBUY et je trouve que l'application est très bien conçue. Le système de suivi GPS fonctionne parfaitement et le mode hors ligne est très pratique dans les zones avec peu de réseau."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">BK</div>
+                        <div class="author-info">
+                            <h4>Bruno Koffi</h4>
+                            <p>Livreur depuis Avril 2025</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="cta" class="cta">
+        <div class="container">
+            <h2>Prêt à rejoindre WAZOBUY ?</h2>
+            <p>Que vous soyez client, vendeur ou livreur, WAZOBUY vous offre une plateforme complète pour vos besoins de commerce en ligne.</p>
+            
+            <div class="cta-buttons">
+                <a href="{{ path('app_register') }}" class="cta-btn primary">S'inscrire comme client</a>
+                <a href="{{ path('app_become_seller') }}" class="cta-btn secondary">Devenir vendeur</a>
+                <a href="#" class="cta-btn tertiary">Rejoindre l'équipe de livraison</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="container">
+            <h2>Restez informé</h2>
+            <p>Abonnez-vous à notre newsletter pour recevoir les dernières actualités, offres spéciales et promotions exclusives.</p>
+            
+            <form class="newsletter-form">
+                <input type="email" class="newsletter-input" placeholder="Votre adresse email">
+                <button type="submit" class="newsletter-btn">S'abonner</button>
+            </form>
+            
+            <p style="margin-top: 1rem; font-size: 0.875rem; color: #6b7280;">
+                En vous inscrivant, vous acceptez notre politique de confidentialité et nos conditions d'utilisation.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>
+                        <div class="logo-icon">W</div>
+                        WAZOBUY
+                    </h3>
+                    <p>WAZOBUY est une plateforme de e-commerce béninoise combinée à un service de livraison intégré, facilitant les achats en ligne pour tous.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">f</a>
+                        <a href="#" class="social-link">w</a>
+                        <a href="#" class="social-link">𝕏</a>
+                        <a href="#" class="social-link">📷</a>
+                        <a href="#" class="social-link">in</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Liens rapides</h4>
+                    <ul>
+                        <li><a href="#">Accueil</a></li>
+                        <li><a href="#">Catégories</a></li>
+                        <li><a href="#">Vendeurs</a></li>
+                        <li><a href="#">Application mobile</a></li>
+                        <li><a href="#">À propos de nous</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Aide & Support</h4>
+                    <ul>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Conditions d'utilisation</a></li>
+                        <li><a href="#">Politique de confidentialité</a></li>
+                        <li><a href="#">Politique de retour</a></li>
+                        <li><a href="#">Signaler un problème</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <div class="contact-info">
+                        <p>📍 123 Rue du Commerce, Cotonou, Bénin</p>
+                        <p>📞 +229 97 12 34 56</p>
+                        <p>✉️ contact@wazobuy.com</p>
+                    </div>
+                    <div class="payment-methods">
+                        <h4>Moyens de paiement acceptés</h4>
+                        <div class="payment-icons">
+                            <div class="payment-icon">💳</div>
+                            <div class="payment-icon">💰</div>
+                            <div class="payment-icon">📱</div>
+                            <div class="payment-icon">💸</div>
+                            <div class="payment-icon">🏦</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 WAZOBUY. Tous droits réservés.</p>
+                <div class="footer-links">
+                    <a href="#">Conditions d'utilisation</a>
+                    <a href="#">Politique de confidentialité</a>
+                    <a href="#">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+{% endblock %}

@@ -1,0 +1,25 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+home:
+    path: /
+    controller: App\Controller\HomeController::index
+    methods: [GET]
+
+app_home:
+    path: /
+    controller: App\Controller\HomeController::index
+    methods: [GET]
+
+products:
+    path: /produits
+    controller: App\Controller\HomeController::products
+    methods: [GET]
+
+vendors:
+    path: /vendeurs
+    controller: App\Controller\HomeController::vendors
+    methods: [GET]

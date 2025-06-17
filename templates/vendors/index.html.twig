@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vendeurs - WAZOBUY{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="page-title">Nos vendeurs</h1>
+        
+        <div class="vendors-grid">
+            {% for vendor in vendors %}
+            <div class="vendor-card">
+                <div class="vendor-info">
+                    {% if vendor.verified %}
+                    <div class="vendor-badge">
+                        ✓ Vérifié
+                    </div>
+                    {% endif %}
+                    <h3 class="vendor-name">{{ vendor.name }}</h3>
+                    <p class="vendor-category">{{ vendor.category }}</p>
+                    <div class="vendor-rating">
+                        <span class="stars">{% for i in 1..vendor.rating %}⭐{% endfor %}</span>
+                        <span>({{ vendor.reviews }} avis)</span>
+                    </div>
+                    <p class="vendor-description">{{ vendor.description }}</p>
+                    <button class="visit-store-btn">Visiter la boutique</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

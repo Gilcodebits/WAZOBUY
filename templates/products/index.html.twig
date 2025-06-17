@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Produits - WAZOBUY{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="page-title">Tous les produits</h1>
+        
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.discount %}
+                    <div class="product-badge discount">-{{ product.discount }}%</div>
+                    {% endif %}
+                    <img src="{{ asset('images/' ~ product.image) }}" alt="{{ product.name }}">
+                </div>
+                <div class="product-content">
+                    <div class="product-rating">
+                        <span class="stars">{% for i in 1..product.rating %}⭐{% endfor %}</span>
+                        <span class="rating-count">({{ product.reviews }} avis)</span>
+                    </div>
+                    <h3 class="product-title">{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description }}</p>
+                    <div class="product-price">
+                        <div>
+                            <span class="price">{{ product.price }} FCFA</span>
+                            {% if product.old_price %}
+                            <span class="old-price">{{ product.old_price }} FCFA</span>
+                            {% endif %}
+                        </div>
+                        <button class="add-to-cart">🛒</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
