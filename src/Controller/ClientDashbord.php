@@ -11,7 +11,7 @@ class ClientDashbord extends AbstractController
     #[Route('/client/dashbord', name: 'app_client_dashbord')]
     public function index(): Response
     {
-        return $this->render('clientdashbord/clientdashbord.html.twig');
+        return $this->render('clientdasbord/clientdashbord.html.twig');
     }
 }
 ?>

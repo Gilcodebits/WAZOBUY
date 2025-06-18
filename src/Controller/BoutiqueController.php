@@ -10,7 +10,7 @@ class BoutiqueController extends AbstractController
     #[Route('/boutique', name: 'app_boutique')]
     public function index(): Response
     {
-        return $this->render('boutique/index.html.twig');
+        return $this->render('seller/sellerdashbord.html.twig');
     }
 }
 ?>
