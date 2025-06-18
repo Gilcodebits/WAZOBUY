@@ -13,4 +13,16 @@ class DeliveryController extends AbstractController
     {
         return $this->render('delivery/dashboard.html.twig');
     }
+
+    #[Route('/livreur/profile', name: 'app_delivery_profile')]
+    public function profile(): Response
+    {
+        return $this->render('delivery/profile.html.twig');
+    }
+
+    #[Route('/livreur/orders', name: 'app_delivery_orders')]
+    public function orders(): Response
+    {
+        return $this->render('delivery/orders.html.twig');
+    }
 }

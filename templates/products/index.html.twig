@@ -10,9 +10,6 @@
             {% for product in products %}
             <div class="product-card">
                 <div class="product-image">
-                    {% if product.discount %}
-                    <div class="product-badge discount">-{{ product.discount }}%</div>
-                    {% endif %}
                     <img src="{{ asset('images/' ~ product.image) }}" alt="{{ product.name }}">
                 </div>
                 <div class="product-content">
@@ -23,12 +20,7 @@
                     <h3 class="product-title">{{ product.name }}</h3>
                     <p class="product-description">{{ product.description }}</p>
                     <div class="product-price">
-                        <div>
-                            <span class="price">{{ product.price }} FCFA</span>
-                            {% if product.old_price %}
-                            <span class="old-price">{{ product.old_price }} FCFA</span>
-                            {% endif %}
-                        </div>
+                        <span class="price">{{ product.price }} FCFA</span>
                         <button class="add-to-cart">🛒</button>
                     </div>
                 </div>
