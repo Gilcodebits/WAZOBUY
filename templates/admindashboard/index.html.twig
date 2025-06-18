@@ -1,0 +1,424 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/styles/admindashboard.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">wazobuy</div>
+            
+            <nav>
+                <div class="nav-item active">
+                    <span class="nav-item-icon">📊</span>
+                    Tableau de bord
+                </div>
+                <div class="nav-item">
+                    <span class="nav-item-icon">👥</span>
+                    Utilisateurs
+                </div>
+                <div class="nav-item">
+                    <span class="nav-item-icon">🏪</span>
+                    Vendeurs
+                </div>
+                <div class="nav-item">
+                    <span class="nav-item-icon">📦</span>
+                    Produits
+                </div>
+                <div class="nav-item">
+                    <span class="nav-item-icon">🛒</span>
+                    Commandes
+                </div>
+                <div class="nav-item">
+                    <span class="nav-item-icon">🚚</span>
+                    Livraisons
+                </div>
+                <div class="nav-item">
+                    <span class="nav-item-icon">📈</span>
+                    Statistiques
+                </div>
+                <div class="nav-item">
+                    <span class="nav-item-icon">⚖️</span>
+                    Litiges
+                </div>
+                <div class="nav-item">
+                    <span class="nav-item-icon">💳</span>
+                    Paiements
+                </div>
+                <div class="nav-item">
+                    <span class="nav-item-icon">⚙️</span>
+                    Paramètres
+                </div>
+            </nav>
+
+            <div class="admin-section">
+                <div class="admin-avatar">AD</div>
+                <div>
+                    <div style="font-weight: 600; font-size: 14px;">Admin Principal</div>
+                    <div style="font-size: 12px; opacity: 0.8;">admin@wazobuy.com</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
+                
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Rechercher...">
+                </div>
+                
+                <div class="header-actions">
+                    <div class="notification-badge">5</div>
+                    <div class="notification-badge" style="background: #f97316;">3</div>
+                    <div class="user-info">
+                        <span style="font-weight: 600;">Admin</span>
+                        <div class="user-avatar">A</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Overlay for Mobile -->
+            <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <h1 class="page-title">Tableau de bord</h1>
+                <p class="page-date">Mardi, 17 Juin 2025</p>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #dbeafe; color: #2563eb;">💰</div>
+                        <div class="stat-label">Chiffre d'affaires</div>
+                        <div class="stat-value">12,450,000 FCFA</div>
+                        <div class="stat-change positive">
+                            ↗ +24% cette semaine
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #dcfce7; color: #059669;">🛒</div>
+                        <div class="stat-label">Commandes</div>
+                        <div class="stat-value">1,245</div>
+                        <div class="stat-change positive">
+                            ↗ +18% ce mois
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fef3c7; color: #d97706;">👥</div>
+                        <div class="stat-label">Nouveaux utilisateurs</div>
+                        <div class="stat-value">328</div>
+                        <div class="stat-change positive">
+                            ↗ +32% ce mois
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fed7aa; color: #ea580c;">📊</div>
+                        <div class="stat-label">Taux de livraison</div>
+                        <div class="stat-value">94.3%</div>
+                        <div class="stat-change positive">
+                            ↗ +2.3% cette semaine
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Évolution des ventes</h3>
+                            <div class="chart-filters">
+                                <button class="filter-btn">7 jours</button>
+                                <button class="filter-btn active">30 jours</button>
+                                <button class="filter-btn">90 jours</button>
+                            </div>
+                        </div>
+                        <div class="line-chart">
+                            <div class="chart-line"></div>
+                            <div class="chart-axes">
+                                <div class="chart-x-axis">
+                                    <span>1 Juin</span>
+                                    <span>10 Juin</span>
+                                    <span>20 Juin</span>
+                                    <span>30 Juin</span>
+                                </div>
+                                <div class="chart-y-axis">
+                                    <span>1,000,000</span>
+                                    <span>800,000</span>
+                                    <span>600,000</span>
+                                    <span>400,000</span>
+                                    <span>200,000</span>
+                                    <span>0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Commandes par région</h3>
+                            <button class="filter-btn">📤 Exporter</button>
+                        </div>
+                        <div class="pie-chart"></div>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #38bdf8;"></div>
+                                Cotonou
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #a7f3d0;"></div>
+                                Porto-Novo
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #fbbf24;"></div>
+                                Parakou
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #fb7185;"></div>
+                                Abomey-Calavi
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #cbd5e1;"></div>
+                                Autres
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tables Section -->
+                <div class="tables-grid">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">Commandes récentes</h3>
+                            <a href="#" class="view-all-btn">Voir tout</a>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Client</th>
+                                    <th>Montant</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#WB-2506</td>
+                                    <td>Marcel Kponou</td>
+                                    <td>45,000 FCFA</td>
+                                    <td><span class="status-badge status-delivered">Livré</span></td>
+                                </tr>
+                                <tr>
+                                    <td>#WB-2505</td>
+                                    <td>Félicité Adjovi</td>
+                                    <td>28,500 FCFA</td>
+                                    <td><span class="status-badge status-shipping">En livraison</span></td>
+                                </tr>
+                                <tr>
+                                    <td>#WB-2504</td>
+                                    <td>Rodrigue Gbénou</td>
+                                    <td>125,000 FCFA</td>
+                                    <td><span class="status-badge status-preparing">En préparation</span></td>
+                                </tr>
+                                <tr>
+                                    <td>#WB-2503</td>
+                                    <td>Estelle Dossou</td>
+                                    <td>67,200 FCFA</td>
+                                    <td><span class="status-badge status-cancelled">Annulé</span></td>
+                                </tr>
+                                <tr>
+                                    <td>#WB-2502</td>
+                                    <td>Pascal Ahouansou</td>
+                                    <td>32,800 FCFA</td>
+                                    <td><span class="status-badge status-delivered">Livré</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div style="padding: 24px;">
+                            <h3 class="table-title" style="margin-bottom: 16px;">Litiges actifs</h3>
+                            <button class="manage-btn" style="float: right; margin-top: -40px;">Gérer les litiges</button>
+                            
+                            <table class="table" style="margin-top: 16px;">
+                                <thead>
+                                    <tr>
+                                        <th>ID Commande</th>
+                                        <th>Client</th>
+                                        <th>Vendeur</th>
+                                        <th>Problème</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#WB-2478</td>
+                                        <td>Diane Agossou</td>
+                                        <td>Boutique Techno</td>
+                                        <td>Produit défectueux</td>
+                                        <td><span class="status-badge status-pending">En attente</span></td>
+                                        <td><a href="#" class="action-btn">Examiner</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#WB-2465</td>
+                                        <td>Laurent Hounsou</td>
+                                        <td>Mode Chic</td>
+                                        <td>Livraison retardée</td>
+                                        <td><span class="status-badge status-mediation">En médiation</span></td>
+                                        <td><a href="#" class="action-btn">Examiner</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#WB-2452</td>
+                                        <td>Sylvie Gnahoui</td>
+                                        <td>Épicerie Premium</td>
+                                        <td>Produit manquant</td>
+                                        <td><span class="status-badge status-escalated">Escaladé</span></td>
+                                        <td><a href="#" class="action-btn">Examiner</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">Nouveaux vendeurs</h3>
+                            <a href="#" class="view-all-btn">Voir tout</a>
+                        </div>
+                        <div class="vendors-list">
+                            <div class="vendor-item">
+                                <div class="vendor-info">
+                                    <div class="vendor-avatar" style="background: #dbeafe; color: #2563eb;">BT</div>
+                                    <div class="vendor-details">
+                                        <h4>Boutique Techno</h4>
+                                        <p>Électronique</p>
+                                    </div>
+                                </div>
+                                <div class="toggle-switch"></div>
+                            </div>
+
+                            <div class="vendor-item">
+                                <div class="vendor-info">
+                                    <div class="vendor-avatar" style="background: #fce7f3; color: #be185d;">MC</div>
+                                    <div class="vendor-details">
+                                        <h4>Mode Chic</h4>
+                                        <p>Vêtements</p>
+                                    </div>
+                                </div>
+                                <div class="toggle-switch"></div>
+                            </div>
+
+                            <div class="vendor-item">
+                                <div class="vendor-info">
+                                    <div class="vendor-avatar" style="background: #fef3c7; color: #d97706;">EP</div>
+                                    <div class="vendor-details">
+                                        <h4>Épicerie Premium</h4>
+                                        <p>Alimentation</p>
+                                    </div>
+                                </div>
+                                <div class="toggle-switch"></div>
+                            </div>
+
+                            <div class="vendor-item">
+                                <div class="vendor-info">
+                                    <div class="vendor-avatar" style="background: #dcfce7; color: #059669;">BM</div>
+                                    <div class="vendor-details">
+                                        <h4>Beauté Moderne</h4>
+                                        <p>Cosmétiques</p>
+                                    </div>
+                                </div>
+                                <div class="toggle-switch active"></div>
+                            </div>
+
+                            <div class="vendor-item">
+                                <div class="vendor-info">
+                                    <div class="vendor-avatar" style="background: #e0e7ff; color: #3730a3;">AS</div>
+                                    <div class="vendor-details">
+                                        <h4>Artisanat du Sud</h4>
+                                        <p>Artisanat</p>
+                                    </div>
+                                </div>
+                                <div class="toggle-switch"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle switches functionality
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        // Chart filters functionality  
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from siblings
+                this.parentElement.querySelectorAll('.filter-btn').forEach(sibling => {
+                    sibling.classList.remove('active');
+                });
+                // Add active class to clicked button
+                this.classList.add('active');
+            });
+        });
+
+        // Mobile sidebar toggle functionality
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.toggle('mobile-open');
+            overlay.style.display = sidebar.classList.contains('mobile-open') ? 'block' : 'none';
+        }
+
+        function closeSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.remove('mobile-open');
+            overlay.style.display = 'none';
+        }
+
+        // Close sidebar when clicking on nav items on mobile
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.querySelector('.sidebar-overlay');
+                sidebar.classList.remove('mobile-open');
+                overlay.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
+{{ ... }}
+                const overlay = document.querySelector('.sidebar-overlay');
+                sidebar.classList.remove('mobile-open');
+                overlay.style.display = 'none';
+            }
+        });
+    </script>
+{% endblock %}
