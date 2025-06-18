@@ -1,0 +1,190 @@
+{# templates/boutique/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/styles/sellerdashbord.css') }}">
+{% endblock %}
+
+{% block body %}
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <nav class="nav-tabs">
+                    <a href="#" class="nav-tab active">
+                        <span class="nav-icon">🏪</span>
+                        Boutique
+                    </a>
+                    <a href="#" class="nav-tab">
+                        <span class="nav-icon">📦</span>
+                        Commandes
+                    </a>
+                    <a href="#" class="nav-tab">
+                        <span class="nav-icon">💬</span>
+                        Messages
+                        <span style="width: 8px; height: 8px; background: #28a745; border-radius: 50%; margin-left: 5px;"></span>
+                    </a>
+                    <a href="#" class="nav-tab">
+                        <span class="nav-icon">👤</span>
+                        Compte
+                    </a>
+                </nav>
+
+                <div class="logo">WazoBuy</div>
+
+                <div class="header-right">
+                    <div class="profile">
+                        <div class="profile-img"></div>
+                        <span>Ma Boutique</span>
+                    </div>
+                    <button class="add-product-btn">+ Ajouter un produit</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Dashboard -->
+        <section class="dashboard">
+            <div class="dashboard-layout">
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon sales">🛒</div>
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Ventes du jour</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon messages">💬</div>
+                        <div class="stat-value">780</div>
+                        <div class="stat-label">Messages reçus</div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="recent-orders">
+                    <h3 class="orders-title">Commandes récentes</h3>
+                    <div class="order-item">
+                        <div>
+                            <div class="order-date">17 avr.</div>
+                        </div>
+                        <div class="order-amount">10.000 FCFA</div>
+                        <div class="order-status status-pending">En attente</div>
+                    </div>
+                    <div class="order-item">
+                        <div>
+                            <div class="order-date">16 avr.</div>
+                        </div>
+                        <div class="order-amount">12.000 FCFA</div>
+                        <div class="order-status status-delivered">En livraison</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section class="products-section">
+            <h2 class="section-title">Liste des produits en vente</h2>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image ceramic-pot">
+                        <div class="product-actions">
+                            <button class="action-btn">✏️</button>
+                            <button class="action-btn">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Ceramic Pot</h3>
+                        <div class="product-stock">12 stock</div>
+                        <div class="product-price">5.000 FCFA</div>
+                        <span class="product-status">Publié</span>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image fabric">
+                        <div class="product-actions">
+                            <button class="action-btn">✏️</button>
+                            <button class="action-btn">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Fabric Fabric</h3>
+                        <div class="product-stock">5 stock</div>
+                        <div class="product-price">8.000 FCFA</div>
+                        <span class="product-status">Publié</span>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image smartphone">
+                        <div class="product-actions">
+                            <button class="action-btn">✏️</button>
+                            <button class="action-btn">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Smartphone</h3>
+                        <div class="product-stock">3 stock</div>
+                        <div class="product-price">70.000 FCFA</div>
+                        <span class="product-status">Publié</span>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div class="product-image necklace">
+                        <div class="product-actions">
+                            <button class="action-btn">✏️</button>
+                            <button class="action-btn">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Collier Traditionnel</h3>
+                        <div class="product-stock">8 stock</div>
+                        <div class="product-price">25.000 FCFA</div>
+                        <span class="product-status">Publié</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="view-more">
+                <a href="#" class="view-more-btn">Voir plus de produits ⌄</a>
+            </div>
+        </section>
+
+        <!-- Recent Orders Full Section -->
+        <section class="recent-orders-section">
+            <h2 class="section-title">Commandes récentes reçues</h2>
+            <div class="order-item">
+                <div>
+                    <div class="order-date">17 avr.</div>
+                </div>
+                <div class="order-amount">10.000 FCFA</div>
+                <div class="order-status status-pending">En attente</div>
+            </div>
+            <div class="order-item">
+                <div>
+                    <div class="order-date">16 avr.</div>
+                </div>
+                <div class="order-amount">12.000 FCFA</div>
+                <div class="order-status status-delivered">En livraison</div>
+            </div>
+        </section>
+
+        <!-- Bottom Stats -->
+        <section class="bottom-stats">
+            <div class="bottom-stat-card">
+                <div class="stat-icon sales">🛒</div>
+                <div class="stat-value">24</div>
+                <div class="stat-label">Ventes du jour</div>
+                <div style="margin-top: 10px; color: #6c757d;">780</div>
+            </div>
+            <div class="bottom-stat-card">
+                <div class="stat-icon messages">💬</div>
+                <div class="stat-value">780</div>
+                <div class="stat-label">Messages reçus</div>
+            </div>
+        </section>
+    </main>
+{% endblock %}
