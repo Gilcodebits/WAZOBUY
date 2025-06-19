@@ -1,0 +1,1018 @@
+{# templates/delivery/application.html.twig #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devenir Livreur - WAZOBUY</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#0047AB',secondary:'#40E0D0'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            background-color: #f8fafc;
+            color: #1f2937;
+        }
+        .file-upload-container {
+            border: 2px dashed #d1d5db;
+            transition: all 0.3s ease;
+        }
+        .file-upload-container:hover {
+            border-color: #40E0D0;
+        }
+        .file-upload-container.dragging {
+            background-color: rgba(64, 224, 208, 0.1);
+            border-color: #40E0D0;
+        }
+        .progress-bar {
+            height: 4px;
+            background-color: #e2e8f0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #40E0D0;
+            transition: width 0.3s ease;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #40E0D0;
+            box-shadow: 0 0 0 3px rgba(64, 224, 208, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="bg-primary py-4 shadow-md">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="text-white text-2xl font-['Pacifico']">logo</div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#" class="text-white hover:text-secondary transition">Accueil</a>
+                <a href="#" class="text-white hover:text-secondary transition">Marketplace</a>
+                <a href="#" class="text-white hover:text-secondary transition">Services</a>
+                <a href="#" class="text-white hover:text-secondary transition">À propos</a>
+                <a href="#" class="text-white hover:text-secondary transition">Contact</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button class="md:hidden text-white w-10 h-10 flex items-center justify-center">
+                    <i class="ri-menu-line ri-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+            <div class="bg-primary py-6 px-8">
+                <h1 class="text-2xl md:text-3xl font-bold text-white text-center">Devenir Livreur WAZOBUY</h1>
+                <p class="text-white text-center mt-2 opacity-90">Rejoignez notre équipe de livraison et contribuez à la digitalisation du commerce local</p>
+            </div>
+
+            <div class="p-6 md:p-8">
+                <!-- Progress Indicator -->
+                <div class="mb-8">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm font-medium" id="progress-text">Étape 1 sur 4</span>
+                        <span class="text-sm font-medium"><span id="progress-percentage">25</span>% complété</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" style="width: 25%"></div>
+                    </div>
+                </div>
+
+                <!-- Steps Navigation -->
+                <div class="flex justify-between mb-8">
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 flex items-center justify-center rounded-full bg-secondary text-white font-bold step-indicator active">1</div>
+                        <span class="text-xs mt-2 text-center">Informations Personnelles</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-bold step-indicator">2</div>
+                        <span class="text-xs mt-2 text-center">Documents Requis</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-bold step-indicator">3</div>
+                        <span class="text-xs mt-2 text-center">Informations Professionnelles</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-bold step-indicator">4</div>
+                        <span class="text-xs mt-2 text-center">Validation</span>
+                    </div>
+                </div>
+                <form id="delivery-application-form">
+                    <!-- Section 1: Personal Information -->
+                    <div class="form-section active" id="section-1">
+                        <h2 class="text-xl font-semibold mb-6 text-primary">Informations Personnelles</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="firstname" class="block text-sm font-medium text-gray-700 mb-1">Prénom <span class="text-red-500">*</span></label>
+                                <input type="text" id="firstname" name="firstname" required class="w-full px-4 py-2 border border-gray-300 rounded focus:border-secondary" placeholder="Votre prénom">
+                            </div>
+                            <div>
+                                <label for="lastname" class="block text-sm font-medium text-gray-700 mb-1">Nom <span class="text-red-500">*</span></label>
+                                <input type="text" id="lastname" name="lastname" required class="w-full px-4 py-2 border border-gray-300 rounded focus:border-secondary" placeholder="Votre nom">
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="birthdate" class="block text-sm font-medium text-gray-700 mb-1">Date de naissance <span class="text-red-500">*</span></label>
+                            <input type="date" id="birthdate" name="birthdate" required class="w-full px-4 py-2 border border-gray-300 rounded focus:border-secondary">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Numéro de téléphone <span class="text-red-500">*</span></label>
+                                <input type="tel" id="phone" name="phone" required class="w-full px-4 py-2 border border-gray-300 rounded focus:border-secondary" placeholder="+229 XX XX XX XX">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                                <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded focus:border-secondary" placeholder="votre.email@exemple.com">
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Adresse complète <span class="text-red-500">*</span></label>
+                            <textarea id="address" name="address" required rows="3" class="w-full px-4 py-2 border border-gray-300 rounded focus:border-secondary" placeholder="Votre adresse complète"></textarea>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button type="button" class="next-btn bg-secondary hover:bg-opacity-90 text-white py-2 px-6 rounded-button whitespace-nowrap">Suivant <i class="ri-arrow-right-line ml-1"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Required Documents -->
+                    <div class="form-section" id="section-2">
+                        <h2 class="text-xl font-semibold mb-6 text-primary">Documents Requis</h2>
+                        <p class="text-gray-600 mb-6">Veuillez télécharger les documents suivants. Formats acceptés: JPG, PNG, PDF. Taille maximale: 5MB par fichier.</p>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Photo d'identité <span class="text-red-500">*</span></label>
+                                <div class="file-upload-container rounded-lg p-4 text-center" data-input="id-photo">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <i class="ri-image-add-line ri-2x text-gray-400 mb-2"></i>
+                                        <p class="text-sm text-gray-500">Glissez-déposez votre photo ou</p>
+                                        <button type="button" class="mt-2 text-secondary hover:text-primary focus:outline-none text-sm font-medium browse-btn whitespace-nowrap">Parcourir les fichiers</button>
+                                        <input type="file" id="id-photo" name="id-photo" accept="image/*,.pdf" class="hidden file-input" required>
+                                    </div>
+                                    <div class="file-info hidden mt-3">
+                                        <p class="text-sm text-gray-700 file-name"></p>
+                                        <div class="progress-bar mt-2">
+                                            <div class="progress-bar-fill" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Permis de conduire <span class="text-red-500">*</span></label>
+                                <div class="file-upload-container rounded-lg p-4 text-center" data-input="driving-license">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <i class="ri-file-list-3-line ri-2x text-gray-400 mb-2"></i>
+                                        <p class="text-sm text-gray-500">Glissez-déposez votre permis ou</p>
+                                        <button type="button" class="mt-2 text-secondary hover:text-primary focus:outline-none text-sm font-medium browse-btn whitespace-nowrap">Parcourir les fichiers</button>
+                                        <input type="file" id="driving-license" name="driving-license" accept="image/*,.pdf" class="hidden file-input" required>
+                                    </div>
+                                    <div class="file-info hidden mt-3">
+                                        <p class="text-sm text-gray-700 file-name"></p>
+                                        <div class="progress-bar mt-2">
+                                            <div class="progress-bar-fill" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Carte grise du véhicule <span class="text-red-500">*</span></label>
+                                <div class="file-upload-container rounded-lg p-4 text-center" data-input="vehicle-registration">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <i class="ri-file-list-3-line ri-2x text-gray-400 mb-2"></i>
+                                        <p class="text-sm text-gray-500">Glissez-déposez votre carte grise ou</p>
+                                        <button type="button" class="mt-2 text-secondary hover:text-primary focus:outline-none text-sm font-medium browse-btn whitespace-nowrap">Parcourir les fichiers</button>
+                                        <input type="file" id="vehicle-registration" name="vehicle-registration" accept="image/*,.pdf" class="hidden file-input" required>
+                                    </div>
+                                    <div class="file-info hidden mt-3">
+                                        <p class="text-sm text-gray-700 file-name"></p>
+                                        <div class="progress-bar mt-2">
+                                            <div class="progress-bar-fill" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Assurance du véhicule <span class="text-red-500">*</span></label>
+                                <div class="file-upload-container rounded-lg p-4 text-center" data-input="vehicle-insurance">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <i class="ri-shield-check-line ri-2x text-gray-400 mb-2"></i>
+                                        <p class="text-sm text-gray-500">Glissez-déposez votre assurance ou</p>
+                                        <button type="button" class="mt-2 text-secondary hover:text-primary focus:outline-none text-sm font-medium browse-btn whitespace-nowrap">Parcourir les fichiers</button>
+                                        <input type="file" id="vehicle-insurance" name="vehicle-insurance" accept="image/*,.pdf" class="hidden file-input" required>
+                                    </div>
+                                    <div class="file-info hidden mt-3">
+                                        <p class="text-sm text-gray-700 file-name"></p>
+                                        <div class="progress-bar mt-2">
+                                            <div class="progress-bar-fill" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Casier judiciaire <span class="text-red-500">*</span></label>
+                                <div class="file-upload-container rounded-lg p-4 text-center" data-input="criminal-record">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <i class="ri-file-text-line ri-2x text-gray-400 mb-2"></i>
+                                        <p class="text-sm text-gray-500">Glissez-déposez votre casier judiciaire ou</p>
+                                        <button type="button" class="mt-2 text-secondary hover:text-primary focus:outline-none text-sm font-medium browse-btn whitespace-nowrap">Parcourir les fichiers</button>
+                                        <input type="file" id="criminal-record" name="criminal-record" accept="image/*,.pdf" class="hidden file-input" required>
+                                    </div>
+                                    <div class="file-info hidden mt-3">
+                                        <p class="text-sm text-gray-700 file-name"></p>
+                                        <div class="progress-bar mt-2">
+                                            <div class="progress-bar-fill" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between mt-8">
+                            <button type="button" class="prev-btn border border-gray-300 text-gray-700 py-2 px-6 rounded-button hover:bg-gray-50 whitespace-nowrap"><i class="ri-arrow-left-line mr-1"></i> Précédent</button>
+                            <button type="button" class="next-btn bg-secondary hover:bg-opacity-90 text-white py-2 px-6 rounded-button whitespace-nowrap">Suivant <i class="ri-arrow-right-line ml-1"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Professional Information -->
+                    <div class="form-section" id="section-3">
+                        <h2 class="text-xl font-semibold mb-6 text-primary">Informations Professionnelles</h2>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Type de véhicule <span class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="border border-gray-300 rounded-lg p-4 cursor-pointer vehicle-option" data-value="moto">
+                                    <div class="flex items-center mb-2">
+                                        <div class="w-6 h-6 flex items-center justify-center rounded-full border-2 border-gray-300 mr-3 radio-circle">
+                                            <div class="w-3 h-3 rounded-full bg-secondary hidden radio-dot"></div>
+                                        </div>
+                                        <span class="font-medium">Moto</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <i class="ri-motorbike-fill ri-3x text-gray-400"></i>
+                                    </div>
+                                </div>
+                                <div class="border border-gray-300 rounded-lg p-4 cursor-pointer vehicle-option" data-value="scooter">
+                                    <div class="flex items-center mb-2">
+                                        <div class="w-6 h-6 flex items-center justify-center rounded-full border-2 border-gray-300 mr-3 radio-circle">
+                                            <div class="w-3 h-3 rounded-full bg-secondary hidden radio-dot"></div>
+                                        </div>
+                                        <span class="font-medium">Scooter</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <i class="ri-e-bike-2-fill ri-3x text-gray-400"></i>
+                                    </div>
+                                </div>
+                                <div class="border border-gray-300 rounded-lg p-4 cursor-pointer vehicle-option" data-value="voiture">
+                                    <div class="flex items-center mb-2">
+                                        <div class="w-6 h-6 flex items-center justify-center rounded-full border-2 border-gray-300 mr-3 radio-circle">
+                                            <div class="w-3 h-3 rounded-full bg-secondary hidden radio-dot"></div>
+                                        </div>
+                                        <span class="font-medium">Voiture</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <i class="ri-car-fill ri-3x text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="vehicle-type" name="vehicle-type" required>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="delivery-zones" class="block text-sm font-medium text-gray-700 mb-1">Zones de livraison préférées <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <select id="delivery-zones" name="delivery-zones[]" multiple class="w-full px-4 py-2 border border-gray-300 rounded focus:border-secondary pr-8" size="5">
+                                    <option value="cotonou-centre">Cotonou Centre</option>
+                                    <option value="cotonou-nord">Cotonou Nord</option>
+                                    <option value="cotonou-sud">Cotonou Sud</option>
+                                    <option value="calavi">Abomey-Calavi</option>
+                                    <option value="porto-novo">Porto-Novo</option>
+                                    <option value="ouidah">Ouidah</option>
+                                    <option value="seme-kpodji">Sèmè-Kpodji</option>
+                                    <option value="pahou">Pahou</option>
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">Maintenez Ctrl (ou Cmd sur Mac) pour sélectionner plusieurs zones</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Disponibilités hebdomadaires <span class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="font-medium">Lundi</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" name="availability[]" value="monday" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">De</label>
+                                            <input type="time" name="monday-from" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">À</label>
+                                            <input type="time" name="monday-to" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="font-medium">Mardi</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" name="availability[]" value="tuesday" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">De</label>
+                                            <input type="time" name="tuesday-from" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">À</label>
+                                            <input type="time" name="tuesday-to" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="font-medium">Mercredi</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" name="availability[]" value="wednesday" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">De</label>
+                                            <input type="time" name="wednesday-from" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">À</label>
+                                            <input type="time" name="wednesday-to" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="font-medium">Jeudi</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" name="availability[]" value="thursday" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">De</label>
+                                            <input type="time" name="thursday-from" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">À</label>
+                                            <input type="time" name="thursday-to" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="font-medium">Vendredi</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" name="availability[]" value="friday" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">De</label>
+                                            <input type="time" name="friday-from" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">À</label>
+                                            <input type="time" name="friday-to" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="font-medium">Samedi</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" name="availability[]" value="saturday" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">De</label>
+                                            <input type="time" name="saturday-from" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">À</label>
+                                            <input type="time" name="saturday-to" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-300 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="font-medium">Dimanche</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" name="availability[]" value="sunday" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">De</label>
+                                            <input type="time" name="sunday-from" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">À</label>
+                                            <input type="time" name="sunday-to" class="w-full px-3 py-1 border border-gray-300 rounded text-sm" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="experience" class="block text-sm font-medium text-gray-700 mb-1">Expérience en livraison</label>
+                            <select id="experience" name="experience" class="w-full px-4 py-2 border border-gray-300 rounded focus:border-secondary pr-8">
+                                <option value="">Sélectionnez votre niveau d'expérience</option>
+                                <option value="none">Aucune expérience</option>
+                                <option value="less-than-1">Moins d'un an</option>
+                                <option value="1-2">1-2 ans</option>
+                                <option value="3-5">3-5 ans</option>
+                                <option value="more-than-5">Plus de 5 ans</option>
+                            </select>
+                        </div>
+
+                        <div class="flex justify-between mt-8">
+                            <button type="button" class="prev-btn border border-gray-300 text-gray-700 py-2 px-6 rounded-button hover:bg-gray-50 whitespace-nowrap"><i class="ri-arrow-left-line mr-1"></i> Précédent</button>
+                            <button type="button" class="next-btn bg-secondary hover:bg-opacity-90 text-white py-2 px-6 rounded-button whitespace-nowrap">Suivant <i class="ri-arrow-right-line ml-1"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Validation -->
+                    <div class="form-section" id="section-4">
+                        <h2 class="text-xl font-semibold mb-6 text-primary">Validation de votre candidature</h2>
+                        
+                        <div class="bg-blue-50 border-l-4 border-primary p-4 mb-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="ri-information-line text-primary ri-lg"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-blue-700">
+                                        Veuillez vérifier toutes les informations avant de soumettre votre candidature. Une fois soumise, notre équipe examinera votre dossier dans un délai de 48 à 72 heures ouvrables.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <div class="flex items-center">
+                                <input id="terms-agreement" name="terms-agreement" type="checkbox" required class="w-5 h-5 text-secondary border-gray-300 rounded focus:ring-secondary">
+                                <label for="terms-agreement" class="ml-2 block text-sm text-gray-700">
+                                    J'accepte les <a href="#" class="text-secondary hover:underline">conditions générales</a> et la <a href="#" class="text-secondary hover:underline">politique de confidentialité</a> de WAZOBUY. <span class="text-red-500">*</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <div class="flex items-center">
+                                <input id="data-agreement" name="data-agreement" type="checkbox" required class="w-5 h-5 text-secondary border-gray-300 rounded focus:ring-secondary">
+                                <label for="data-agreement" class="ml-2 block text-sm text-gray-700">
+                                    J'autorise WAZOBUY à traiter mes données personnelles pour l'évaluation de ma candidature. <span class="text-red-500">*</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <div class="flex items-center">
+                                <input id="communication-agreement" name="communication-agreement" type="checkbox" class="w-5 h-5 text-secondary border-gray-300 rounded focus:ring-secondary">
+                                <label for="communication-agreement" class="ml-2 block text-sm text-gray-700">
+                                    J'accepte de recevoir des communications marketing de WAZOBUY.
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between mt-8">
+                            <button type="button" class="prev-btn border border-gray-300 text-gray-700 py-2 px-6 rounded-button hover:bg-gray-50 whitespace-nowrap"><i class="ri-arrow-left-line mr-1"></i> Précédent</button>
+                            <button type="submit" class="bg-primary hover:bg-opacity-90 text-white py-2 px-6 rounded-button whitespace-nowrap">Soumettre ma candidature</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Why Join Us Section -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+            <div class="bg-primary py-6 px-8">
+                <h2 class="text-2xl font-bold text-white text-center">Pourquoi devenir livreur WAZOBUY ?</h2>
+            </div>
+            <div class="p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-16 h-16 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                            <i class="ri-time-line ri-xl text-primary"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">Flexibilité horaire</h3>
+                        <p class="text-gray-600">Travaillez selon votre emploi du temps. Vous choisissez vos heures de disponibilité.</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                            <i class="ri-money-dollar-circle-line ri-xl text-primary"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">Revenus compétitifs</h3>
+                        <p class="text-gray-600">Gagnez des revenus attractifs avec des primes lors des périodes de forte demande.</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                            <i class="ri-community-line ri-xl text-primary"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">Communauté dynamique</h3>
+                        <p class="text-gray-600">Rejoignez une équipe solidaire et participez à la digitalisation du commerce local au Bénin.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testimonials -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+            <div class="bg-primary py-6 px-8">
+                <h2 class="text-2xl font-bold text-white text-center">Témoignages de nos livreurs</h2>
+            </div>
+            <div class="p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="border border-gray-200 rounded-lg p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                KA
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="font-semibold">Kokou Agbodjan</h3>
+                                <p class="text-sm text-gray-500">Livreur depuis 8 mois</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic">"Devenir livreur chez WAZOBUY a été une excellente décision. La flexibilité me permet de gérer mon temps comme je le souhaite, et l'application est très intuitive pour suivre mes livraisons."</p>
+                        <div class="flex mt-3 text-yellow-400">
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                FT
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="font-semibold">Fatou Tossou</h3>
+                                <p class="text-sm text-gray-500">Livreuse depuis 1 an</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic">"J'apprécie particulièrement le support de l'équipe WAZOBUY. Quand j'ai un problème, ils sont toujours disponibles pour m'aider. Les revenus sont stables et les clients sont généralement très sympathiques."</p>
+                        <div class="flex mt-3 text-yellow-400">
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-fill"></i>
+                            <i class="ri-star-half-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-primary py-6 px-8">
+                <h2 class="text-2xl font-bold text-white text-center">Questions fréquentes</h2>
+            </div>
+            <div class="p-6 md:p-8">
+                <div class="space-y-4">
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-4 text-left font-medium focus:outline-none">
+                            <span>Quelles sont les conditions pour devenir livreur ?</span>
+                            <i class="ri-arrow-down-s-line ri-lg transition-transform"></i>
+                        </button>
+                        <div class="faq-content hidden px-4 pb-4">
+                            <p class="text-gray-600">Pour devenir livreur WAZOBUY, vous devez avoir au moins 18 ans, posséder un véhicule (moto, scooter ou voiture) en bon état, un permis de conduire valide, une assurance à jour et un casier judiciaire vierge. Vous devez également avoir un smartphone compatible avec notre application de livraison.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-4 text-left font-medium focus:outline-none">
+                            <span>Comment fonctionne la rémunération ?</span>
+                            <i class="ri-arrow-down-s-line ri-lg transition-transform"></i>
+                        </button>
+                        <div class="faq-content hidden px-4 pb-4">
+                            <p class="text-gray-600">La rémunération est basée sur plusieurs facteurs : la distance parcourue, le temps de livraison et le nombre de commandes effectuées. Vous recevez également des primes lors des périodes de forte demande et des pourboires laissés par les clients. Les paiements sont effectués de façon hebdomadaire directement sur votre compte bancaire ou mobile money.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-4 text-left font-medium focus:outline-none">
+                            <span>Quel est le délai de traitement de ma candidature ?</span>
+                            <i class="ri-arrow-down-s-line ri-lg transition-transform"></i>
+                        </button>
+                        <div class="faq-content hidden px-4 pb-4">
+                            <p class="text-gray-600">Après soumission de votre dossier complet, notre équipe l'examine généralement dans un délai de 48 à 72 heures ouvrables. Si votre candidature est retenue, vous serez invité à une courte formation sur l'utilisation de notre application et les procédures de livraison avant de commencer.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-4 text-left font-medium focus:outline-none">
+                            <span>Est-ce que WAZOBUY fournit l'équipement de livraison ?</span>
+                            <i class="ri-arrow-down-s-line ri-lg transition-transform"></i>
+                        </button>
+                        <div class="faq-content hidden px-4 pb-4">
+                            <p class="text-gray-600">Oui, WAZOBUY fournit un sac de livraison isotherme et un t-shirt à l'effigie de la marque. Pour les livreurs à moto, nous fournissons également un casque aux couleurs de WAZOBUY. Vous devez cependant disposer de votre propre véhicule et smartphone.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-4 text-left font-medium focus:outline-none">
+                            <span>Comment fonctionne l'application de livraison ?</span>
+                            <i class="ri-arrow-down-s-line ri-lg transition-transform"></i>
+                        </button>
+                        <div class="faq-content hidden px-4 pb-4">
+                            <p class="text-gray-600">Notre application de livraison est intuitive et facile à utiliser. Elle vous permet de voir les commandes disponibles dans votre zone, d'accepter celles qui vous conviennent, de naviguer jusqu'aux points de collecte et de livraison, et de confirmer la remise au client. L'application intègre également un système de messagerie pour communiquer avec les clients et le support.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-primary text-white mt-16">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="text-2xl font-['Pacifico'] mb-4">logo</div>
+                    <p class="text-gray-300 mb-4">WAZOBUY - La première plateforme de e-commerce avec livraison intégrée au Bénin.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition">
+                            <i class="ri-facebook-fill text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition">
+                            <i class="ri-instagram-fill text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition">
+                            <i class="ri-twitter-fill text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition">
+                            <i class="ri-linkedin-fill text-white"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Liens rapides</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition">Accueil</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition">Nos produits</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition">Devenir vendeur</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition">Devenir livreur</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition">À propos</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition">Centre d'aide</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition">FAQ</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition">Conditions d'utilisation</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition">Politique de confidentialité</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition">Contactez-nous</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="ri-map-pin-line ri-lg mt-1 mr-3"></i>
+                            <span>Quartier Fidjrossè, Cotonou, Bénin</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="ri-phone-line ri-lg mr-3"></i>
+                            <span>+229 97 12 34 56</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="ri-mail-line ri-lg mr-3"></i>
+                            <span>contact@wazobuy.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white/20 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-300 text-sm mb-4 md:mb-0">© 2025 WAZOBUY. Tous droits réservés.</p>
+                <div class="flex space-x-4">
+                    <i class="ri-visa-fill ri-lg"></i>
+                    <i class="ri-mastercard-fill ri-lg"></i>
+                    <i class="ri-paypal-fill ri-lg"></i>
+                    <i class="ri-bank-card-fill ri-lg"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script id="form-navigation">
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.form-section');
+            const nextButtons = document.querySelectorAll('.next-btn');
+            const prevButtons = document.querySelectorAll('.prev-btn');
+            const progressBar = document.querySelector('.progress-bar-fill');
+            const progressText = document.getElementById('progress-text');
+            const progressPercentage = document.getElementById('progress-percentage');
+            const stepIndicators = document.querySelectorAll('.step-indicator');
+            let currentSection = 0;
+
+            // Next button click handler
+            nextButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Validate current section
+                    if (validateSection(currentSection)) {
+                        sections[currentSection].classList.remove('active');
+                        currentSection++;
+                        sections[currentSection].classList.add('active');
+                        updateProgress();
+                    }
+                });
+            });
+
+            // Previous button click handler
+            prevButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    sections[currentSection].classList.remove('active');
+                    currentSection--;
+                    sections[currentSection].classList.add('active');
+                    updateProgress();
+                });
+            });
+
+            // Update progress indicators
+            function updateProgress() {
+                const progress = ((currentSection + 1) / sections.length) * 100;
+                progressBar.style.width = `${progress}%`;
+                progressText.textContent = `Étape ${currentSection + 1} sur ${sections.length}`;
+                progressPercentage.textContent = Math.round(progress);
+                
+                // Update step indicators
+                stepIndicators.forEach((indicator, index) => {
+                    if (index <= currentSection) {
+                        indicator.classList.add('bg-secondary');
+                        indicator.classList.add('text-white');
+                        indicator.classList.remove('bg-gray-200');
+                        indicator.classList.remove('text-gray-500');
+                    } else {
+                        indicator.classList.remove('bg-secondary');
+                        indicator.classList.remove('text-white');
+                        indicator.classList.add('bg-gray-200');
+                        indicator.classList.add('text-gray-500');
+                    }
+                });
+            }
+
+            // Basic validation for each section
+            function validateSection(sectionIndex) {
+                const section = sections[sectionIndex];
+                const requiredFields = section.querySelectorAll('[required]');
+                let valid = true;
+
+                requiredFields.forEach(field => {
+                    if (!field.value) {
+                        field.classList.add('border-red-500');
+                        valid = false;
+                    } else {
+                        field.classList.remove('border-red-500');
+                    }
+                });
+
+                // Special validation for section 3 (vehicle type)
+                if (sectionIndex === 2) {
+                    const vehicleType = document.getElementById('vehicle-type');
+                    if (!vehicleType.value) {
+                        document.querySelectorAll('.vehicle-option').forEach(option => {
+                            option.classList.add('border-red-500');
+                        });
+                        valid = false;
+                    }
+                }
+
+                return valid;
+            }
+
+            // Form submission
+            const form = document.getElementById('delivery-application-form');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Final validation
+                if (validateSection(currentSection)) {
+                    // Show success message (in a real application, you would submit the form data to a server)
+                    const formContainer = form.parentElement;
+                    formContainer.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                <i class="ri-check-line ri-2x text-green-500"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-primary mb-2">Candidature soumise avec succès !</h2>
+                            <p class="text-gray-600 mb-6">Merci pour votre intérêt à rejoindre l'équipe de livreurs WAZOBUY. Nous examinerons votre candidature et vous contacterons dans les 48 à 72 heures ouvrables.</p>
+                            <p class="text-gray-600 mb-6">Un email de confirmation a été envoyé à l'adresse que vous avez fournie.</p>
+                            <a href="#" class="inline-block bg-primary hover:bg-opacity-90 text-white py-2 px-6 rounded-button whitespace-nowrap">Retour à l'accueil</a>
+                        </div>
+                    `;
+                }
+            });
+        });
+    </script>
+
+    <script id="file-upload-handlers">
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileContainers = document.querySelectorAll('.file-upload-container');
+            
+            fileContainers.forEach(container => {
+                const inputId = container.dataset.input;
+                const fileInput = document.getElementById(inputId);
+                const browseBtn = container.querySelector('.browse-btn');
+                const fileInfo = container.querySelector('.file-info');
+                const fileName = container.querySelector('.file-name');
+                const progressFill = container.querySelector('.progress-bar-fill');
+                
+                // Open file dialog when browse button is clicked
+                browseBtn.addEventListener('click', () => {
+                    fileInput.click();
+                });
+                
+                // Handle file selection
+                fileInput.addEventListener('change', () => {
+                    if (fileInput.files.length > 0) {
+                        const file = fileInput.files[0];
+                        fileName.textContent = file.name;
+                        fileInfo.classList.remove('hidden');
+                        
+                        // Simulate upload progress
+                        let progress = 0;
+                        const interval = setInterval(() => {
+                            progress += 10;
+                            progressFill.style.width = `${progress}%`;
+                            
+                            if (progress >= 100) {
+                                clearInterval(interval);
+                                container.classList.add('border-green-500');
+                                container.classList.remove('border-gray-300');
+                            }
+                        }, 200);
+                    }
+                });
+                
+                // Handle drag and drop
+                container.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    container.classList.add('dragging');
+                });
+                
+                container.addEventListener('dragleave', () => {
+                    container.classList.remove('dragging');
+                });
+                
+                container.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    container.classList.remove('dragging');
+                    
+                    if (e.dataTransfer.files.length > 0) {
+                        fileInput.files = e.dataTransfer.files;
+                        const file = e.dataTransfer.files[0];
+                        fileName.textContent = file.name;
+                        fileInfo.classList.remove('hidden');
+                        
+                        // Simulate upload progress
+                        let progress = 0;
+                        const interval = setInterval(() => {
+                            progress += 10;
+                            progressFill.style.width = `${progress}%`;
+                            
+                            if (progress >= 100) {
+                                clearInterval(interval);
+                                container.classList.add('border-green-500');
+                                container.classList.remove('border-gray-300');
+                            }
+                        }, 200);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script id="vehicle-selection">
+        document.addEventListener('DOMContentLoaded', function() {
+            const vehicleOptions = document.querySelectorAll('.vehicle-option');
+            const vehicleTypeInput = document.getElementById('vehicle-type');
+            
+            vehicleOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selection from all options
+                    vehicleOptions.forEach(opt => {
+                        opt.classList.remove('border-secondary');
+                        opt.classList.add('border-gray-300');
+                        const radioDot = opt.querySelector('.radio-dot');
+                        radioDot.classList.add('hidden');
+                        const radioCircle = opt.querySelector('.radio-circle');
+                        radioCircle.classList.remove('border-secondary');
+                        radioCircle.classList.add('border-gray-300');
+                    });
+                    
+                    // Add selection to clicked option
+                    this.classList.add('border-secondary');
+                    this.classList.remove('border-gray-300');
+                    const radioDot = this.querySelector('.radio-dot');
+                    radioDot.classList.remove('hidden');
+                    const radioCircle = this.querySelector('.radio-circle');
+                    radioCircle.classList.add('border-secondary');
+                    radioCircle.classList.remove('border-gray-300');
+                    
+                    // Update hidden input
+                    vehicleTypeInput.value = this.dataset.value;
+                    
+                    // Remove validation error styling
+                    vehicleOptions.forEach(opt => {
+                        opt.classList.remove('border-red-500');
+                    });
+                });
+            });
+        });
+    </script>
+
+    <script id="availability-toggles">
+        document.addEventListener('DOMContentLoaded', function() {
+            const availabilityToggles = document.querySelectorAll('input[name="availability[]"]');
+            
+            availabilityToggles.forEach(toggle => {
+                toggle.addEventListener('change', function() {
+                    const day = this.value;
+                    const fromInput = document.querySelector(`input[name="${day}-from"]`);
+                    const toInput = document.querySelector(`input[name="${day}-to"]`);
+                    
+                    if (this.checked) {
+                        fromInput.disabled = false;
+                        toInput.disabled = false;
+                        fromInput.required = true;
+                        toInput.required = true;
+                    } else {
+                        fromInput.disabled = true;
+                        toInput.disabled = true;
+                        fromInput.required = false;
+                        toInput.required = false;
+                        fromInput.value = '';
+                        toInput.value = '';
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script id="faq-toggles">
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqToggles = document.querySelectorAll('.faq-toggle');
+            
+            faqToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    const icon = this.querySelector('i');
+                    
+                    // Toggle content visibility
+                    content.classList.toggle('hidden');
+                    
+                    // Rotate icon
+                    if (content.classList.contains('hidden')) {
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

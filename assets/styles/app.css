@@ -744,7 +744,7 @@ element.style {
 
 .author-info p {
     font-size: 0.9rem;
-    color: var(--light-gray);
+    color: gray;
 }
 
 @media (max-width: 768px) {
