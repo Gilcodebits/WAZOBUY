@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du vendeur - Administration{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Détails du vendeur</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ vendeur.nom }} {{ vendeur.prenom }}</h5>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Email:</strong> {{ vendeur.email }}</p>
+                    <p><strong>Téléphone:</strong> {{ vendeur.telephone ?? 'Non défini' }}</p>
+                    <p><strong>Date de création:</strong> {{ vendeur.dateCreation|date('d/m/Y H:i') }}</strong></p>
+                    <p><strong>Dernière connexion:</strong> {{ vendeur.derniereConnexion|date('d/m/Y H:i') ?? 'Jamais' }}</p>
+                    <p><strong>Statut:</strong> {% if vendeur.estActif %}Actif{% else %}Inactif{% endif %}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Photo de profil:</strong>
+                        {% if vendeur.photoProfil %}
+                            <img src="{{ vendeur.photoProfil }}" alt="Photo de profil" class="img-thumbnail" style="max-width: 200px;">
+                        {% else %}
+                            Pas de photo de profil
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="{{ path('app_admin_vendeurs') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

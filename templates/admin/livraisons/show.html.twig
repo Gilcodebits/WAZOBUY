@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la livraison - Administration{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Détails de la livraison #{{ livraison.id }}</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Informations de la livraison</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Date:</strong> {{ livraison.dateLivraison|date('d/m/Y H:i') }}</p>
+                    <p><strong>Statut:</strong>
+                        {% if livraison.statut == 'en_attente' %}
+                            <span class="badge bg-warning">En attente</span>
+                        {% elseif livraison.statut == 'validée' %}
+                            <span class="badge bg-success">Validée</span>
+                        {% elseif livraison.statut == 'annulée' %}
+                            <span class="badge bg-danger">Annulée</span>
+                        {% elseif livraison.statut == 'expédiée' %}
+                            <span class="badge bg-info">Expédiée</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ livraison.statut }}</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Adresse de livraison:</strong><br>
+                        {{ livraison.adresseLivraison }}<br>
+                        {{ livraison.codePostal }} {{ livraison.ville }}<br>
+                        {{ livraison.pays }}</p>
+                    <p><strong>Frais de livraison:</strong> {{ livraison.fraisLivraison|number_format(2, ',', ' ') }} €</p>
+                    <p><strong>Instructions:</strong> {{ livraison.instructionsLivraison }}</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Détails de la commande</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Prix unitaire</th>
+                                    <th>Quantité</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detail in livraison.commande?.details %}
+                                <tr>
+                                    <td>
+                                        {{ detail.produit?.nom }}<br>
+                                        <small class="text-muted">{{ detail.produit?.description }}</small>
+                                    </td>
+                                    <td>{{ detail.prixUnitaire|number_format(2, ',', ' ') }} €</td>
+                                    <td>{{ detail.quantite }}</td>
+                                    <td>{{ (detail.prixUnitaire * detail.quantite)|number_format(2, ',', ' ') }} €</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td><strong>{{ livraison.commande?.total|number_format(2, ',', ' ') }} €</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informations du client</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Nom:</strong> {{ livraison.commande?.client?.nom }} {{ livraison.commande?.client?.prenom }}</p>
+                    <p><strong>Email:</strong> {{ livraison.commande?.client?.email }}</p>
+                    <p><strong>Téléphone:</strong> {{ livraison.commande?.client?.telephone }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ path('app_admin_livraisons') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+        {% if livraison.statut == 'en_attente' %}
+            <a href="{{ path('app_admin_livraison_valider', {'id': livraison.id}) }}" class="btn btn-success" onclick="return confirm('Êtes-vous sûr de vouloir valider cette livraison ?')">
+                <i class="fas fa-check"></i> Valider
+            </a>
+            <a href="{{ path('app_admin_livraison_annuler', {'id': livraison.id}) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette livraison ?')">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

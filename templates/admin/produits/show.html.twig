@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du produit - Administration{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Détails du produit</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ produit.nom }}</h5>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Prix:</strong> {{ produit.prix|number_format(2, ',', ' ') }} €</p>
+                    <p><strong>Stock:</strong> {{ produit.stock }}</p>
+                    <p><strong>Catégorie:</strong> {{ produit.categorie?.nom ?? 'Non définie' }}</p>
+                    <p><strong>Vendeur:</strong> {{ produit.vendeur?.nom }} {{ produit.vendeur?.prenom }}</p>
+                    <p><strong>Description:</strong> {{ produit.description }}</p>
+                    <p><strong>Promotion:</strong> 
+                        {% if produit.enPromotion %}
+                            <span class="badge bg-success">En promotion</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Normal</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Photos:</strong>
+                        {% if produit.photos %}
+                            <div class="row">
+                                {% for photo in produit.photos %}
+                                <div class="col-4 mb-3">
+                                    <img src="{{ photo }}" alt="{{ produit.nom }}" class="img-thumbnail" style="max-width: 150px;">
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            Aucune photo
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="{{ path('app_admin_produits') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

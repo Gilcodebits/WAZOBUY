@@ -1,0 +1,730 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Utilisateurs - Administration{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container-fluid {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header Section */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            background: var(--light-color);
+            padding: 2rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .table-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .table-title i {
+            color: var(--primary-color);
+        }
+
+        .table-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            min-width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            background: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 150px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Table Styling */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            margin: 0;
+            border-collapse: collapse;
+        }
+
+        .table thead {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .table th {
+            padding: 1.25rem 1rem;
+            font-weight: 600;
+            text-align: left;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+        }
+
+        .table tbody tr {
+            transition: var(--transition);
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+            transform: scale(1.01);
+        }
+
+        .table td {
+            padding: 1.25rem 1rem;
+            vertical-align: middle;
+            border: none;
+        }
+
+        /* User Avatar */
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            font-size: 1rem;
+            margin-right: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-details h5 {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0 0 0.25rem 0;
+            font-size: 1rem;
+        }
+
+        .user-details small {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+
+        /* Role Badges */
+        .role-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+
+        .role-admin { 
+            background: linear-gradient(135deg, #dc3545, #c82333); 
+            color: white; 
+        }
+        .role-vendeur { 
+            background: linear-gradient(135deg, #28a745, #1e7e34); 
+            color: white; 
+        }
+        .role-client { 
+            background: linear-gradient(135deg, #007bff, #0056b3); 
+            color: white; 
+        }
+        .role-livreur { 
+            background: linear-gradient(135deg, #ffc107, #e0a800); 
+            color: black; 
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active { 
+            background: linear-gradient(135deg, #28a745, #1e7e34); 
+            color: white; 
+        }
+        .status-inactive { 
+            background: linear-gradient(135deg, #dc3545, #c82333); 
+            color: white; 
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0.9;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding: 1rem;
+            }
+
+            .page-header {
+                padding: 2rem 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .table-header-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .table-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                min-width: auto;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table th,
+            .table td {
+                padding: 1rem 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-item, .table-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stat-item:nth-child(1) { animation-delay: 0.1s; }
+        .stat-item:nth-child(2) { animation-delay: 0.2s; }
+        .stat-item:nth-child(3) { animation-delay: 0.3s; }
+        .stat-item:nth-child(4) { animation-delay: 0.4s; }
+        .stat-item:nth-child(5) { animation-delay: 0.5s; }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>
+            <i class="fas fa-users"></i>
+            Gestion des Utilisateurs
+        </h1>
+        <p>Vue d'ensemble et gestion de tous les utilisateurs de la plateforme WAZOBUY</p>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-number">{{ stats.total }}</div>
+            <div class="stat-label">Total Utilisateurs</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ stats.clients }}</div>
+            <div class="stat-label">Clients</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ stats.vendeurs }}</div>
+            <div class="stat-label">Vendeurs</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ stats.livreurs }}</div>
+            <div class="stat-label">Livreurs</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ stats.admins }}</div>
+            <div class="stat-label">Administrateurs</div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="table-container">
+        <div class="table-header">
+            <div class="table-header-content">
+                <h3 class="table-title">
+                    <i class="fas fa-table"></i>
+                    Liste des Utilisateurs
+                </h3>
+                <div class="table-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" id="searchInput" placeholder="Rechercher un utilisateur...">
+                    </div>
+                    <select class="filter-select" id="roleFilter">
+                        <option value="">Tous les rôles</option>
+                        <option value="ROLE_ADMIN">Administrateurs</option>
+                        <option value="ROLE_VENDEUR">Vendeurs</option>
+                        <option value="ROLE_CLIENT">Clients</option>
+                        <option value="ROLE_LIVREUR">Livreurs</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table" id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Utilisateur</th>
+                        <th>Contact</th>
+                        <th>Rôles</th>
+                        <th>Statut</th>
+                        <th>Inscription</th>
+                        <th>Dernière Connexion</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for utilisateur in utilisateurs %}
+                    <tr data-roles="{{ utilisateur.roles|json_encode }}">
+                        <td>
+                            <div class="user-info">
+                                {% set colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe', '#43e97b', '#38f9d7', '#fa709a', '#fee140', '#a8edea', '#fed6e3', '#ffecd2', '#fcb69f', '#ff9a9e', '#fecfef', '#fecfef', '#ffc3a0'] %}
+                                {% set colorIndex = (utilisateur.id - 1) % colors|length %}
+                                <div class="user-avatar" style="background: {{ colors[colorIndex] }};">
+                                    {{ utilisateur.prenom|first|upper }}{{ utilisateur.nom|first|upper }}
+                                </div>
+                                <div class="user-details">
+                                    <h5>{{ utilisateur.prenom }} {{ utilisateur.nom }}</h5>
+                                    <small>ID: #{{ utilisateur.id }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <div style="margin-bottom: 0.5rem;">
+                                    <a href="mailto:{{ utilisateur.email }}" class="text-decoration-none" style="color: var(--primary-color);">
+                                        <i class="fas fa-envelope"></i> {{ utilisateur.email }}
+                                    </a>
+                                </div>
+                                {% if utilisateur.telephone %}
+                                    <div>
+                                        <a href="tel:{{ utilisateur.telephone }}" class="text-decoration-none" style="color: var(--info-color);">
+                                            <i class="fas fa-phone"></i> {{ utilisateur.telephone }}
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <small style="color: #6c757d;">
+                                        <i class="fas fa-phone"></i> Non renseigné
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% for role in utilisateur.roles %}
+                                {% if role == 'ROLE_ADMIN' %}
+                                    <span class="role-badge role-admin">Admin</span>
+                                {% elseif role == 'ROLE_VENDEUR' %}
+                                    <span class="role-badge role-vendeur">Vendeur</span>
+                                {% elseif role == 'ROLE_LIVREUR' %}
+                                    <span class="role-badge role-livreur">Livreur</span>
+                                {% elseif role == 'ROLE_CLIENT' %}
+                                    <span class="role-badge role-client">Client</span>
+                                {% else %}
+                                    <span class="role-badge">{{ role|replace({'ROLE_': ''}) }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% if utilisateur.estActif %}
+                                <span class="status-badge status-active">
+                                    <i class="fas fa-check-circle"></i> Actif
+                                </span>
+                            {% else %}
+                                <span class="status-badge status-inactive">
+                                    <i class="fas fa-ban"></i> Inactif
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div>
+                                <div style="font-weight: 500; color: var(--dark-color);">
+                                    {{ utilisateur.dateCreation|date('d/m/Y') }}
+                                </div>
+                                <small style="color: #6c757d;">
+                                    {{ utilisateur.dateCreation|date('H:i') }}
+                                </small>
+                            </div>
+                        </td>
+                        <td>
+                            {% if utilisateur.derniereConnexion %}
+                                <div>
+                                    <div style="font-weight: 500; color: var(--dark-color);">
+                                        {{ utilisateur.derniereConnexion|date('d/m/Y') }}
+                                    </div>
+                                    <small style="color: #6c757d;">
+                                        {{ utilisateur.derniereConnexion|date('H:i') }}
+                                    </small>
+                                </div>
+                            {% else %}
+                                <span style="color: #6c757d; font-style: italic;">
+                                    <i class="fas fa-clock"></i> Jamais
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{{ path('app_admin_utilisateur_show', {'id': utilisateur.id}) }}" 
+                                   class="btn btn-primary" 
+                                   title="Voir les détails">
+                                    <i class="fas fa-eye"></i>
+                                    Voir
+                                </a>
+                                {% if utilisateur.estActif %}
+                                    <a href="{{ path('app_admin_utilisateur_desactiver', {'id': utilisateur.id}) }}" 
+                                       class="btn btn-danger" 
+                                       onclick="return confirm('Êtes-vous sûr de vouloir désactiver cet utilisateur ?')"
+                                       title="Désactiver">
+                                        <i class="fas fa-ban"></i>
+                                        Désactiver
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('app_admin_utilisateur_activer', {'id': utilisateur.id}) }}" 
+                                       class="btn btn-success"
+                                       title="Activer">
+                                        <i class="fas fa-check"></i>
+                                        Activer
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="fas fa-users"></i>
+                                <h3>Aucun utilisateur trouvé</h3>
+                                <p>Aucun utilisateur ne correspond à vos critères de recherche.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// Fonction de recherche en temps réel
+document.getElementById('searchInput').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#usersTable tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+});
+
+// Fonction de filtrage par rôle
+document.getElementById('roleFilter').addEventListener('change', function() {
+    const selectedRole = this.value;
+    const rows = document.querySelectorAll('#usersTable tbody tr');
+    
+    rows.forEach(row => {
+        if (!selectedRole) {
+            row.style.display = '';
+            return;
+        }
+        
+        const roles = JSON.parse(row.dataset.roles);
+        row.style.display = roles.includes(selectedRole) ? '' : 'none';
+    });
+});
+
+// Animation des lignes au survol
+document.querySelectorAll('#usersTable tbody tr').forEach(row => {
+    row.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.01)';
+    });
+    
+    row.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1)';
+    });
+});
+
+// Confirmation pour les actions destructives
+document.querySelectorAll('.btn-danger').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        if (!confirm('Êtes-vous sûr de vouloir effectuer cette action ?')) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %} 

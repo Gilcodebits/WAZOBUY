@@ -1,0 +1,34 @@
+app_admin_commandes:
+    path: /admin/commandes
+    controller: App\Controller\Admin\CommandeController::index
+    methods: [GET]
+
+app_admin_commande_show:
+    path: /admin/commandes/{id}
+    controller: App\Controller\Admin\CommandeController::show
+    methods: [GET]
+
+app_admin_commande_resolve:
+    path: /admin/commandes/{id}/resolve
+    controller: App\Controller\Admin\CommandeController::resolve
+    methods: [POST]
+
+app_admin_vendeurs:
+    path: /admin/vendeurs
+    controller: App\Controller\Admin\VendeurController::index
+    methods: [GET]
+
+app_admin_vendeur_show:
+    path: /admin/vendeurs/{id}
+    controller: App\Controller\Admin\VendeurController::show
+    methods: [GET]
+
+app_admin_vendeur_activate:
+    path: /admin/vendeurs/{id}/activate
+    controller: App\Controller\Admin\VendeurController::activate
+    methods: [POST]
+
+app_admin_vendeur_deactivate:
+    path: /admin/vendeurs/{id}/deactivate
+    controller: App\Controller\Admin\VendeurController::deactivate
+    methods: [POST]

@@ -1,0 +1,179 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Livraisons - Administration{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12 col-md-8 offset-md-2 text-center">
+            <h1 class="mb-3">Liste des livraisons</h1>
+            <form class="d-flex justify-content-center" method="get" action="">
+                <input class="form-control me-2" style="max-width:300px;" type="search" name="q" placeholder="Rechercher une livraison, un client..." aria-label="Rechercher">
+                <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        body {
+            background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
+        }
+        .stat-table th, .stat-table td { vertical-align: middle; font-size: 1.25rem; }
+        .stat-table .stat-cell {
+            transition: background 0.3s, color 0.3s, transform 0.2s;
+            cursor: pointer;
+            padding: 1.5em 0.5em !important;
+        }
+        .stat-table .stat-cell:hover {
+            background: #f8f9fa !important;
+            color: #212529 !important;
+            transform: scale(1.12);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+        }
+        .stat-table .stat-badge {
+            font-size: 2.1rem;
+            padding: 1.1em 2.2em;
+            border-radius: 2.5em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7em;
+            font-weight: bold;
+        }
+        .stat-table th { font-size: 1.3rem; padding-top: 1.2em; padding-bottom: 1.2em; }
+        @media (max-width: 768px) {
+            .stat-table, .stat-table thead, .stat-table tbody, .stat-table tr, .stat-table th, .stat-table td {
+                display: block;
+                width: 100%;
+            }
+            .stat-table thead { display: none; }
+            .stat-table tr { margin-bottom: 1.5em; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-radius: 1.5em; background: #fff; }
+            .stat-table .stat-cell { padding: 1.2em 0.5em !important; text-align: center; }
+        }
+        .modern-card {
+            background: #fff;
+            border-radius: 1.5em;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            margin-bottom: 1.5em;
+            padding: 1.5em 1.2em;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .modern-card:hover {
+            box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+            transform: translateY(-4px) scale(1.01);
+        }
+        .modern-table thead.sticky-top { position: sticky; top: 0; z-index: 2; background: #f8fafc; }
+        .modern-table th, .modern-table td { vertical-align: middle; }
+        @media (max-width: 900px) {
+            .modern-table, .modern-table thead, .modern-table tbody, .modern-table tr, .modern-table th, .modern-table td {
+                display: block;
+                width: 100%;
+            }
+            .modern-table thead { display: none; }
+            .modern-table tr { margin-bottom: 1.5em; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-radius: 1.5em; background: #fff; }
+            .modern-table td { padding: 1.2em 0.5em !important; text-align: left; border: none; }
+            .modern-table td:last-child { border-bottom: none; }
+        }
+    </style>
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered text-center align-middle mb-0 stat-table">
+            <thead class="table-light">
+                <tr>
+                    <th>Total</th>
+                    <th>En attente</th>
+                    <th>Validées</th>
+                    <th>Annulées</th>
+                    <th>Expédiées</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="stat-cell"><span class="stat-badge bg-dark text-white"><i class="fas fa-list"></i> {{ livraisons|length }}</span></td>
+                    <td class="stat-cell"><span class="stat-badge bg-warning text-dark"><i class="fas fa-hourglass-half"></i> {{ livraisons|filter(l => l.statut == 'en_attente')|length }}</span></td>
+                    <td class="stat-cell"><span class="stat-badge bg-success text-white"><i class="fas fa-check-circle"></i> {{ livraisons|filter(l => l.statut == 'validée')|length }}</span></td>
+                    <td class="stat-cell"><span class="stat-badge bg-danger text-white"><i class="fas fa-times-circle"></i> {{ livraisons|filter(l => l.statut == 'annulée')|length }}</span></td>
+                    <td class="stat-cell"><span class="stat-badge bg-info text-dark"><i class="fas fa-truck"></i> {{ livraisons|filter(l => l.statut == 'expédiée')|length }}</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-responsive rounded shadow-sm">
+        <table class="table align-middle table-hover mb-0 modern-table">
+            <thead class="table-light sticky-top">
+                <tr>
+                    <th>Date</th>
+                    <th>Commande</th>
+                    <th>Client</th>
+                    <th>Adresse</th>
+                    <th>Statut</th>
+                    <th>Frais</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for livraison in livraisons %}
+                <tr>
+                    <td><span class="fw-semibold">{{ livraison.dateLivraison|date('d/m/Y H:i') }}</span></td>
+                    <td>
+                        {% if livraison.commande is defined and livraison.commande is not null %}
+                            <span class="badge bg-secondary">#{{ livraison.commande.id }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if livraison.commande is defined and livraison.commande is not null and livraison.commande.client is defined and livraison.commande.client is not null %}
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center" style="width:36px;height:36px;font-weight:bold;">
+                                    {{ livraison.commande.client.prenom|first|upper }}{{ livraison.commande.client.nom|first|upper }}
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">{{ livraison.commande.client.nom }} {{ livraison.commande.client.prenom }}</div>
+                                    <small class="text-muted">{{ livraison.commande.client.email }}</small>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div>{{ livraison.adresseLivraison }}</div>
+                        <div><span class="badge bg-light text-dark">{{ livraison.codePostal }}</span> {{ livraison.ville }}</div>
+                        <div class="text-muted small">{{ livraison.pays }}</div>
+                    </td>
+                    <td>
+                        {% if livraison.statut == 'en_attente' %}
+                            <span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half"></i> En attente</span>
+                        {% elseif livraison.statut == 'validée' %}
+                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Validée</span>
+                        {% elseif livraison.statut == 'annulée' %}
+                            <span class="badge bg-danger"><i class="fas fa-times-circle"></i> Annulée</span>
+                        {% elseif livraison.statut == 'expédiée' %}
+                            <span class="badge bg-info text-dark"><i class="fas fa-truck"></i> Expédiée</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ livraison.statut }}</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="fw-semibold">{{ livraison.fraisLivraison|number_format(2, ',', ' ') }} €</span></td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{{ path('app_admin_livraison_show', {'id': livraison.id}) }}" class="btn btn-sm btn-outline-primary" title="Voir">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            {% if livraison.statut == 'en_attente' %}
+                                <a href="{{ path('app_admin_livraison_valider', {'id': livraison.id}) }}" class="btn btn-sm btn-outline-success" title="Valider" onclick="return confirm('Êtes-vous sûr de vouloir valider cette livraison ?')">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                <a href="{{ path('app_admin_livraison_annuler', {'id': livraison.id}) }}" class="btn btn-sm btn-outline-danger" title="Annuler" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette livraison ?')">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center">Aucune livraison trouvée</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

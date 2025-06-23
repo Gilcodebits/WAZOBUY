@@ -1,0 +1,995 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admindashboard.css') }}">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .sidebar .logo {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+
+        .logo-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .sidebar nav {
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-item-icon {
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .admin-section {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            right: 2rem;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            transition: var(--transition);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark-color);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: var(--light-color);
+            border-radius: 25px;
+            padding: 0.75rem 1.5rem;
+            flex: 1;
+            max-width: 400px;
+            margin: 0 2rem;
+        }
+
+        .search-icon {
+            margin-right: 0.75rem;
+            color: #6c757d;
+        }
+
+        .search-input {
+            border: none;
+            background: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-badge {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        .notification-badge:last-child {
+            background: var(--warning-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-date {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success-color);
+        }
+
+        .stat-change.negative {
+            color: var(--danger-color);
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .chart-filters {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Tables Grid */
+        .tables-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1.5rem 2rem;
+            background: var(--light-color);
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+        }
+
+        .view-all-btn {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .view-all-btn:hover {
+            color: var(--secondary-color);
+        }
+
+        .table {
+            width: 100%;
+            margin: 0;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.pending { background: var(--warning-color); color: black; }
+        .status-badge.success { background: var(--success-color); color: white; }
+        .status-badge.info { background: var(--info-color); color: white; }
+        .status-badge.danger { background: var(--danger-color); color: white; }
+        .status-badge.warning { background: var(--warning-color); color: black; }
+
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .action-btn.view { background: var(--info-color); color: white; }
+        .action-btn.resolve { background: var(--success-color); color: white; }
+        .action-btn.activate { background: var(--success-color); color: white; }
+        .action-btn.deactivate { background: var(--danger-color); color: white; }
+
+        .action-btn:hover {
+            opacity: 0.8;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tables-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .search-bar {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .header-actions {
+                justify-content: center;
+            }
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card, .chart-card, .table-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .user-menu-container {
+            position: relative;
+        }
+        .user-menu {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            min-width: 180px;
+            z-index: 2000;
+            padding: 0.5rem 0;
+            animation: fadeInUp 0.3s;
+        }
+        .user-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--dark-color);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .user-menu-item:hover {
+            background: var(--light-color);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <a href="{{ path('app_dashboard') }}" class="logo-text">WAZOBUY</a>
+                <span class="logo-subtitle">Administration Panel</span>
+            </div>
+            
+            <nav>
+                <a href="{{ path('app_dashboard') }}" class="nav-item active">
+                    <span class="nav-item-icon">📊</span>
+                    Tableau de bord
+                </a>
+                <a href="{{ path('app_admin_utilisateurs') }}" class="nav-item">
+                    <span class="nav-item-icon">👥</span>
+                    Utilisateurs
+                </a>
+                <a href="{{ path('app_admin_vendeurs') }}" class="nav-item">
+                    <span class="nav-item-icon">🏪</span>
+                    Vendeurs
+                </a>
+                <a href="{{ path('app_admin_produits') }}" class="nav-item">
+                    <span class="nav-item-icon">📦</span>
+                    Produits
+                </a>
+                <a href="{{ path('app_admin_commandes') }}" class="nav-item">
+                    <span class="nav-item-icon">🛒</span>
+                    Commandes
+                </a>
+                <a href="{{ path('app_admin_livraisons') }}" class="nav-item">
+                    <span class="nav-item-icon">🚚</span>
+                    Livraisons
+                </a>
+                <div class="nav-item">
+                    <span class="nav-item-icon">💳</span>
+                    Paiements
+                </div>
+                <div class="nav-item">
+                    <span class="nav-item-icon">⚙️</span>
+                    Paramètres
+                </div>
+            </nav>
+
+            <div class="admin-section">
+                <div class="admin-avatar">AD</div>
+                <div>
+                    <div style="font-weight: 600; font-size: 14px;">Admin Principal</div>
+                    <div style="font-size: 12px; opacity: 0.8;">admin@wazobuy.com</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
+                
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Rechercher...">
+                </div>
+                
+                <div class="header-actions">
+                    <div class="notification-badge" title="Notifications"><i class="fas fa-bell"></i></div>
+                    <div class="notification-badge" title="Messages"><i class="fas fa-envelope"></i></div>
+                    <div class="user-info user-menu-container">
+                        <span style="font-weight: 600;">Super Admin</span>
+                        <div class="user-avatar" onclick="toggleUserMenu()">SA</div>
+                        <div class="user-menu" id="userMenu">
+                            <a href="#" class="user-menu-item"><i class="fas fa-user"></i> Profil</a>
+                            <a href="#" class="user-menu-item"><i class="fas fa-cog"></i> Paramètres</a>
+                            <a href="{{ path('_logout_main') }}" class="user-menu-item"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Overlay for Mobile -->
+            <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <h1 class="page-title">Tableau de bord</h1>
+                <p class="page-date">{{ dateAujourdhui }}</p>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">💰</div>
+                        <div class="stat-label">Chiffre d'affaires</div>
+                        <div class="stat-value">{{ '%.2f'|format(chiffreAffaires) }} FCFA</div>
+                        <div class="stat-change positive">
+                            ↗ +{{ '%.1f'|format(croissanceCommandes) }}% depuis hier
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #28a745, #20c997); color: white;">🛒</div>
+                        <div class="stat-label">Commandes</div>
+                        <div class="stat-value">{{ commandesTotal }}</div>
+                        <div class="stat-change positive">
+                            ↗ +{{ '%.1f'|format(croissanceCommandes) }}% depuis hier
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107, #fd7e14); color: white;">👥</div>
+                        <div class="stat-label">Nouveaux utilisateurs</div>
+                        <div class="stat-value">{{ utilisateursTotal }}</div>
+                        <div class="stat-change positive">
+                            ↗ +32% ce mois
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: linear-gradient(135deg, #17a2b8, #6f42c1); color: white;">📊</div>
+                        <div class="stat-label">Taux de livraison</div>
+                        <div class="stat-value">94.3%</div>
+                        <div class="stat-change positive">
+                            ↗ +2.3% cette semaine
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Évolution des ventes</h3>
+                            <div class="chart-filters">
+                                <button class="filter-btn active">7 jours</button>
+                                <button class="filter-btn">30 jours</button>
+                                <button class="filter-btn">1 an</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Commandes par région</h3>
+                            <button class="filter-btn">📤 Exporter</button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="regionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tables Section -->
+                <div class="tables-grid">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">Commandes récentes</h3>
+                            <a href="#" class="view-all-btn">Voir tout</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID Commande</th>
+                                        <th>Client</th>
+                                        <th>Date</th>
+                                        <th>Total</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for commande in commandesRecentes %}
+                                    <tr>
+                                        <td><strong>#{{ commande.id }}</strong></td>
+                                        <td>{{ commande.clientPrenom }} {{ commande.clientNom }}</td>
+                                        <td>{{ commande.dateCommande|date('d/m/Y H:i') }}</td>
+                                        <td>{{ commande.montantTotal|number_format(2, ',', ' ') }} FCFA</td>
+                                        <td>
+                                            {% if commande.statut == 'en_attente' %}
+                                                <span class="status-badge pending">En attente</span>
+                                            {% elseif commande.statut == 'validée' %}
+                                                <span class="status-badge success">Validée</span>
+                                            {% elseif commande.statut == 'expédiée' %}
+                                                <span class="status-badge info">Expédiée</span>
+                                            {% elseif commande.statut == 'livrée' %}
+                                                <span class="status-badge success">Livrée</span>
+                                            {% elseif commande.statut == 'annulée' %}
+                                                <span class="status-badge danger">Annulée</span>
+                                            {% elseif commande.statut == 'litige' %}
+                                                <span class="status-badge warning">Litige</span>
+                                            {% else %}
+                                                <span class="status-badge">{{ commande.statut }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">Aucune commande récente</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">Litiges actifs</h3>
+                            <a href="{{ path('app_admin_commandes', {'statut': 'litige'}) }}" class="view-all-btn">Voir tout</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID Commande</th>
+                                        <th>Client</th>
+                                        <th>Date</th>
+                                        <th>Montant</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for litige in litiges %}
+                                    <tr>
+                                        <td><strong>#{{ litige.id }}</strong></td>
+                                        <td>{{ litige.clientPrenom }} {{ litige.clientNom }}</td>
+                                        <td>{{ litige.dateCommande|date('d/m/Y H:i') }}</td>
+                                        <td>{{ litige.montantTotal|number_format(2, ',', ' ') }} FCFA</td>
+                                        <td>
+                                            <a href="{{ path('app_admin_commande_show', {'id': litige.id}) }}" class="action-btn view">Voir</a>
+                                            <a href="{{ path('app_admin_commande_resolve', {'id': litige.id}) }}" class="action-btn resolve">Résoudre</a>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">Aucun litige actif</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Tables -->
+                <div class="tables-grid" style="margin-top: 1.5rem;">
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">Nouveaux vendeurs</h3>
+                            <a href="{{ path('app_admin_vendeurs') }}" class="view-all-btn">Voir tout</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Email</th>
+                                        <th>Date d'inscription</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vendeur in nouveauxVendeurs %}
+                                    <tr>
+                                        <td>{{ vendeur.prenom }} {{ vendeur.nom }}</td>
+                                        <td>{{ vendeur.email }}</td>
+                                        <td>{{ vendeur.dateCreation|date('d/m/Y') }}</td>
+                                        <td>
+                                            {% if 'ROLE_VENDEUR' in vendeur.roles %}
+                                                <span class="status-badge success">Actif</span>
+                                            {% else %}
+                                                <span class="status-badge warning">En attente</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ path('app_admin_vendeur_show', {'id': vendeur.id}) }}" class="action-btn view">Voir</a>
+                                            {% if 'ROLE_VENDEUR' in vendeur.roles %}
+                                                <a href="{{ path('app_admin_vendeur_deactivate', {'id': vendeur.id}) }}" class="action-btn deactivate">Désactiver</a>
+                                            {% else %}
+                                                <a href="{{ path('app_admin_vendeur_activate', {'id': vendeur.id}) }}" class="action-btn activate">Activer</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">Aucun nouveau vendeur</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h3 class="table-title">Activité récente</h3>
+                            <a href="#" class="view-all-btn">Voir tout</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Utilisateur</th>
+                                        <th>Date</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for activite in activitesRecentes %}
+                                    <tr>
+                                        <td>{{ activite.action }}</td>
+                                        <td>{{ activite.utilisateur }}</td>
+                                        <td>{{ activite.date|date('d/m/Y H:i') }}</td>
+                                        <td><span class="status-badge {{ activite.statut|lower }}">{{ activite.statut|capitalize }}</span></td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">Aucune activité récente</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle switches functionality
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        // Chart filters functionality  
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from siblings
+                this.parentElement.querySelectorAll('.filter-btn').forEach(sibling => {
+                    sibling.classList.remove('active');
+                });
+                // Add active class to clicked button
+                this.classList.add('active');
+            });
+        });
+
+        // Mobile sidebar toggle functionality
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.toggle('mobile-open');
+            overlay.style.display = sidebar.classList.contains('mobile-open') ? 'block' : 'none';
+        }
+
+        function closeSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.remove('mobile-open');
+            overlay.style.display = 'none';
+        }
+
+        // Close sidebar when clicking on nav items on mobile
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.querySelector('.sidebar-overlay');
+                sidebar.classList.remove('mobile-open');
+                overlay.style.display = 'none';
+            }
+        });
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            // Add search functionality here
+        });
+
+        // Notification badges click handlers
+        document.querySelectorAll('.notification-badge').forEach(badge => {
+            badge.addEventListener('click', function() {
+                // Add notification handling here
+                console.log('Notification clicked');
+            });
+        });
+
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('userMenu');
+            const avatar = document.querySelector('.user-avatar');
+            if (menu && avatar && !avatar.contains(event.target) && !menu.contains(event.target)) {
+                menu.style.display = 'none';
+            }
+        });
+    </script>
+{% endblock %} 

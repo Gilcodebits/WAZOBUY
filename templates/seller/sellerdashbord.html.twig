@@ -1,190 +1,592 @@
 {# templates/boutique/index.html.twig #}
 {% extends 'base.html.twig' %}
 
+{% block title %}Tableau de Bord Vendeur{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('styles/sellerdashbord.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar .logo {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .sidebar nav {
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-item-icon {
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: var(--light-color);
+            border-radius: 25px;
+            padding: 0.75rem 1.5rem;
+        }
+
+        .search-input {
+            border: none;
+            background: none;
+            outline: none;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        /* Notification Icon */
+        .notification-icon {
+            position: relative;
+            width: 45px;
+            height: 45px;
+            background: var(--light-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .notification-icon:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .notification-icon i {
+            font-size: 1.2rem;
+            color: var(--dark-color);
+            transition: var(--transition);
+        }
+
+        .notification-icon:hover i {
+            color: white;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border: 2px solid white;
+        }
+
+        /* Message Icon */
+        .message-icon {
+            position: relative;
+            width: 45px;
+            height: 45px;
+            background: var(--light-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .message-icon:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .message-icon i {
+            font-size: 1.2rem;
+            color: var(--dark-color);
+            transition: var(--transition);
+        }
+
+        .message-icon:hover i {
+            color: white;
+        }
+
+        .message-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--warning-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border: 2px solid white;
+        }
+
+        /* User Profile Dropdown */
+        .user-profile {
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .profile-dropdown {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 250px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: var(--transition);
+        }
+
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--dark-color);
+            text-decoration: none;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Table Card */
+        .table-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .btn-add-product {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        .btn-add-product:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+
+        /* Notifications/messages dropdown améliorés */
+        .notification-dropdown, .message-dropdown {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            min-width: 320px;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: var(--transition);
+            border: 1px solid #e9ecef;
+            display: block;
+            pointer-events: none;
+        }
+        .notification-icon.open .notification-dropdown,
+        .message-icon.open .message-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .dropdown-title {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+            background: var(--light-color);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .dropdown-content {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .notification-item, .message-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f3f4;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .notification-item.unread, .message-item.unread {
+            background: rgba(102, 126, 234, 0.05);
+        }
+        .notification-content, .message-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        .notification-icon-small, .message-icon-small {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: white;
+            flex-shrink: 0;
+            background: var(--primary-color);
+        }
+        .message-icon-small { background: var(--warning-color); }
+        .notification-text, .message-text { flex: 1; }
+        .notification-text h5, .message-text h5 {
+            margin: 0 0 0.25rem 0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        .notification-text p, .message-text p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        .notification-time, .message-time {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        .dropdown-footer-simple {
+            padding: 1rem 1.5rem;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            background: var(--light-color);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+        }
+        .view-all-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <nav class="nav-tabs">
-                    <a href="#" class="nav-tab active">
-                        <span class="nav-icon">🏪</span>
-                        Boutique
-                    </a>
-                    <a href="#" class="nav-tab">
-                        <span class="nav-icon">📦</span>
-                        Commandes
-                    </a>
-                    <a href="#" class="nav-tab">
-                        <span class="nav-icon">💬</span>
-                        Messages
-                        <span style="width: 8px; height: 8px; background: #28a745; border-radius: 50%; margin-left: 5px;"></span>
-                    </a>
-                    <a href="#" class="nav-tab">
-                        <span class="nav-icon">👤</span>
-                        Compte
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <a href="#" class="logo-text">WAZOBUY</a>
+        </div>
+        <nav>
+            <a href="#" class="nav-item active">
+                <i class="fas fa-tachometer-alt nav-item-icon"></i> Tableau de bord
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-box-open nav-item-icon"></i> Produits
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-shopping-cart nav-item-icon"></i> Commandes
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-wallet nav-item-icon"></i> Paiements
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-chart-line nav-item-icon"></i> Rapports
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-cog nav-item-icon"></i> Paramètres
                     </a>
                 </nav>
+    </aside>
 
-                <div class="logo">WazoBuy</div>
-
-                <div class="header-right">
-                    <div class="profile">
-                        <div class="profile-img"></div>
-                        <span>Ma Boutique</span>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" class="search-input" placeholder="Rechercher des produits, commandes...">
+            </div>
+            <div class="header-actions">
+                <!-- Notification Icon -->
+                <div class="notification-icon" onclick="toggleNotificationDropdown()">
+                    <i class="fas fa-bell"></i>
+                    <div class="notification-badge">2</div>
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="dropdown-title">
+                            <h4>Notifications</h4>
+                            <a href="#" class="mark-all-read">Marquer comme lu</a>
                     </div>
-                    <button class="add-product-btn">+ Ajouter un produit</button>
+                        <div class="dropdown-content">
+                            <div class="notification-item unread">
+                                <div class="notification-content">
+                                    <div class="notification-icon-small"><i class="fas fa-shopping-cart"></i></div>
+                                    <div class="notification-text">
+                                        <h5>Nouvelle commande</h5>
+                                        <p>Commande #1234 reçue</p>
+                                        <div class="notification-time">Il y a 5 minutes</div>
                 </div>
             </div>
         </div>
-    </header>
-
-    <main class="container">
-        <!-- Dashboard -->
-        <section class="dashboard">
-            <div class="dashboard-layout">
-                <!-- Quick Stats -->
-                <div class="quick-stats">
-                    <div class="stat-card">
-                        <div class="stat-icon sales">🛒</div>
-                        <div class="stat-value">24</div>
-                        <div class="stat-label">Ventes du jour</div>
+                            <div class="notification-item">
+                                <div class="notification-content">
+                                    <div class="notification-icon-small"><i class="fas fa-check-circle"></i></div>
+                                    <div class="notification-text">
+                                        <h5>Paiement reçu</h5>
+                                        <p>Paiement confirmé pour la commande #1228</p>
+                                        <div class="notification-time">Il y a 2 heures</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon messages">💬</div>
-                        <div class="stat-value">780</div>
-                        <div class="stat-label">Messages reçus</div>
                     </div>
                 </div>
-
-                <!-- Recent Orders -->
-                <div class="recent-orders">
-                    <h3 class="orders-title">Commandes récentes</h3>
-                    <div class="order-item">
-                        <div>
-                            <div class="order-date">17 avr.</div>
                         </div>
-                        <div class="order-amount">10.000 FCFA</div>
-                        <div class="order-status status-pending">En attente</div>
-                    </div>
-                    <div class="order-item">
-                        <div>
-                            <div class="order-date">16 avr.</div>
-                        </div>
-                        <div class="order-amount">12.000 FCFA</div>
-                        <div class="order-status status-delivered">En livraison</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Products Section -->
-        <section class="products-section">
-            <h2 class="section-title">Liste des produits en vente</h2>
-            <div class="products-grid">
-                <div class="product-card">
-                    <div class="product-image ceramic-pot">
-                        <div class="product-actions">
-                            <button class="action-btn">✏️</button>
-                            <button class="action-btn">🗑️</button>
+                        <div class="dropdown-footer-simple">
+                            <a href="#" class="view-all-link">Voir toutes les notifications</a>
                         </div>
                     </div>
-                    <div class="product-info">
-                        <h3 class="product-name">Ceramic Pot</h3>
-                        <div class="product-stock">12 stock</div>
-                        <div class="product-price">5.000 FCFA</div>
-                        <span class="product-status">Publié</span>
+                </div>
+                <!-- Message Icon -->
+                <div class="message-icon" onclick="toggleMessageDropdown()">
+                    <i class="fas fa-envelope"></i>
+                    <div class="message-badge">1</div>
+                    <div class="message-dropdown" id="messageDropdown">
+                        <div class="dropdown-title">
+                            <h4>Messages</h4>
+                            <a href="#" class="mark-all-read">Marquer comme lu</a>
+                        </div>
+                        <div class="dropdown-content">
+                            <div class="message-item unread">
+                                <div class="message-content">
+                                    <div class="message-icon-small"><i class="fas fa-user"></i></div>
+                                    <div class="message-text">
+                                        <h5>Support Client</h5>
+                                        <p>Question concernant la livraison...</p>
+                                        <div class="message-time">Il y a 10 minutes</div>
+                    </div>
                     </div>
                 </div>
-
-                <div class="product-card">
-                    <div class="product-image fabric">
-                        <div class="product-actions">
-                            <button class="action-btn">✏️</button>
-                            <button class="action-btn">🗑️</button>
+                        </div>
+                        <div class="dropdown-footer-simple">
+                            <a href="#" class="view-all-link">Voir tous les messages</a>
                         </div>
                     </div>
-                    <div class="product-info">
-                        <h3 class="product-name">Fabric Fabric</h3>
-                        <div class="product-stock">5 stock</div>
-                        <div class="product-price">8.000 FCFA</div>
-                        <span class="product-status">Publié</span>
-                    </div>
                 </div>
-
-                <div class="product-card">
-                    <div class="product-image smartphone">
-                        <div class="product-actions">
-                            <button class="action-btn">✏️</button>
-                            <button class="action-btn">🗑️</button>
+                <!-- Ajouter un produit -->
+                <a href="{{ path('seller_product_add') }}" class="btn btn-add-product">
+                    <i class="fas fa-plus"></i> Ajouter un produit
+                </a>
+                <!-- User Profile -->
+                <div class="user-profile" id="userProfile">
+                    <img src="https://i.pravatar.cc/150?u={{ user.email }}" alt="Avatar" class="user-avatar" onclick="toggleProfileDropdown()">
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <h4>{{ user.prenom }} {{ user.nom }}</h4>
+                            <p style="font-size: 0.85rem; color: #6c757d;">Vendeur</p>
                         </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-name">Smartphone</h3>
-                        <div class="product-stock">3 stock</div>
-                        <div class="product-price">70.000 FCFA</div>
-                        <span class="product-status">Publié</span>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image necklace">
-                        <div class="product-actions">
-                            <button class="action-btn">✏️</button>
-                            <button class="action-btn">🗑️</button>
-                        </div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-name">Collier Traditionnel</h3>
-                        <div class="product-stock">8 stock</div>
-                        <div class="product-price">25.000 FCFA</div>
-                        <span class="product-status">Publié</span>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user-circle"></i> Mon Profil
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-store"></i> Ma Boutique
+                        </a>
+                        <a href="/logout" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i> Se déconnecter
+                        </a>
                     </div>
                 </div>
             </div>
+        </header>
 
-            <div class="view-more">
-                <a href="#" class="view-more-btn">Voir plus de produits ⌄</a>
-            </div>
-        </section>
+        <!-- Page Title -->
+        <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem;">Tableau de Bord</h1>
 
-        <!-- Recent Orders Full Section -->
-        <section class="recent-orders-section">
-            <h2 class="section-title">Commandes récentes reçues</h2>
-            <div class="order-item">
-                <div>
-                    <div class="order-date">17 avr.</div>
-                </div>
-                <div class="order-amount">10.000 FCFA</div>
-                <div class="order-status status-pending">En attente</div>
+        <!-- Stats Grid -->
+        <div class="stats-grid" style="margin-bottom:2rem;">
+            <div class="stat-card">
+                <h3 style="font-size: 1rem; color: #6c757d;">Aucune statistique disponible</h3>
             </div>
-            <div class="order-item">
-                <div>
-                    <div class="order-date">16 avr.</div>
-                </div>
-                <div class="order-amount">12.000 FCFA</div>
-                <div class="order-status status-delivered">En livraison</div>
             </div>
-        </section>
 
-        <!-- Bottom Stats -->
-        <section class="bottom-stats">
-            <div class="bottom-stat-card">
-                <div class="stat-icon sales">🛒</div>
-                <div class="stat-value">24</div>
-                <div class="stat-label">Ventes du jour</div>
-                <div style="margin-top: 10px; color: #6c757d;">780</div>
+        <!-- Recent Orders -->
+        <div class="table-card">
+            <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">Aucune commande récente</h2>
             </div>
-            <div class="bottom-stat-card">
-                <div class="stat-icon messages">💬</div>
-                <div class="stat-value">780</div>
-                <div class="stat-label">Messages reçus</div>
-            </div>
-        </section>
     </main>
+</div>
+
+<script>
+    function toggleProfileDropdown() {
+        document.getElementById('profileDropdown').classList.toggle('show');
+    }
+    function toggleNotificationDropdown() {
+        document.querySelector('.notification-icon').classList.toggle('open');
+        document.querySelector('.message-icon').classList.remove('open');
+    }
+    function toggleMessageDropdown() {
+        document.querySelector('.message-icon').classList.toggle('open');
+        document.querySelector('.notification-icon').classList.remove('open');
+    }
+    window.onclick = function(event) {
+        if (!event.target.closest('.notification-icon')) {
+            document.querySelector('.notification-icon').classList.remove('open');
+        }
+        if (!event.target.closest('.message-icon')) {
+            document.querySelector('.message-icon').classList.remove('open');
+        }
+        if (!event.target.matches('.user-avatar')) {
+            var dropdowns = document.getElementsByClassName("profile-dropdown");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+</script>
 {% endblock %}

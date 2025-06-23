@@ -41,7 +41,13 @@
                     <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                         <img src="{{ asset('images/default-profile.png') }}" alt="Profile" class="w-8 h-8 rounded-full object-cover">
                     </div>
-                    <span class="text-gray-700 font-medium">{{ user.firstName }}</span>
+                    <div class="user-info">
+                        <h2>Bienvenue, {{ userInfo.prenom }} {{ userInfo.nom }}</h2>
+                        <p>Email: {{ userInfo.email }}</p>
+                        <p>Statut: {{ userInfo.estActif ? 'En ligne' : 'Hors ligne' }}</p>
+                        <p>Évaluations: {{ stats.average_rating }}/5</p>
+                        <p>Nombre de livraisons: {{ stats.total_deliveries }}</p>
+                    </div>
                 </div>
             </div>
         </div>

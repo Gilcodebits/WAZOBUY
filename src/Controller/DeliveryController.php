@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use DateTime;
+use App\Entity\Utilisateur;
 
 class DeliveryController extends AbstractController
 {
@@ -38,18 +39,16 @@ class DeliveryController extends AbstractController
             ]
         ];
 
-        // Simuler les données de l'utilisateur
-        $user = [
-            'firstName' => 'John',
-            'lastName' => 'Doe',
-            'email' => 'livreur@wazobuy.com',
-            'rating' => 4.5,
-            'total_deliveries' => 125,
-            'current_status' => 'En ligne'
-        ];
+        // Récupérer les données de l'utilisateur connecté
+        $user = $this->getUser();
+        
+        // Vérifier si l'utilisateur est un livreur
+        if (!$user || !$user instanceof Utilisateur || $user->getRole() !== 'livreur') {
+            throw $this->createAccessDeniedException('Accès non autorisé');
+        }
 
         // Simuler les statistiques
-        $stats = [
+        $stats = array(
             'total_deliveries' => 125,
             'completed_deliveries' => 118,
             'pending_deliveries' => 7,
@@ -57,21 +56,29 @@ class DeliveryController extends AbstractController
             'total_earnings' => '250.000 FCFA',
             'deliveries_today' => 15,
             'satisfaction_rate' => 92.5,
-            'distance_couverte'=>'100km',
-            'weekly_deliveries' => [
-                ['day' => 'Lundi', 'count' => 15],
-                ['day' => 'Mardi', 'count' => 18],
-                ['day' => 'Mercredi', 'count' => 12],
-                ['day' => 'Jeudi', 'count' => 16],
-                ['day' => 'Vendredi', 'count' => 19],
-                ['day' => 'Samedi', 'count' => 15],
-                ['day' => 'Dimanche', 'count' => 8]
-            ]
+            'distance_couverte' => '100km',
+            'weekly_deliveries' => array(
+                array('day' => 'Lundi', 'count' => 15),
+                array('day' => 'Mardi', 'count' => 18),
+                array('day' => 'Mercredi', 'count' => 12),
+                array('day' => 'Jeudi', 'count' => 16),
+                array('day' => 'Vendredi', 'count' => 19),
+                array('day' => 'Samedi', 'count' => 15),
+                array('day' => 'Dimanche', 'count' => 8)
+            )
+        );
+
+        // Extraire les informations de l'utilisateur
+        $userInfo = [
+            'prenom' => $user->getPrenom(),
+            'nom' => $user->getNom(),
+            'email' => $user->getEmail(),
+            'estActif' => $user->isEstActif()
         ];
 
         return $this->render('deliverydashbord/deliverdashboard.html.twig', [
             'orders' => $orders,
-            'user' => $user,
+            'userInfo' => $userInfo,
             'stats' => $stats
         ]);
     }
@@ -86,3 +93,4 @@ class DeliveryController extends AbstractController
         return $this->redirectToRoute('app_deliver_dashboard');
     }
 }
+?>

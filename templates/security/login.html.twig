@@ -2,7 +2,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('/styles/login.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -23,13 +23,24 @@
             <!-- Login Form -->
             <div class="login-form-container">
                 <h1 class="login-title">Se connecter</h1>
-                
-                <form class="login-form">
+
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {% if error.messageKey == 'Bad credentials' %}
+                            Identifiants incorrects. Vérifiez votre email et mot de passe.
+                        {% else %}
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{{ path('app_login') }}" class="login-form">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                     <div class="form-group">
-                        <label for="email">Email ou téléphone</label>
+                        <label for="email">Email</label>
                         <div class="input-wrapper">
                             <span class="input-icon icon-user"></span>
-                            <input type="text" id="email" name="email" placeholder="Entrez votre email ou téléphone" required>
+                            <input type="email" id="email" name="_username" value="{{ last_username }}" placeholder="Entrez votre email" required>
                         </div>
                     </div>
 
@@ -37,7 +48,7 @@
                         <label for="password">Mot de passe</label>
                         <div class="input-wrapper">
                             <span class="input-icon icon-lock"></span>
-                            <input type="password" id="password" name="password" placeholder="Entrez votre mot de passe" required>
+                            <input type="password" id="password" name="_password" placeholder="Entrez votre mot de passe" required>
                             <button type="button" class="password-toggle" onclick="togglePassword()">
                                 <span class="icon-eye"></span>
                             </button>
@@ -46,13 +57,13 @@
 
                     <div class="form-options">
                         <label class="remember-me">
-                            <input type="checkbox" name="remember">
-                            Se souvenir de moi
+                            <input type="checkbox" name="_remember_me"> Se souvenir de moi
                         </label>
                         <a href="#" class="forgot-password">Mot de passe oublié ?</a>
                     </div>
 
                     <button type="submit" class="login-button">Se connecter</button>
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                 </form>
 
                 <div class="divider">
@@ -60,21 +71,20 @@
                 </div>
 
                 <div class="social-buttons">
-                    <a href="#" class="social-button google">
+                    <a href="{{ path('hwi_oauth_service_redirect', {'service': 'google'}) }}" class="social-button google">
                         <span class="icon-google"></span>
                         Google
                     </a>
-                    <a href="#" class="social-button facebook">
+                    <a href="{{ path('hwi_oauth_service_redirect', {'service': 'facebook'}) }}" class="social-button facebook">
                         <span class="icon-facebook"></span>
                         Facebook
                     </a>
                 </div>
 
                 <div class="signup-link">
-                    Pas de rappel de compte ? <a href="{{ path('app_register') }}">Créer un compte</a>
+                    Pas de compte ? <a href="{{ path('app_register') }}">Créer un compte</a>
                 </div>
             </div>
-
             <!-- Benefits Section -->
             <div class="benefits-container">
                 <h2 class="benefits-title">Avantages membres</h2>
@@ -116,7 +126,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>© 2025 WAZOBUY. Tous droits réservés.</p>
+        <p> 2025 WAZOBUY. Tous droits rservs.</p>
     </footer>
 
     <script>
@@ -145,22 +155,19 @@
                 return;
             }
             
-            // Here you would typically handle the login logic
-            console.log('Login attempt:', { email, password });
-            alert('Connexion en cours...');
+            // Submit the form
+            this.submit();
         });
 
         // Social login handlers
         document.querySelector('.social-button.google').addEventListener('click', function(e) {
             e.preventDefault();
             console.log('Google login clicked');
-            alert('Connexion avec Google...');
         });
 
         document.querySelector('.social-button.facebook').addEventListener('click', function(e) {
             e.preventDefault();
             console.log('Facebook login clicked');
-            alert('Connexion avec Facebook...');
         });
 
         // Input focus effects

@@ -1,0 +1,177 @@
+/* Dashboard Container */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: #ffffff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.sidebar-header {
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+}
+
+.sidebar-header h2 {
+    color: #333;
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav li {
+    margin-bottom: 10px;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: #666;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-nav a i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+    background: #007bff;
+    color: white;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.welcome-section {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.welcome-section h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.user-info {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.user-info p {
+    margin: 5px 0;
+    color: #666;
+}
+
+/* Stats Section */
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card i {
+    font-size: 2rem;
+    color: #007bff;
+    margin-bottom: 15px;
+}
+
+.stat-card h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.stat-card .stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Recent Orders */
+.recent-orders {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.recent-orders h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.no-orders {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.shop-now-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.shop-now-btn:hover {
+    background: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .main-content {
+        padding: 10px;
+    }
+
+    .stats-section {
+        grid-template-columns: 1fr;
+    }
+}

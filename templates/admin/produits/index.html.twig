@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Produits - Administration{% endblock %}
+
+{% block stylesheets %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
+    {{ parent() }}
+    <style>
+        .sticky-header th { position: sticky; top: 0; background: #212529; color: #fff; z-index: 2; }
+        .table-responsive { overflow-x: auto; }
+        .table-actions .btn { margin-bottom: 2px; }
+        @media (max-width: 768px) {
+            .table th, .table td { white-space: nowrap; }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <h1 class="mb-4">Liste des produits</h1>
+    <!-- Barre d'outils -->
+    <div class="row g-2 align-items-center mb-3">
+        <div class="col-md-4">
+            <input id="searchInput" type="text" class="form-control" placeholder="Rechercher (nom, catégorie, vendeur...)" />
+        </div>
+        <div class="col-md-3">
+            <select id="statutFilter" class="form-select">
+                <option value="">Tous les statuts</option>
+                <option value="promo">En promotion</option>
+                <option value="normal">Normal</option>
+            </select>
+        </div>
+        <div class="col-md-2 text-center">
+            <button class="btn btn-outline-secondary w-100" onclick="exportCSV()"><i class="fas fa-file-csv"></i> Exporter</button>
+        </div>
+        <div class="col-md-3 text-end">
+            <a href="#" class="btn btn-success w-100"><i class="fas fa-plus"></i> Ajouter un produit</a>
+        </div>
+    </div>
+    <!-- Tableau -->
+    <div class="table-responsive">
+        <table id="produitsTable" class="table table-hover align-middle table-bordered table-striped mb-0">
+            <thead class="table-dark sticky-header">
+                <tr>
+                    <th>#</th>
+                    <th>Nom</th>
+                    <th>Prix</th>
+                    <th>Stock</th>
+                    <th>Catégorie</th>
+                    <th>Vendeur</th>
+                    <th>Date d'ajout</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produit in produits %}
+                <tr data-statut="{{ produit.enPromotion ? 'promo' : 'normal' }}">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ produit.nom }}</td>
+                    <td>{{ produit.prix|number_format(2, ',', ' ') }} €</td>
+                    <td>{{ produit.stock }}</td>
+                    <td>
+                        {% if produit.categorie is defined and produit.categorie is not null and produit.categorie.nom is defined %}
+                            {{ produit.categorie.nom }}
+                        {% else %}
+                            Non défini
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if produit.vendeur is defined and produit.vendeur is not null %}
+                            {{ produit.vendeur.nom }} {{ produit.vendeur.prenom }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if produit.createdAt is defined and produit.createdAt is not null %}
+                            {{ produit.createdAt|date('d/m/Y') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if produit.enPromotion %}
+                            <span class="badge bg-success">En promotion</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Normal</span>
+                        {% endif %}
+                    </td>
+                    <td class="table-actions">
+                        <a href="{{ path('app_admin_produit_show', {'id': produit.id}) }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Voir le produit">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        {% if produit.enPromotion %}
+                            <a href="{{ path('app_admin_produit_desactiver', {'id': produit.id}) }}" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Retirer promotion" onclick="return confirm('Êtes-vous sûr de vouloir retirer ce produit de la promotion ?')">
+                                <i class="fas fa-times-circle"></i>
+                            </a>
+                        {% else %}
+                            <a href="{{ path('app_admin_produit_activer', {'id': produit.id}) }}" class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Mettre en promotion">
+                                <i class="fas fa-tags"></i>
+                            </a>
+                        {% endif %}
+                        <a href="#" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Supprimer" onclick="return confirm('Voulez-vous vraiment supprimer ce produit ?');">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="text-center text-muted">Aucun produit trouvé</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Pagination statique -->
+    <nav aria-label="Pagination" class="mt-3">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled"><a class="page-link" href="#">Précédent</a></li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Suivant</a></li>
+        </ul>
+    </nav>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+    // Recherche instantanée et filtre statut
+    const searchInput = document.getElementById('searchInput');
+    const statutFilter = document.getElementById('statutFilter');
+    const table = document.getElementById('produitsTable');
+    searchInput.addEventListener('keyup', filterTable);
+    statutFilter.addEventListener('change', filterTable);
+    function filterTable() {
+        const filter = searchInput.value.toLowerCase();
+        const statut = statutFilter.value;
+        for (let row of table.tBodies[0].rows) {
+            let text = row.textContent.toLowerCase();
+            let rowStatut = row.getAttribute('data-statut');
+            let show = text.includes(filter) && (!statut || rowStatut === statut);
+            row.style.display = show ? '' : 'none';
+        }
+    }
+    // Tooltips Bootstrap
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    // Export CSV
+    function exportCSV() {
+        let csv = '';
+        const rows = table.querySelectorAll('tr');
+        for (let row of rows) {
+            let cols = Array.from(row.querySelectorAll('th,td')).map(td => '"' + td.innerText.replace(/"/g, '""') + '"');
+            csv += cols.join(',') + '\n';
+        }
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'produits.csv';
+        link.click();
+    }
+    </script>
+{% endblock %}

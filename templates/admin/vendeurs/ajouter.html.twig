@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un vendeur - Administration{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-lg rounded-4 border-0 p-4">
+                <h2 class="mb-4 text-center">Ajouter un vendeur</h2>
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endfor %}
+                {{ form_start(form) }}
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">{{ form_row(form.prenom) }}</div>
+                        <div class="col-12 col-md-6">{{ form_row(form.nom) }}</div>
+                        <div class="col-12">{{ form_row(form.email) }}</div>
+                        <div class="col-12 col-md-6">{{ form_row(form.plainPassword) }}</div>
+                        <div class="col-12 col-md-6">{{ form_row(form.confirmPassword) }}</div>
+                        <div class="col-12">{{ form_row(form.agreeTerms) }}</div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-success btn-lg px-5"><i class="fas fa-user-plus"></i> Ajouter</button>
+                        <a href="{{ path('app_admin_vendeurs') }}" class="btn btn-outline-secondary btn-lg ms-3"><i class="fas fa-arrow-left"></i> Retour</a>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

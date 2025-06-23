@@ -4,6 +4,10 @@ controllers:
         namespace: App\Controller
     type: attribute
 
+app_login_check:
+    path: /login_check
+    methods: [POST]
+
 home:
     path: /
     controller: App\Controller\HomeController::index

@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la commande - Administration{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Détails de la commande #{{ commande.id }}</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Informations de la commande</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Date:</strong> {{ commande.dateCommande|date('d/m/Y H:i') }}</p>
+                    <p><strong>Statut:</strong>
+                        {% if commande.statut == 'en_attente' %}
+                            <span class="badge bg-warning">En attente</span>
+                        {% elseif commande.statut == 'validée' %}
+                            <span class="badge bg-success">Validée</span>
+                        {% elseif commande.statut == 'annulée' %}
+                            <span class="badge bg-danger">Annulée</span>
+                        {% elseif commande.statut == 'expédiée' %}
+                            <span class="badge bg-info">Expédiée</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ commande.statut }}</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Mode de paiement:</strong> {{ commande.modePaiement }}</p>
+                    <p><strong>Total:</strong> {{ commande.total|number_format(2, ',', ' ') }} €</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Détails des produits</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Prix unitaire</th>
+                                    <th>Quantité</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detail in commande.details %}
+                                <tr>
+                                    <td>
+                                        {{ detail.produit?.nom }}<br>
+                                        <small class="text-muted">{{ detail.produit?.description }}</small>
+                                    </td>
+                                    <td>{{ detail.prixUnitaire|number_format(2, ',', ' ') }} €</td>
+                                    <td>{{ detail.quantite }}</td>
+                                    <td>{{ (detail.prixUnitaire * detail.quantite)|number_format(2, ',', ' ') }} €</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td><strong>{{ commande.total|number_format(2, ',', ' ') }} €</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informations du client</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Nom:</strong> {{ commande.client?.nom }} {{ commande.client?.prenom }}</p>
+                    <p><strong>Email:</strong> {{ commande.client?.email }}</p>
+                    <p><strong>Téléphone:</strong> {{ commande.client?.telephone }}</p>
+                    <p><strong>Adresse:</strong><br>
+                        {{ commande.client?.adresse }}<br>
+                        {{ commande.client?.codePostal }} {{ commande.client?.ville }}<br>
+                        {{ commande.client?.pays }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ path('app_admin_commandes') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+        {% if commande.statut == 'en_attente' %}
+            <a href="{{ path('app_admin_commande_valider', {'id': commande.id}) }}" class="btn btn-success" onclick="return confirm('Êtes-vous sûr de vouloir valider cette commande ?')">
+                <i class="fas fa-check"></i> Valider
+            </a>
+            <a href="{{ path('app_admin_commande_annuler', {'id': commande.id}) }}" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?')">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

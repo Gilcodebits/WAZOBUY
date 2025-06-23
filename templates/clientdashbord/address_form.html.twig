@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% if form.vars.data.id %}Modifier{% else %}Ajouter{% endif %} une adresse - WAZOBUY{% endblock %}
+
+{% block body %}
+    <div class="address-form-container">
+        <h1>{% if form.vars.data.id %}Modifier{% else %}Ajouter{% endif %} une adresse</h1>
+
+        {{ form_start(form, {'attr': {'class': 'address-form'}}) }}
+        
+        <div class="form-group">
+            {{ form_label(form.nom) }}
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.nom) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.rue) }}
+            {{ form_widget(form.rue, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.rue) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.codePostal) }}
+            {{ form_widget(form.codePostal, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.codePostal) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.ville) }}
+            {{ form_widget(form.ville, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.ville) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.pays) }}
+            {{ form_widget(form.pays, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.pays) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.telephone) }}
+            {{ form_widget(form.telephone, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.telephone) }}
+        </div>
+
+        <div class="form-group checkbox-group">
+            {{ form_label(form.principal) }}
+            {{ form_widget(form.principal) }}
+            {{ form_errors(form.principal) }}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if form.vars.data.id %}Modifier{% else %}Ajouter{% endif %}
+            </button>
+            <a href="{{ path('app_client_addresses') }}" class="btn btn-secondary">
+                Annuler
+            </a>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/address_form.css') }}">
+{% endblock %}

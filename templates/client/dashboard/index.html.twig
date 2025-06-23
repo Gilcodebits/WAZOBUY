@@ -1,0 +1,276 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon tableau de bord{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        .gradient-button {
+            background: linear-gradient(135deg, #3B82F6 0%, #F97316 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .gradient-button:hover {
+            background: linear-gradient(135deg, #2563EB 0%, #EA580C 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        .gradient-button:active {
+            transform: translateY(0);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Profil utilisateur -->
+    <div class="bg-white rounded-lg shadow mb-8">
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        {% if app.user.photoProfil %}
+                            <img src="{{ asset('uploads/photos/' ~ app.user.photoProfil) }}" alt="Photo de profil" class="w-16 h-16 rounded-full object-cover border-4 border-gray-200">
+                        {% else %}
+                            <div class="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold border-4 border-gray-200">
+                                {{ app.user.nom|first|upper }}{{ app.user.prenom|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">{{ app.user.prenom }} {{ app.user.nom }}</h1>
+                        <p class="text-gray-600">{{ app.user.email }}</p>
+                        <p class="text-sm text-gray-500">Client depuis {{ app.user.dateCreation|date('d/m/Y') }}</p>
+                    </div>
+                </div>
+                
+                <!-- Menu profil -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
+                        <i class="ri-settings-3-line text-gray-600"></i>
+                        <span class="text-gray-700">Options</span>
+                        <i class="ri-arrow-down-s-line text-gray-600"></i>
+                    </button>
+                    
+                    <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                        <div class="py-2">
+                            <a href="{{ path('app_client_profile') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition">
+                                <i class="ri-user-line mr-3 text-gray-500"></i>
+                                <span>Mon profil</span>
+                            </a>
+                            <a href="{{ path('app_client_addresses') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition">
+                                <i class="ri-map-pin-line mr-3 text-gray-500"></i>
+                                <span>Mes adresses</span>
+                            </a>
+                            <a href="{{ path('app_client_orders') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition">
+                                <i class="ri-file-list-3-line mr-3 text-gray-500"></i>
+                                <span>Mes commandes</span>
+                            </a>
+                            <a href="{{ path('app_client_payments') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition">
+                                <i class="ri-bank-card-line mr-3 text-gray-500"></i>
+                                <span>Mes paiements</span>
+                            </a>
+                            <hr class="my-2">
+                            <a href="{{ path('app_change_password') }}" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition">
+                                <i class="ri-lock-password-line mr-3 text-gray-500"></i>
+                                <span>Changer le mot de passe</span>
+                            </a>
+                            <hr class="my-2">
+                            <a href="{{ path('app_logout') }}" class="flex items-center px-4 py-3 text-red-600 hover:bg-red-50 transition">
+                                <i class="ri-logout-box-r-line mr-3"></i>
+                                <span>Se déconnecter</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow p-6 flex items-center">
+            <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                <i class="ri-file-list-3-line text-primary text-2xl"></i>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-500">Commandes</p>
+                <h3 class="text-2xl font-bold text-gray-800">{{ commandesRecentes|length }}</h3>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6 flex items-center">
+            <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mr-4">
+                <i class="ri-heart-3-line text-green-600 text-2xl"></i>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-500">Favoris</p>
+                <h3 class="text-2xl font-bold text-gray-800">{{ produitsFavoris|length }}</h3>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6 flex items-center">
+            <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mr-4">
+                <i class="ri-shopping-cart-2-line text-purple-600 text-2xl"></i>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-500">Panier</p>
+                <h3 class="text-2xl font-bold text-gray-800">{{ panierCount|default(0) }}</h3>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6 flex items-center">
+            <div class="w-12 h-12 rounded-full bg-secondary bg-opacity-20 flex items-center justify-center mr-4">
+                <i class="ri-money-euro-circle-line text-secondary text-2xl"></i>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-500">Total dépensé</p>
+                <h3 class="text-2xl font-bold text-gray-800">{{ totalDepense|default(0)|number_format(0, ',', ' ') }} FCFA</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Commandes récentes -->
+    <div class="bg-white rounded-lg shadow mb-8">
+        <div class="flex justify-between items-center p-6 border-b border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-800">Commandes récentes</h2>
+            <a href="{{ path('app_client_orders') }}" class="text-sm text-secondary hover:underline whitespace-nowrap">Voir toutes mes commandes</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for commande in commandesRecentes %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ commande.dateCommande|date('d/m/Y H:i') }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ commande.total|number_format(0, ',', ' ') }} FCFA</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if commande.statut == 'en_attente' %}
+                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">En attente</span>
+                            {% elseif commande.statut == 'validée' %}
+                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Validée</span>
+                            {% elseif commande.statut == 'annulée' %}
+                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Annulée</span>
+                            {% elseif commande.statut == 'expédiée' %}
+                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">Expédiée</span>
+                            {% else %}
+                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">{{ commande.statut }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <a href="{{ path('app_commande_show', {'id': commande.id}) }}" class="text-secondary hover:underline">Détails</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-gray-400 py-4">Aucune commande récente</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Produits favoris -->
+    <div class="bg-white rounded-lg shadow mb-8">
+        <div class="flex justify-between items-center p-6 border-b border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-800">Produits favoris</h2>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {% for produit in produitsFavoris %}
+                <div class="bg-gray-50 rounded-lg shadow-sm overflow-hidden flex flex-col">
+                    {% if produit.photos %}
+                        <img src="{{ produit.photos[0] }}" class="w-full h-40 object-cover" alt="{{ produit.nom }}">
+                    {% endif %}
+                    <div class="p-4 flex-1 flex flex-col">
+                        <h6 class="font-semibold text-gray-800 mb-1">{{ produit.nom }}</h6>
+                        <p class="text-sm text-gray-500 mb-2">{{ produit.description|u.truncate(60) }}</p>
+                        <div class="mt-auto flex items-center justify-between">
+                            <span class="text-primary font-bold">{{ produit.prix|number_format(0, ',', ' ') }} FCFA</span>
+                            <a href="{{ path('app_produit_show', {'id': produit.id}) }}" class="text-secondary hover:underline text-sm">Voir</a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-span-3 text-center text-gray-400">Aucun produit favori</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tous les produits de la marketplace -->
+    <div class="bg-white rounded-lg shadow mb-8">
+        <div class="flex justify-between items-center p-6 border-b border-gray-100">
+            <h2 class="text-lg font-semibold text-gray-800">Tous les produits</h2>
+            <form method="get" class="flex items-center gap-2">
+                <input type="text" name="search" value="{{ filters.search|default('') }}" placeholder="Rechercher..." class="px-3 py-2 border rounded-lg text-sm focus:ring-secondary focus:border-secondary">
+                <select name="categorie" class="px-3 py-2 border rounded-lg text-sm focus:ring-secondary focus:border-secondary">
+                    <option value="">Toutes catégories</option>
+                    <option value="electronics" {% if filters.categorie == 'electronics' %}selected{% endif %}>Électronique</option>
+                    <option value="fashion" {% if filters.categorie == 'fashion' %}selected{% endif %}>Mode & Vêtements</option>
+                    <option value="home" {% if filters.categorie == 'home' %}selected{% endif %}>Maison & Jardin</option>
+                    <option value="sports" {% if filters.categorie == 'sports' %}selected{% endif %}>Sports & Loisirs</option>
+                    <option value="beauty" {% if filters.categorie == 'beauty' %}selected{% endif %}>Beauté & Santé</option>
+                    <option value="books" {% if filters.categorie == 'books' %}selected{% endif %}>Livres & Médias</option>
+                </select>
+                <button type="submit" class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-opacity-90 transition">Filtrer</button>
+            </form>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for produit in produits %}
+                <div class="bg-gray-50 rounded-lg shadow-sm overflow-hidden flex flex-col">
+                    <img src="{{ produit.image ? asset('uploads/images/' ~ produit.image) : asset('images/default-product.png') }}" class="w-full h-40 object-cover" alt="{{ produit.nom }}">
+                    <div class="p-4 flex-1 flex flex-col">
+                        <h6 class="font-semibold text-gray-800 mb-1">{{ produit.nom }}</h6>
+                        <p class="text-sm text-gray-500 mb-2">{{ produit.description|u.truncate(60) }}</p>
+                        <div class="mt-auto flex items-center justify-between">
+                            <span class="text-primary font-bold">{{ produit.prix|number_format(0, ',', ' ') }} FCFA</span>
+                            <form method="post" action="{{ path('app_panier_ajouter', {'id': produit.id}) }}">
+                                <button class="px-3 py-2 bg-secondary text-white rounded hover:bg-opacity-90 transition text-sm" type="submit">
+                                    <i class="ri-shopping-cart-2-line mr-1"></i> Ajouter au panier
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-span-3 text-center text-gray-400">Aucun produit trouvé</div>
+                {% endfor %}
+            </div>
+            <!-- Pagination -->
+            <div class="mt-8 flex items-center justify-between">
+                <div class="text-sm text-gray-600">Affichage de 1 à {{ produits|length }} sur {{ totalProduits }} produits</div>
+                <div class="flex space-x-2">
+                    {% for page in 1..totalPages %}
+                        <a href="?page={{ page }}{% if filters.categorie %}&categorie={{ filters.categorie }}{% endif %}{% if filters.search %}&search={{ filters.search }}{% endif %}" class="px-3 py-1 rounded {{ filters.page == page ? 'bg-secondary text-white' : 'border border-gray-300 text-gray-600 hover:bg-gray-50' }} whitespace-nowrap">{{ page }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panier accès rapide -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <a href="{{ path('app_panier') }}" class="flex items-center px-6 py-3 bg-primary text-white rounded-full shadow-lg hover:bg-blue-800 transition">
+            <i class="ri-shopping-cart-2-line text-2xl mr-2"></i>
+            <span>Voir mon panier ({{ panierCount|default(0) }})</span>
+        </a>
+    </div>
+    <div class="fixed bottom-24 right-6 z-50">
+        <a href="{{ path('app_client_payments') }}" class="flex items-center px-6 py-3 gradient-button text-white rounded-full shadow-lg transition">
+            <i class="ri-bank-card-line text-2xl mr-2"></i>
+            <span>Payer avec Mobile Money</span>
+        </a>
+    </div>
+</div>
+{% endblock %}

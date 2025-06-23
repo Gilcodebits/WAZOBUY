@@ -1,0 +1,25 @@
+hwi_oauth:
+    firewall_names: [main]
+    resource_owners:
+        google:
+            type: google
+            client_id: '%env(GOOGLE_CLIENT_ID)%'
+            client_secret: '%env(GOOGLE_CLIENT_SECRET)%'
+            scope: "profile email"
+            options:
+                access_type: offline
+                approval_prompt: auto
+            paths:
+                profilepicture: picture
+        facebook:
+            type: facebook
+            client_id: '%env(FACEBOOK_CLIENT_ID)%'
+            client_secret: '%env(FACEBOOK_CLIENT_SECRET)%'
+            scope: "email public_profile"
+            options:
+                display: popup
+                auth_type: rerequest
+                csrf: true
+    connect:
+        confirmation: false
+        account_connector: App\Security\OAuthUserProvider

@@ -14,7 +14,32 @@ services:
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
-        resource: '../src/'
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    App\Service\AdminInitializer:
+        arguments:
+            $passwordHasher: '@security.user_password_hasher'
+            $entityManager: '@doctrine.orm.entity_manager'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Security\OAuthUserProvider:
+        class: App\Security\OAuthUserProvider
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: 'security.oauth_user_provider' }
+
+    security.authentication.success_handler:
+        class: App\Security\Authentication\AuthenticationSuccessHandler
+        arguments:
+            - '@security.http_utils'
+            - '@router.default'
+            - { default_target_path: '/app_home' }
