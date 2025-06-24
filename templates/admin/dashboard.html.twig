@@ -419,7 +419,7 @@
         }
 
         .table td {
-            padding: 1rem;
+            padding: 0.7rem;
             border-bottom: 1px solid #dee2e6;
             vertical-align: middle;
         }
@@ -855,11 +855,17 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <a href="{{ path('app_admin_vendeur_show', {'id': vendeur.id}) }}" class="action-btn view">Voir</a>
+                                            <a href="{{ path('app_admin_vendeur_show', {'id': vendeur.id}) }}" class="btn btn-sm btn-outline-primary rounded-circle me-1" data-bs-toggle="tooltip" title="Voir le profil">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
                                             {% if 'ROLE_VENDEUR' in vendeur.roles %}
-                                                <a href="{{ path('app_admin_vendeur_deactivate', {'id': vendeur.id}) }}" class="action-btn deactivate">Désactiver</a>
+                                                <a href="{{ path('app_admin_vendeur_deactivate', {'id': vendeur.id}) }}" class="btn btn-sm btn-outline-danger rounded-circle me-1" data-bs-toggle="tooltip" title="Désactiver">
+                                                    <i class="fas fa-power-off"></i>
+                                                </a>
                                             {% else %}
-                                                <a href="{{ path('app_admin_vendeur_activate', {'id': vendeur.id}) }}" class="action-btn activate">Activer</a>
+                                                <a href="{{ path('app_admin_vendeur_activate', {'id': vendeur.id}) }}" class="btn btn-sm btn-outline-success rounded-circle me-1" data-bs-toggle="tooltip" title="Activer">
+                                                    <i class="fas fa-check"></i>
+                                                </a>
                                             {% endif %}
                                         </td>
                                     </tr>

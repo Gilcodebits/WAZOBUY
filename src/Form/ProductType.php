@@ -66,9 +66,9 @@ class ProductType extends AbstractType
                 ]
             ])
             ->add('images', FileType::class, [
-                'label' => 'Images du produit',
+                'label' => 'Image du produit',
                 'mapped' => false,
-                'multiple' => true,
+                'multiple' => false,
                 'required' => false,
                 'constraints' => [
                     new File([

@@ -3,37 +3,173 @@
 {% block title %}Détails du vendeur - Administration{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <h1>Détails du vendeur</h1>
-    
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">{{ vendeur.nom }} {{ vendeur.prenom }}</h5>
-            
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>Email:</strong> {{ vendeur.email }}</p>
-                    <p><strong>Téléphone:</strong> {{ vendeur.telephone ?? 'Non défini' }}</p>
-                    <p><strong>Date de création:</strong> {{ vendeur.dateCreation|date('d/m/Y H:i') }}</strong></p>
-                    <p><strong>Dernière connexion:</strong> {{ vendeur.derniereConnexion|date('d/m/Y H:i') ?? 'Jamais' }}</p>
-                    <p><strong>Statut:</strong> {% if vendeur.estActif %}Actif{% else %}Inactif{% endif %}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>Photo de profil:</strong>
-                        {% if vendeur.photoProfil %}
-                            <img src="{{ vendeur.photoProfil }}" alt="Photo de profil" class="img-thumbnail" style="max-width: 200px;">
-                        {% else %}
-                            Pas de photo de profil
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
-
-            <div class="mt-4">
-                <a href="{{ path('app_admin_vendeurs') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Retour à la liste
-                </a>
-            </div>
+<style>
+    body {
+        background: #f6f8fa !important;
+    }
+    .vendeur-profile-card {
+        max-width: 420px;
+        margin: 40px auto;
+        background: #fff;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(60,72,88,0.10);
+        padding: 2.5rem 2rem 2rem 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .vendeur-avatar {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #667eea;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(102,126,234,0.08);
+    }
+    .vendeur-profile-card h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: #222;
+        text-align: center;
+    }
+    .vendeur-badge {
+        font-size: 0.95rem;
+        padding: 0.3em 1em;
+        border-radius: 1em;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+    .vendeur-badge.actif {
+        background: #e6f4ea;
+        color: #16b887;
+        border: 1px solid #16b887;
+    }
+    .vendeur-badge.inactif {
+        background: #f2f2f2;
+        color: #888;
+        border: 1px solid #ccc;
+    }
+    .vendeur-profile-list {
+        width: 100%;
+        margin-bottom: 1.5rem;
+    }
+    .vendeur-profile-list li {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f2f2f2;
+        font-size: 1rem;
+        color: #444;
+    }
+    .vendeur-profile-list li:last-child {
+        border-bottom: none;
+    }
+    .vendeur-profile-list i {
+        color: #667eea;
+        margin-right: 0.7em;
+        font-size: 1.1em;
+        min-width: 22px;
+        text-align: center;
+    }
+    .vendeur-actions {
+        width: 100%;
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+    .vendeur-actions .btn {
+        font-size: 0.98rem;
+        border-radius: 0.7em;
+        padding: 0.45em 1.2em;
+        font-weight: 500;
+        box-shadow: 0 1px 4px rgba(102,126,234,0.07);
+        transition: background 0.2s, color 0.2s;
+    }
+    .vendeur-stats {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+    .vendeur-stat-badge {
+        background: #f6f8fa;
+        color: #667eea;
+        border-radius: 0.7em;
+        padding: 0.5em 1.1em;
+        font-size: 1.05rem;
+        font-weight: 600;
+        box-shadow: 0 1px 4px rgba(102,126,234,0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .vendeur-stat-badge .stat-label {
+        font-size: 0.85em;
+        color: #888;
+        font-weight: 400;
+        margin-top: 0.1em;
+    }
+    @media (max-width: 600px) {
+        .vendeur-profile-card {
+            padding: 1.2rem 0.5rem 1.5rem 0.5rem;
+        }
+        .vendeur-stats {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>
+<div class="vendeur-profile-card">
+    {% if vendeur.photoProfil %}
+        <img src="{{ vendeur.photoProfil }}" alt="Photo de profil" class="vendeur-avatar" style="object-fit: cover;">
+    {% else %}
+        <div class="vendeur-avatar">
+            {{ vendeur.prenom ? vendeur.prenom|first|upper : '?' }}{{ vendeur.nom ? vendeur.nom|first|upper : '?' }}
+        </div>
+    {% endif %}
+    <h2>{{ vendeur.prenom }} {{ vendeur.nom }}</h2>
+    {% if vendeur.estActif %}
+        <span class="vendeur-badge actif">Actif</span>
+    {% else %}
+        <span class="vendeur-badge inactif">Inactif</span>
+    {% endif %}
+    <ul class="vendeur-profile-list list-unstyled">
+        <li><i class="fas fa-envelope"></i><a href="mailto:{{ vendeur.email }}">{{ vendeur.email }}</a></li>
+        <li><i class="fas fa-phone"></i>{{ vendeur.telephone|default('Non défini') }}</li>
+        <li><i class="fas fa-calendar-plus"></i>Date d'inscription : {{ vendeur.dateCreation ? vendeur.dateCreation|date('d/m/Y H:i') : 'Non défini' }}</li>
+        <li><i class="fas fa-calendar-check"></i>Dernière connexion : {{ vendeur.derniereConnexion ? vendeur.derniereConnexion|date('d/m/Y H:i') : 'Jamais' }}</li>
+        <li><i class="fas fa-id-badge"></i>ID : {{ vendeur.id }}</li>
+    </ul>
+    <div class="vendeur-actions">
+        {% if vendeur.estActif %}
+            <a href="{{ path('app_admin_vendeur_deactivate', {'id': vendeur.id}) }}" class="btn btn-warning"><i class="fas fa-user-slash"></i> Désactiver</a>
+        {% else %}
+            <a href="{{ path('app_admin_vendeur_activate', {'id': vendeur.id}) }}" class="btn btn-success"><i class="fas fa-user-check"></i> Activer</a>
+        {% endif %}
+        <a href="mailto:{{ vendeur.email }}" class="btn btn-info text-white"><i class="fas fa-envelope"></i> Contacter</a>
+        <a href="{{ path('app_admin_vendeurs') }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Retour</a>
+    </div>
+    <div class="vendeur-stats">
+        <div class="vendeur-stat-badge">
+            {{ vendeur.nbProduits is defined ? vendeur.nbProduits : '?' }}
+            <span class="stat-label">Produits</span>
+        </div>
+        <div class="vendeur-stat-badge">
+            {{ vendeur.dateCreation ? vendeur.dateCreation|date('Y') : '?' }}
+            <span class="stat-label">Année d'inscription</span>
+        </div>
+        <div class="vendeur-stat-badge">
+            {{ vendeur.estActif ? 'Oui' : 'Non' }}
+            <span class="stat-label">Compte actif</span>
         </div>
     </div>
 </div>

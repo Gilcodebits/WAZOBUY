@@ -30,7 +30,7 @@ class Produit
     #[ORM\Column]
     private ?int $stock = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
     #[ORM\Column(length: 255)]
@@ -42,7 +42,7 @@ class Produit
     #[ORM\Column]
     private ?bool $enPromotion = false;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?float $pourcentagePromotion = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
@@ -54,10 +54,10 @@ class Produit
     #[ORM\Column]
     private array $caracteristiques = [];
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $note = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $nombreAvis = null;
 
     #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'produits')]
@@ -68,6 +68,11 @@ class Produit
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
+        $this->nouveau = true;
+        $this->enPromotion = false;
+        $this->note = 0;
+        $this->nombreAvis = 0;
+        $this->caracteristiques = [];
     }
 
     #[ORM\PreUpdate]

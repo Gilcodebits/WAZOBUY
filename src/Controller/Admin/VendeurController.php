@@ -11,6 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Form\RegistrationFormType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class VendeurController extends AbstractController
 {
@@ -59,5 +60,29 @@ class VendeurController extends AbstractController
         return $this->render('admin/vendeurs/ajouter.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/admin/vendeurs/{id}/activate', name: 'app_admin_vendeur_activate', methods: ['POST'])]
+    public function activate(Request $request, Utilisateur $vendeur, EntityManagerInterface $em): Response
+    {
+        $vendeur->setEstActif(true);
+        $em->flush();
+
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['success' => true]);
+        }
+        return $this->redirectToRoute('app_admin_vendeurs');
+    }
+
+    #[Route('/admin/vendeurs/{id}/deactivate', name: 'app_admin_vendeur_deactivate', methods: ['POST'])]
+    public function deactivate(Request $request, Utilisateur $vendeur, EntityManagerInterface $em): Response
+    {
+        $vendeur->setEstActif(false);
+        $em->flush();
+
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['success' => true]);
+        }
+        return $this->redirectToRoute('app_admin_vendeurs');
     }
 }

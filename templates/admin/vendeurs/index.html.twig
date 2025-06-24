@@ -18,6 +18,43 @@
         @media (max-width: 768px) {
             .table th, .table td { white-space: nowrap; }
         }
+        /* Switch CSS */
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 48px;
+          height: 28px;
+        }
+        .switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: #16b887;
+          border-radius: 34px;
+          transition: .4s;
+        }
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 22px;
+          width: 22px;
+          left: 3px;
+          bottom: 3px;
+          background: white;
+          border-radius: 50%;
+          transition: .4s;
+        }
+        input:checked + .slider {
+          background: #16b887;
+        }
+        input:checked + .slider:before {
+          transform: translateX(20px);
+        }
     </style>
 {% endblock %}
 
@@ -66,7 +103,8 @@
                     <td>{{ loop.index }}</td>
                     <td>
                         <div class="avatar" aria-label="Avatar {{ vendeur.prenom }} {{ vendeur.nom }}">
-                            {{ vendeur.prenom[0]|upper }}{{ vendeur.nom[0]|upper }}
+                            {{ vendeur.prenom is defined and vendeur.prenom is iterable == false and vendeur.prenom|length > 0 ? vendeur.prenom|first|upper : '?' }}
+                            {{ vendeur.nom is defined and vendeur.nom is iterable == false and vendeur.nom|length > 0 ? vendeur.nom|first|upper : '?' }}
                         </div>
                     </td>
                     <td>{{ vendeur.prenom }} {{ vendeur.nom }}</td>
@@ -89,15 +127,13 @@
                         <a href="mailto:{{ vendeur.email }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Contacter">
                             <i class="fas fa-envelope"></i>
                         </a>
-                        {% if vendeur.estActif %}
-                            <a href="{{ path('app_admin_vendeur_deactivate', {'id': vendeur.id}) }}" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Désactiver">
-                                <i class="fas fa-user-slash"></i>
-                            </a>
-                        {% else %}
-                            <a href="{{ path('app_admin_vendeur_activate', {'id': vendeur.id}) }}" class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Activer">
-                                <i class="fas fa-user-check"></i>
-                            </a>
-                        {% endif %}
+                        <label class="switch" title="Activer/Désactiver">
+                            <input type="checkbox"
+                                   {% if vendeur.estActif %}checked{% endif %}
+                                   data-id="{{ vendeur.id }}"
+                                   onchange="toggleVendeurStatus(this)">
+                            <span class="slider"></span>
+                        </label>
                         <a href="#" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Supprimer" onclick="return confirm('Voulez-vous vraiment supprimer ce vendeur ?');">
                             <i class="fas fa-trash"></i>
                         </a>
@@ -162,6 +198,32 @@
         link.href = URL.createObjectURL(blob);
         link.download = 'vendeurs.csv';
         link.click();
+    }
+    // Switch AJAX
+    function toggleVendeurStatus(checkbox) {
+        const vendeurId = checkbox.getAttribute('data-id');
+        const isActive = checkbox.checked;
+        const url = isActive
+            ? '{{ path("app_admin_vendeur_activate", {"id": "VENDEUR_ID"}) }}'
+            : '{{ path("app_admin_vendeur_deactivate", {"id": "VENDEUR_ID"}) }}';
+
+        fetch(url.replace('VENDEUR_ID', vendeurId), {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                alert('Erreur lors du changement de statut');
+                checkbox.checked = !isActive; // revert
+            }
+        })
+        .catch(() => {
+            alert('Erreur réseau');
+            checkbox.checked = !isActive; // revert
+        });
     }
     </script>
 {% endblock %}

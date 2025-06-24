@@ -315,21 +315,29 @@
 
         /* Status Badges */
         .status-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.5em !important;
+            padding: 0.5rem 1.2rem !important;
+            border-radius: 999px !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.08) !important;
         }
 
-        .status-active { 
-            background: linear-gradient(135deg, #28a745, #1e7e34); 
-            color: white; 
+        .status-active {
+            background: linear-gradient(90deg, #43a047, #66bb6a) !important;
+            color: #fff !important;
         }
-        .status-inactive { 
-            background: linear-gradient(135deg, #dc3545, #c82333); 
-            color: white; 
+        .status-inactive {
+            background: linear-gradient(90deg, #dc3545, #c82333) !important;
+            color: #fff !important;
+        }
+        .status-badge i {
+            font-size: 1.2em !important;
+            margin-right: 0.3em !important;
         }
 
         /* Action Buttons */

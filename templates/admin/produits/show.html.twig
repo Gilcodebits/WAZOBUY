@@ -3,19 +3,44 @@
 {% block title %}Détails du produit - Administration{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <h1>Détails du produit</h1>
-    
-    <div class="card">
-        <div class="card-body">
+<style>
+    .fiche-produit-container {
+        background: #fff;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(60,72,88,0.10);
+        padding: 2.5rem 2rem 2rem 2rem;
+        max-width: 700px;
+        margin: 40px auto 0 auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 500px;
+    }
+    @media (max-width: 768px) {
+        .fiche-produit-container {
+            padding: 1.2rem 0.5rem 1.5rem 0.5rem;
+            max-width: 98vw;
+        }
+    }
+</style>
+<div class="fiche-produit-container">
+    <h1 class="mb-4">Détails du produit</h1>
+    <div class="card border-0 shadow-none">
+        <div class="card-body p-0">
             <h5 class="card-title">{{ produit.nom }}</h5>
-            
             <div class="row">
                 <div class="col-md-6">
                     <p><strong>Prix:</strong> {{ produit.prix|number_format(2, ',', ' ') }} €</p>
                     <p><strong>Stock:</strong> {{ produit.stock }}</p>
-                    <p><strong>Catégorie:</strong> {{ produit.categorie?.nom ?? 'Non définie' }}</p>
-                    <p><strong>Vendeur:</strong> {{ produit.vendeur?.nom }} {{ produit.vendeur?.prenom }}</p>
+                    <p><strong>Catégorie:</strong>
+                        {% if produit.categorie is iterable and produit.categorie.nom is defined %}
+                            {{ produit.categorie.nom }}
+                        {% elseif produit.categorie is not empty %}
+                            {{ produit.categorie }}
+                        {% else %}
+                            Non définie
+                        {% endif %}
+                    </p>
+                    <p><strong>Vendeur:</strong> {{ produit.vendeur ? produit.vendeur.nom : '' }} {{ produit.vendeur ? produit.vendeur.prenom : '' }}</p>
                     <p><strong>Description:</strong> {{ produit.description }}</p>
                     <p><strong>Promotion:</strong> 
                         {% if produit.enPromotion %}
@@ -24,26 +49,21 @@
                             <span class="badge bg-secondary">Normal</span>
                         {% endif %}
                     </p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>Photos:</strong>
-                        {% if produit.photos %}
-                            <div class="row">
-                                {% for photo in produit.photos %}
-                                <div class="col-4 mb-3">
-                                    <img src="{{ photo }}" alt="{{ produit.nom }}" class="img-thumbnail" style="max-width: 150px;">
-                                </div>
-                                {% endfor %}
-                            </div>
+                    <p><strong>Photo :</strong>
+                        {% if produit.image %}
+                            <img src="{{ produit.image }}" alt="{{ produit.nom }}" class="img-thumbnail" style="max-width: 150px;">
                         {% else %}
                             Aucune photo
                         {% endif %}
                     </p>
                 </div>
+                <div class="col-md-6">
+                    <!-- Bloc photos multiples supprimé car produit.photos n'existe pas -->
+                </div>
             </div>
-
-            <div class="mt-4">
-                <a href="{{ path('app_admin_produits') }}" class="btn btn-secondary">
+            <hr class="my-4">
+            <div class="d-flex justify-content-end" style="margin-top: 2.5rem; margin-bottom: 1.5rem;">
+                <a href="{{ path('app_admin_produits') }}" class="btn btn-secondary btn-lg">
                     <i class="fas fa-arrow-left"></i> Retour à la liste
                 </a>
             </div>
