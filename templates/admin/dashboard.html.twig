@@ -605,6 +605,36 @@
         body.theme-dark .status-badge.info { background: #17a2b8 !important; color: #fff !important; }
         body.theme-dark .status-badge.danger { background: #dc3545 !important; color: #fff !important; }
         body.theme-dark .status-badge.warning { background: #ffc107 !important; color: #23272f !important; }
+
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            border-radius: 12px;
+            background: #e2e8f0;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .toggle-switch.active {
+            background: #10b981;
+        }
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            transition: transform 0.2s;
+            transform: translateX(0);
+        }
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
     </style>
 {% endblock %}
 
@@ -855,7 +885,7 @@
                                         <td>{{ litige.montantTotal|number_format(2, ',', ' ') }} FCFA</td>
                                         <td>
                                             <a href="{{ path('app_admin_commande_show', {'id': litige.id}) }}" class="action-btn view">Voir</a>
-                                            <a href="{{ path('app_admin_commande_resolve', {'id': litige.id}) }}" class="action-btn resolve">Résoudre</a>
+                                            <span class="toggle-switch {% if litige.statut == 'litige' %}active{% endif %}" data-id="{{ litige.id }}" data-action-url="{{ path('app_admin_commande_resolve', {'id': litige.id}) }}" title="Résoudre"></span>
                                         </td>
                                     </tr>
                                     {% else %}
@@ -904,15 +934,7 @@
                                             <a href="{{ path('app_admin_vendeur_show', {'id': vendeur.id}) }}" class="btn btn-sm btn-outline-primary rounded-circle me-1" data-bs-toggle="tooltip" title="Voir le profil">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            {% if 'ROLE_VENDEUR' in vendeur.roles %}
-                                                <a href="{{ path('app_admin_vendeur_deactivate', {'id': vendeur.id}) }}" class="btn btn-sm btn-outline-danger rounded-circle me-1" data-bs-toggle="tooltip" title="Désactiver">
-                                                    <i class="fas fa-power-off"></i>
-                                                </a>
-                                            {% else %}
-                                                <a href="{{ path('app_admin_vendeur_activate', {'id': vendeur.id}) }}" class="btn btn-sm btn-outline-success rounded-circle me-1" data-bs-toggle="tooltip" title="Activer">
-                                                    <i class="fas fa-check"></i>
-                                                </a>
-                                            {% endif %}
+                                            <span class="toggle-switch {% if 'ROLE_VENDEUR' in vendeur.roles %}active{% endif %}" data-id="{{ vendeur.id }}" data-action-url="{{ 'ROLE_VENDEUR' in vendeur.roles ? path('app_admin_vendeur_deactivate', {'id': vendeur.id}) : path('app_admin_vendeur_activate', {'id': vendeur.id}) }}" title="{{ 'ROLE_VENDEUR' in vendeur.roles ? 'Désactiver' : 'Activer' }}"></span>
                                         </td>
                                     </tr>
                                     {% else %}
@@ -1067,6 +1089,13 @@
         // Écouteur pour changement depuis la page paramètres
         window.addEventListener('storage', function(e) {
             if (e.key === 'admin_theme') applyTheme(e.newValue);
+        });
+
+        document.querySelectorAll('.toggle-switch').forEach(function(switchEl) {
+            switchEl.addEventListener('click', function() {
+                const url = this.getAttribute('data-action-url');
+                window.location.href = url;
+            });
         });
     </script>
 {% endblock %} 
