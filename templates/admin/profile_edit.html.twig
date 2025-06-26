@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .profile-edit-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 2.5rem 2rem 2rem 2rem;
+        }
+        .profile-edit-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #343a40;
+            margin-bottom: 1.5rem;
+        }
+        .profile-edit-form label {
+            font-weight: 500;
+            color: #667eea;
+        }
+        .profile-edit-form input[type="text"],
+        .profile-edit-form input[type="email"],
+        .profile-edit-form input[type="file"] {
+            width: 100%;
+            padding: 0.7rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+        }
+        .profile-edit-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+        .profile-edit-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 0.7rem 2.2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+        }
+        .profile-edit-btn:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+    </style>
+{% endblock %}
+{% block body %}
+<div class="profile-edit-container">
+    <div class="profile-edit-title">Informations personnelles</div>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+    <form method="post" enctype="multipart/form-data" class="profile-edit-form">
+        {{ form_start(form) }}
+        {{ form_row(form.prenom) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.photoProfil) }}
+        <div class="profile-edit-actions">
+            <a href="{{ path('app_admin_profile') }}" class="btn btn-secondary">&larr; Retour</a>
+            <button type="submit" class="profile-edit-btn">Sauvegarder</button>
+        </div>
+        {{ form_end(form) }}
+    </form>
+</div>
+{% endblock %} 

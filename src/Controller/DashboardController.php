@@ -139,7 +139,8 @@ class DashboardController extends AbstractController
             'commandesRecentes' => $commandesRecentes,
             'litiges' => $litiges,
             'nouveauxVendeurs' => $nouveauxVendeurs,
-            'activitesRecentes' => $activitesRecentes
+            'activitesRecentes' => $activitesRecentes,
+            'user' => $user
         ]);
     }
 }

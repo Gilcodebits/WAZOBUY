@@ -623,10 +623,18 @@
             </nav>
 
             <div class="admin-section">
-                <div class="admin-avatar">AD</div>
+                {% if user is defined and user.photoProfil %}
+                    <div class="admin-avatar"><img src="/{{ user.photoProfil }}" alt="Photo de profil" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
+                {% elseif user is defined and user.prenom and user.nom %}
+                    <div class="admin-avatar">{{ user.prenom|slice(0,1)|upper }}{{ user.nom|slice(0,1)|upper }}</div>
+                {% elseif user is defined and user.email %}
+                    <div class="admin-avatar">{{ user.email|slice(0,1)|upper }}</div>
+                {% else %}
+                    <div class="admin-avatar">A</div>
+                {% endif %}
                 <div>
                     <div style="font-weight: 600; font-size: 14px;">Admin Principal</div>
-                    <div style="font-size: 12px; opacity: 0.8;">admin@wazobuy.com</div>
+                    <div style="font-size: 12px; opacity: 0.8;">{{ user.email is defined ? user.email : 'admin@wazobuy.com' }}</div>
                 </div>
             </div>
         </div>
@@ -647,9 +655,17 @@
                     <div class="notification-badge" title="Messages"><i class="fas fa-envelope"></i></div>
                     <div class="user-info user-menu-container">
                         <span style="font-weight: 600;">Super Admin</span>
-                        <div class="user-avatar" onclick="toggleUserMenu()">SA</div>
+                        {% if user is defined and user.photoProfil %}
+                            <div class="user-avatar" onclick="toggleUserMenu()"><img src="/{{ user.photoProfil }}" alt="Photo de profil" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
+                        {% elseif user is defined and user.prenom and user.nom %}
+                            <div class="user-avatar" onclick="toggleUserMenu()">{{ user.prenom|slice(0,1)|upper }}{{ user.nom|slice(0,1)|upper }}</div>
+                        {% elseif user is defined and user.email %}
+                            <div class="user-avatar" onclick="toggleUserMenu()">{{ user.email|slice(0,1)|upper }}</div>
+                        {% else %}
+                            <div class="user-avatar" onclick="toggleUserMenu()">A</div>
+                        {% endif %}
                         <div class="user-menu" id="userMenu">
-                            <a href="#" class="user-menu-item"><i class="fas fa-user"></i> Profil</a>
+                            <a href="{{ path('app_admin_profile') }}" class="user-menu-item"><i class="fas fa-user"></i> Profil</a>
                             <a href="#" class="user-menu-item"><i class="fas fa-cog"></i> Paramètres</a>
                             <a href="{{ path('_logout_main') }}" class="user-menu-item"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
                         </div>

@@ -2,13 +2,16 @@
 
 namespace App\Form;
 
-use App\Entity\Utilisateur;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\File;
 
 class ProfileType extends AbstractType
 {
@@ -17,48 +20,47 @@ class ProfileType extends AbstractType
         $builder
             ->add('prenom', TextType::class, [
                 'label' => 'Prénom',
-                'attr' => ['class' => 'form-control'],
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le prénom est requis']),
-                    new Assert\Length([
-                        'min' => 2, 
-                        'max' => 50,
-                        'minMessage' => 'Le prénom doit contenir au moins {{ limit }} caractères',
-                        'maxMessage' => 'Le prénom ne peut pas dépasser {{ limit }} caractères'
-                    ])
-                ]
+                    new NotBlank(['message' => 'Le prénom est obligatoire']),
+                    new Length(['min' => 2, 'max' => 50]),
+                ],
             ])
             ->add('nom', TextType::class, [
                 'label' => 'Nom',
-                'attr' => ['class' => 'form-control'],
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le nom est requis']),
-                    new Assert\Length([
-                        'min' => 2, 
-                        'max' => 50,
-                        'minMessage' => 'Le nom doit contenir au moins {{ limit }} caractères',
-                        'maxMessage' => 'Le nom ne peut pas dépasser {{ limit }} caractères'
-                    ])
-                ]
+                    new NotBlank(['message' => 'Le nom est obligatoire']),
+                    new Length(['min' => 2, 'max' => 50]),
+                ],
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email',
-                'attr' => ['class' => 'form-control'],
                 'constraints' => [
-                    new Assert\NotBlank(['message' => 'L\'email est requis']),
-                    new Assert\Email(['message' => 'Veuillez entrer une adresse email valide'])
-                ]
+                    new NotBlank(['message' => 'L\'email est obligatoire']),
+                    new Email(['message' => 'L\'email n\'est pas valide']),
+                ],
             ])
-        ;
+            ->add('photoProfil', FileType::class, [
+                'label' => 'Photo de profil',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2M',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                            'image/gif',
+                        ],
+                        'mimeTypesMessage' => 'Veuillez uploader une image valide (JPG, PNG, GIF)',
+                    ])
+                ],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Utilisateur::class,
-            'csrf_protection' => true,
-            'csrf_field_name' => '_token',
-            'csrf_token_id' => 'profile_form'
+            'data_class' => null,
         ]);
     }
 }

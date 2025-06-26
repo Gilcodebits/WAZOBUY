@@ -1,0 +1,451 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f6f7fb 0%, #e9eafc 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        .profile-header {
+            max-width: 1100px;
+            margin: 48px auto 0 auto;
+            background: #fff;
+            border-radius: 22px;
+            box-shadow: 0 8px 32px rgba(102,126,234,0.10);
+            padding: 2.8rem 2.5rem 2.2rem 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            animation: fadeInUp 0.7s;
+        }
+        .profile-header .profile-avatar {
+            flex-shrink: 0;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2rem;
+            font-weight: 700;
+            box-shadow: 0 4px 18px rgba(102,126,234,0.18);
+            transition: transform 0.25s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .profile-header .profile-avatar:hover {
+            transform: scale(1.06);
+            box-shadow: 0 8px 32px rgba(102,126,234,0.22);
+        }
+        .profile-header .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .profile-header-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .profile-header-content h1 {
+            font-size: 2.3rem;
+            font-weight: 700;
+            margin: 0 0 0.2rem 0;
+            color: #222;
+        }
+        .profile-header-content .profile-email {
+            color: #6c757d;
+            font-size: 1.13rem;
+        }
+        .profile-header-content .profile-date {
+            color: #888;
+            font-size: 1.02rem;
+        }
+        .profile-header-content .profile-badge {
+            display: inline-block;
+            background: #22b24c;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 20px;
+            padding: 0.45rem 1.3rem 0.45rem 1.1rem;
+            font-size: 1.08rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 2px 8px rgba(40,167,69,0.10);
+        }
+        .profile-edit-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            border-radius: 25px;
+            padding: 0.7rem 2.2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+            margin-top: 1.2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+        .profile-edit-btn:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            box-shadow: 0 4px 16px rgba(102,126,234,0.18);
+        }
+        .profile-main {
+            max-width: 1100px;
+            margin: 30px auto;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.9s 0.1s both;
+        }
+        .profile-col {
+            flex: 1 1 350px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 2rem 2rem 1.5rem 2rem;
+            min-width: 320px;
+            animation: fadeInUp 0.8s 0.15s both;
+        }
+        .profile-col h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            color: #343a40;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .profile-info-label {
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 0.2rem;
+        }
+        .profile-info-value {
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+        .profile-contact {
+            margin-top: 1.5rem;
+            background: #f6f7fb;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+        }
+        .profile-contact a {
+            color: #667eea;
+            text-decoration: underline;
+        }
+        .profile-about {
+            margin-top: 1.5rem;
+            background: #f6f7fb;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            color: #444;
+            font-size: 1.01rem;
+        }
+        .profile-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        .profile-stat-box {
+            background: linear-gradient(135deg, #f6f7fb 60%, #e9eafc 100%);
+            border-radius: 12px;
+            padding: 1.1rem 1rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .profile-stat-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #637cfb;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.1rem;
+        }
+        .profile-stat-value .icon {
+            font-size: 1.2rem;
+        }
+        .profile-stat-value .icon.calendar { color: #637cfb; }
+        .profile-stat-value .icon.check { color: #22b24c; }
+        .profile-stat-value .icon.clock { color: #ffb300; }
+        .profile-stat-value .icon.users { color: #6f42c1; }
+        .profile-stat-label {
+            color: #888;
+            font-size: 0.95rem;
+        }
+        .profile-stat-box i {
+            font-size: 1.1rem;
+            color: #764ba2;
+        }
+        @media (max-width: 900px) {
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                gap: 1.5rem;
+                padding: 2rem 1rem 1.5rem 1rem;
+            }
+            .profile-header-content h1 {
+                font-size: 2rem;
+            }
+            .profile-main { flex-direction: column; gap: 1.5rem; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .profile-form-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.1rem;
+            margin-top: 1.2rem;
+        }
+        .profile-form-view label {
+            align-self: flex-start;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.2rem;
+        }
+        .profile-form-view input {
+            width: 100%;
+            max-width: 420px;
+            padding: 0.85rem 1.1rem;
+            border-radius: 12px;
+            border: 1.5px solid #e3e6f0;
+            background: #f8f9fb;
+            font-size: 1.08rem;
+            color: #222;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.04);
+            margin-bottom: 0.1rem;
+        }
+        .profile-form-view input[readonly] {
+            background: #f8f9fb;
+            color: #222;
+            cursor: default;
+        }
+        .profile-form-view .profile-edit-btn {
+            margin-top: 1.5rem;
+            align-self: center;
+        }
+        .profile-col.security {
+            padding-bottom: 2.5rem;
+        }
+        .security-title {
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #222;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 0.7rem;
+        }
+        .security-title .icon {
+            color: #ffb300;
+            font-size: 1.5rem;
+        }
+        .security-desc {
+            color: #555;
+            font-size: 1.08rem;
+            margin-bottom: 1.7rem;
+        }
+        .security-btn {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            background: #637cfb;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.13rem;
+            border: none;
+            border-radius: 14px;
+            padding: 0.9rem 2.2rem;
+            box-shadow: 0 2px 8px rgba(99,124,251,0.10);
+            transition: background 0.18s, box-shadow 0.18s;
+            margin-bottom: 2.2rem;
+        }
+        .security-btn .icon {
+            color: #ffd600;
+            font-size: 1.2rem;
+        }
+        .security-btn:hover {
+            background: #4f63c7;
+            box-shadow: 0 4px 16px rgba(99,124,251,0.13);
+        }
+        .stats-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #222;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 1.2rem;
+            margin-top: 2.2rem;
+        }
+        .stats-title .icon {
+            color: #6f42c1;
+            font-size: 1.4rem;
+        }
+        .profile-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            margin-top: 0.2rem;
+        }
+        .profile-stat-box {
+            background: #f7f8fa;
+            border-radius: 16px;
+            padding: 1.3rem 1rem 1.1rem 1rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.04);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .profile-stat-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #637cfb;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.1rem;
+        }
+        .profile-stat-value .icon {
+            font-size: 1.2rem;
+        }
+        .profile-stat-value .icon.calendar { color: #637cfb; }
+        .profile-stat-value .icon.check { color: #22b24c; }
+        .profile-stat-value .icon.clock { color: #ffb300; }
+        .profile-stat-value .icon.users { color: #6f42c1; }
+        .profile-stat-label {
+            color: #888;
+            font-size: 1.01rem;
+            font-weight: 500;
+        }
+        .security-btn, .profile-edit-btn {
+            border-bottom: 3px solid #ffd600;
+        }
+        .security-btn:hover, .profile-edit-btn:hover {
+            border-bottom: 3px solid #ffb300;
+        }
+        @media (max-width: 900px) {
+            .profile-stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .profile-avatar input[type="file"] {
+            display: none;
+        }
+        .avatar-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(40,40,60,0.55);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        .profile-avatar:hover .avatar-overlay,
+        .profile-avatar:focus-within .avatar-overlay {
+            opacity: 1;
+        }
+        .avatar-overlay i {
+            font-size: 2rem;
+            margin-bottom: 0.3rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="profile-header">
+    <form method="post" enctype="multipart/form-data" action="{{ path('app_admin_profile_upload_photo') }}">
+        <label class="profile-avatar" tabindex="0" aria-label="Changer la photo de profil">
+            {% if user.photoProfil %}
+                <img src="/{{ user.photoProfil }}" alt="Photo de profil" />
+            {% elseif user.prenom is defined and user.prenom is not empty and user.prenom is iterable == false and user.nom is defined and user.nom is not empty and user.nom is iterable == false %}
+                {{ user.prenom|slice(0,1)|upper }}{{ user.nom|slice(0,1)|upper }}
+            {% elseif user.email is defined and user.email is not empty and user.email is iterable == false %}
+                {{ user.email|slice(0,1)|upper }}
+            {% else %}
+                A
+            {% endif %}
+            <input type="file" name="photoProfil" accept="image/*" onchange="this.form.submit()">
+            <span class="avatar-overlay"><i class="fas fa-camera"></i> Changer la photo</span>
+        </label>
+    </form>
+    <div class="profile-header-content">
+        <h1>{{ user.prenom ~ ' ' ~ user.nom }}</h1>
+        <div class="profile-email"><a href="mailto:{{ user.email }}">{{ user.email }}</a></div>
+        <div class="profile-date">Administrateur depuis {{ user.dateCreation|date('d/m/Y') }}</div>
+        <div class="profile-badge">Administrateur Principal</div>
+    </div>
+</div>
+<div class="profile-main">
+    <div class="profile-col">
+        <h2 style="text-align:center;"><i class="fas fa-user"></i> Informations personnelles</h2>
+        <form class="profile-form-view" autocomplete="off">
+            <label for="profile-prenom">Prénom</label>
+            <input id="profile-prenom" type="text" value="{{ user.prenom }}" readonly>
+            <label for="profile-nom">Nom</label>
+            <input id="profile-nom" type="text" value="{{ user.nom }}" readonly>
+            <label for="profile-email">Email</label>
+            <input id="profile-email" type="email" value="{{ user.email }}" readonly>
+            {% if user.telephone %}
+                <label for="profile-tel">Téléphone</label>
+                <input id="profile-tel" type="text" value="{{ user.telephone }}" readonly>
+            {% endif %}
+            <a href="{{ path('app_admin_profile_edit') }}" class="profile-edit-btn"><i class="fas fa-pen"></i> Modifier</a>
+        </form>
+    </div>
+    <div class="profile-col security">
+        <div class="security-title"><span class="icon"><i class="fas fa-lock"></i></span> Sécurité</div>
+        <div class="security-desc">Gérez votre mot de passe et vos paramètres de sécurité.</div>
+        <a href="{{ path('app_admin_profile_change_password') }}" class="security-btn"><span class="icon"><i class="fas fa-key"></i></span> Changer le mot de passe</a>
+        <div class="stats-title"><span class="icon"><i class="fas fa-chart-bar"></i></span> Statistiques</div>
+        <div class="profile-stats-grid">
+            <div class="profile-stat-box">
+                <span class="profile-stat-value"><span class="icon calendar"><i class="fas fa-calendar"></i></span>{{ user.dateCreation|date('Y') }}</span>
+                <span class="profile-stat-label">Année d'inscription</span>
+            </div>
+            <div class="profile-stat-box">
+                <span class="profile-stat-value"><span class="icon check"><i class="fas fa-user-check"></i></span>{% if user.estActif %}Actif{% else %}Inactif{% endif %}</span>
+                <span class="profile-stat-label">Statut du compte</span>
+            </div>
+            <div class="profile-stat-box">
+                <span class="profile-stat-value"><span class="icon clock"><i class="fas fa-clock"></i></span>{% if user.derniereConnexion %}{{ user.derniereConnexion|date('d/m/Y H:i') }}{% else %}Jamais{% endif %}</span>
+                <span class="profile-stat-label">Dernière connexion</span>
+            </div>
+            <div class="profile-stat-box">
+                <span class="profile-stat-value"><span class="icon users"><i class="fas fa-users"></i></span>{{ user.roles|length }}</span>
+                <span class="profile-stat-label">Rôles assignés</span>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FontAwesome CDN for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+{% endblock %} 
