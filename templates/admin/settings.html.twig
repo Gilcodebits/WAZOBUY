@@ -1,0 +1,264 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .settings-container {
+            max-width: 800px;
+            margin: 48px auto 0 auto;
+            background: #fff;
+            border-radius: 22px;
+            box-shadow: 0 8px 32px rgba(102,126,234,0.10);
+            padding: 2.8rem 2.2rem 2.2rem 2.2rem;
+            animation: fadeInUp 0.7s;
+        }
+        .settings-title {
+            text-align: center;
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 2.2rem;
+        }
+        .settings-tabs {
+            display: flex;
+            gap: 1.2rem;
+            margin-bottom: 2.2rem;
+            justify-content: center;
+        }
+        .settings-tab {
+            padding: 0.7rem 2.2rem;
+            border-radius: 18px 18px 0 0;
+            background: #f7f8fa;
+            color: #637cfb;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: background 0.18s, color 0.18s;
+        }
+        .settings-tab.active {
+            background: #637cfb;
+            color: #fff;
+        }
+        .settings-section {
+            display: none;
+            animation: fadeInUp 0.5s;
+        }
+        .settings-section.active {
+            display: block;
+        }
+        .settings-form-group {
+            margin-bottom: 1.5rem;
+        }
+        .settings-form-group label {
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+        .settings-form-group input[type="text"],
+        .settings-form-group input[type="email"],
+        .settings-form-group input[type="number"],
+        .settings-form-group select {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            border-radius: 12px;
+            border: 1.5px solid #e3e6f0;
+            background: #f8f9fb;
+            font-size: 1.08rem;
+            color: #222;
+            margin-bottom: 0.1rem;
+        }
+        .settings-form-group input[type="checkbox"] {
+            margin-right: 0.7rem;
+        }
+        .settings-form-group .switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .settings-save-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 1rem 0;
+            font-size: 1.15rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+            margin-top: 1.2rem;
+        }
+        .settings-save-btn:hover {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            box-shadow: 0 4px 16px rgba(102,126,234,0.18);
+        }
+        .alert {
+            margin-bottom: 1.2rem;
+            font-size: 1.08rem;
+            text-align: center;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 600px) {
+            .settings-container { padding: 1.2rem 0.5rem; }
+            .settings-tabs { flex-direction: column; gap: 0.5rem; }
+        }
+    </style>
+{% endblock %}
+{% block body %}
+<div class="settings-container">
+    <div class="settings-title">Paramètres du compte administrateur</div>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+    <div class="settings-tabs">
+        <button class="settings-tab active" data-tab="notifications">🔔 Notifications</button>
+        <button class="settings-tab" data-tab="appearance">🎨 Apparence</button>
+        <button class="settings-tab" data-tab="security">🔐 Sécurité</button>
+    </div>
+    <form method="post" autocomplete="off">
+        <div class="settings-section active" id="tab-notifications">
+            <div class="settings-form-group switch">
+                <input type="checkbox" id="notifications_email" name="notifications_email" {% if settings.notifications_email %}checked{% endif %}>
+                <label for="notifications_email">Notifications par email</label>
+            </div>
+            <div class="settings-form-group switch">
+                <input type="checkbox" id="notif_commandes" name="notif_commandes" {% if settings.notif_commandes %}checked{% endif %}>
+                <label for="notif_commandes">Nouvelles commandes</label>
+            </div>
+            <div class="settings-form-group switch">
+                <input type="checkbox" id="notif_litiges" name="notif_litiges" {% if settings.notif_litiges %}checked{% endif %}>
+                <label for="notif_litiges">Litiges et réclamations</label>
+            </div>
+            <div class="settings-form-group switch">
+                <input type="checkbox" id="notif_vendeurs" name="notif_vendeurs" {% if settings.notif_vendeurs %}checked{% endif %}>
+                <label for="notif_vendeurs">Nouveaux vendeurs</label>
+            </div>
+            <div class="settings-form-group switch">
+                <input type="checkbox" id="notif_messages" name="notif_messages" {% if settings.notif_messages %}checked{% endif %}>
+                <label for="notif_messages">Nouveaux messages</label>
+            </div>
+            <div class="settings-form-group">
+                <label for="notif_rapport">Fréquence des rapports</label>
+                <select id="notif_rapport" name="notif_rapport">
+                    <option value="quotidien" {% if settings.notif_rapport == 'quotidien' %}selected{% endif %}>Quotidien</option>
+                    <option value="hebdomadaire" {% if settings.notif_rapport == 'hebdomadaire' %}selected{% endif %}>Hebdomadaire</option>
+                    <option value="mensuel" {% if settings.notif_rapport == 'mensuel' %}selected{% endif %}>Mensuel</option>
+                </select>
+            </div>
+        </div>
+        <div class="settings-section" id="tab-appearance">
+            <div class="settings-form-group">
+                <label for="theme">Thème</label>
+                <select id="theme" name="theme">
+                    <option value="clair" {% if settings.theme == 'clair' %}selected{% endif %}>Clair</option>
+                    <option value="sombre" {% if settings.theme == 'sombre' %}selected{% endif %}>Sombre</option>
+                    <option value="auto" {% if settings.theme == 'auto' %}selected{% endif %}>Automatique</option>
+                </select>
+            </div>
+            <div class="settings-form-group">
+                <label for="langue">Langue</label>
+                <select id="langue" name="langue">
+                    <option value="fr" {% if settings.langue == 'fr' %}selected{% endif %}>Français</option>
+                    <option value="en" {% if settings.langue == 'en' %}selected{% endif %}>English</option>
+                </select>
+            </div>
+            <div class="settings-form-group switch">
+                <input type="checkbox" id="animations" name="animations" {% if settings.animations %}checked{% endif %}>
+                <label for="animations">Animations</label>
+            </div>
+            <div class="settings-form-group">
+                <label for="fuseau">Fuseau horaire</label>
+                <select id="fuseau" name="fuseau">
+                    <option value="Africa/Abidjan" {% if settings.fuseau == 'Africa/Abidjan' %}selected{% endif %}>Abidjan</option>
+                    <option value="Europe/Paris" {% if settings.fuseau == 'Europe/Paris' %}selected{% endif %}>Paris</option>
+                    <option value="America/New_York" {% if settings.fuseau == 'America/New_York' %}selected{% endif %}>New York</option>
+                    <option value="Africa/Porto-Novo" {% if settings.fuseau == 'Africa/Porto-Novo' %}selected{% endif %}>Bénin (Porto-Novo)</option>
+                </select>
+            </div>
+            <div class="settings-form-group">
+                <label for="elements_par_page">Éléments par page</label>
+                <select id="elements_par_page" name="elements_par_page">
+                    <option value="5" {% if settings.elements_par_page == '5' %}selected{% endif %}>5</option>
+                    <option value="10" {% if settings.elements_par_page == '10' %}selected{% endif %}>10</option>
+                    <option value="20" {% if settings.elements_par_page == '20' %}selected{% endif %}>20</option>
+                    <option value="50" {% if settings.elements_par_page == '50' %}selected{% endif %}>50</option>
+                </select>
+            </div>
+        </div>
+        <div class="settings-section" id="tab-security">
+            <div class="settings-form-group switch">
+                <input type="checkbox" id="2fa" name="2fa" {% if settings['2fa'] %}checked{% endif %}>
+                <label for="2fa">Authentification à deux facteurs</label>
+            </div>
+            <div class="settings-form-group switch">
+                <input type="checkbox" id="notif_connexion" name="notif_connexion" {% if settings.notif_connexion %}checked{% endif %}>
+                <label for="notif_connexion">Notifications de connexion</label>
+            </div>
+            <div class="settings-form-group">
+                <label for="session_exp">Délai d'expiration de session</label>
+                <select id="session_exp" name="session_exp">
+                    <option value="15" {% if settings.session_exp == '15' %}selected{% endif %}>15 min</option>
+                    <option value="30" {% if settings.session_exp == '30' %}selected{% endif %}>30 min</option>
+                    <option value="60" {% if settings.session_exp == '60' %}selected{% endif %}>1 heure</option>
+                    <option value="120" {% if settings.session_exp == '120' %}selected{% endif %}>2 heures</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="settings-save-btn">💾 Sauvegarder</button>
+    </form>
+</div>
+<script>
+    // Onglets interactifs
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+        });
+    });
+    // Thème dynamique : sauvegarde la préférence dans localStorage
+    document.getElementById('theme').addEventListener('change', function() {
+        localStorage.setItem('admin_theme', this.value);
+        // Notifier les autres onglets/pages
+        window.dispatchEvent(new StorageEvent('storage', {key: 'admin_theme', newValue: this.value}));
+    });
+    // Appliquer le thème immédiatement sur la page paramètres
+    function applyTheme(theme) {
+        const body = document.body;
+        body.classList.remove('theme-light', 'theme-dark');
+        if (theme === 'clair') {
+            body.classList.add('theme-light');
+        } else if (theme === 'sombre') {
+            body.classList.add('theme-dark');
+        } else {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                body.classList.add('theme-dark');
+            } else {
+                body.classList.add('theme-light');
+            }
+        }
+    }
+    const savedTheme = localStorage.getItem('admin_theme');
+    if (savedTheme) applyTheme(savedTheme);
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'admin_theme') applyTheme(e.newValue);
+    });
+    // Langue dynamique : sauvegarde la préférence dans localStorage et recharge la page
+    document.getElementById('langue').addEventListener('change', function() {
+        localStorage.setItem('admin_langue', this.value);
+        // Pour la démo, recharge la page (le backend doit lire la langue ensuite)
+        location.reload();
+    });
+</script>
+{% endblock %} 

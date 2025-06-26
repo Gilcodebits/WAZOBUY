@@ -575,6 +575,36 @@
         .user-menu-item:hover {
             background: var(--light-color);
         }
+
+        body.theme-light {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+            color: #222;
+        }
+        body.theme-dark {
+            background: linear-gradient(135deg, #23272f 0%, #2d3748 100%) !important;
+            color: #f8f9fa;
+        }
+        body.theme-dark .main-content, body.theme-dark .header, body.theme-dark .stat-card, body.theme-dark .chart-card, body.theme-dark .table-card {
+            background: #23272f !important;
+            color: #f8f9fa !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        }
+        body.theme-dark .sidebar {
+            background: linear-gradient(180deg, #23272f 0%, #2d3748 100%) !important;
+            color: #f8f9fa !important;
+        }
+        body.theme-dark .nav-item.active, body.theme-dark .nav-item:hover {
+            background: rgba(255,255,255,0.08) !important;
+            color: #fff !important;
+        }
+        body.theme-dark .table th, body.theme-dark .table-header {
+            background: #23272f !important;
+            color: #f8f9fa !important;
+        }
+        body.theme-dark .status-badge.success { background: #28a745 !important; color: #fff !important; }
+        body.theme-dark .status-badge.info { background: #17a2b8 !important; color: #fff !important; }
+        body.theme-dark .status-badge.danger { background: #dc3545 !important; color: #fff !important; }
+        body.theme-dark .status-badge.warning { background: #ffc107 !important; color: #23272f !important; }
     </style>
 {% endblock %}
 
@@ -616,10 +646,10 @@
                     <span class="nav-item-icon">💳</span>
                     Paiements
                 </div>
-                <div class="nav-item">
+                <a href="{{ path('app_admin_settings') }}" class="nav-item">
                     <span class="nav-item-icon">⚙️</span>
                     Paramètres
-                </div>
+                </a>
             </nav>
 
             <div class="admin-section">
@@ -666,7 +696,7 @@
                         {% endif %}
                         <div class="user-menu" id="userMenu">
                             <a href="{{ path('app_admin_profile') }}" class="user-menu-item"><i class="fas fa-user"></i> Profil</a>
-                            <a href="#" class="user-menu-item"><i class="fas fa-cog"></i> Paramètres</a>
+                            <a href="{{ path('app_admin_settings') }}" class="user-menu-item"><i class="fas fa-cog"></i> Paramètres</a>
                             <a href="{{ path('_logout_main') }}" class="user-menu-item"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
                         </div>
                     </div>
@@ -1012,6 +1042,31 @@
             if (menu && avatar && !avatar.contains(event.target) && !menu.contains(event.target)) {
                 menu.style.display = 'none';
             }
+        });
+
+        // Thème dynamique (clair/sombre/auto)
+        function applyTheme(theme) {
+            const body = document.body;
+            body.classList.remove('theme-light', 'theme-dark');
+            if (theme === 'clair') {
+                body.classList.add('theme-light');
+            } else if (theme === 'sombre') {
+                body.classList.add('theme-dark');
+            } else {
+                // auto: détecte le thème système
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    body.classList.add('theme-dark');
+                } else {
+                    body.classList.add('theme-light');
+                }
+            }
+        }
+        // Appliquer au chargement
+        const savedTheme = localStorage.getItem('admin_theme');
+        if (savedTheme) applyTheme(savedTheme);
+        // Écouteur pour changement depuis la page paramètres
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'admin_theme') applyTheme(e.newValue);
         });
     </script>
 {% endblock %} 
