@@ -227,6 +227,28 @@
             </div>
         </div>
     </div>
+    
+    <div class="form-section">
+        <h2 class="section-title">Promotion</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    {{ form_widget(form.enPromotion) }}
+                    {{ form_label(form.enPromotion) }}
+                </div>
+                {{ form_errors(form.enPromotion) }}
+            </div>
+            <div class="form-group promotion-field" style="display: none;">
+                {{ form_label(form.pourcentagePromotion) }}
+                {{ form_widget(form.pourcentagePromotion) }}
+                {{ form_errors(form.pourcentagePromotion) }}
+                <small style="color: #666; margin-top: 0.5rem; display: block;">
+                    Le prix en promotion sera automatiquement calculé
+                </small>
+            </div>
+        </div>
+    </div>
+    
     <div class="form-section">
         <h2 class="section-title">Images du produit</h2>
         <div class="form-group">
@@ -240,4 +262,33 @@
         <button type="submit" class="btn btn-save">Publier le produit</button>
     </div>
 {{ form_end(form) }}
+
+<script>
+    function togglePromotionFields() {
+        const promotionCheckbox = document.querySelector('input[name*="enPromotion"]');
+        const promotionField = document.querySelector('.promotion-field');
+        
+        if (promotionCheckbox && promotionCheckbox.checked) {
+            promotionField.style.display = 'block';
+        } else {
+            promotionField.style.display = 'none';
+            // Réinitialiser la valeur du pourcentage
+            const percentageInput = promotionField.querySelector('input');
+            if (percentageInput) {
+                percentageInput.value = '';
+            }
+        }
+    }
+    
+    // Initialiser l'état au chargement de la page
+    document.addEventListener('DOMContentLoaded', function() {
+        togglePromotionFields();
+        
+        // Ajouter l'écouteur d'événement sur la checkbox
+        const promotionCheckbox = document.querySelector('input[name*="enPromotion"]');
+        if (promotionCheckbox) {
+            promotionCheckbox.addEventListener('change', togglePromotionFields);
+        }
+    });
+</script>
 {% endblock %} 

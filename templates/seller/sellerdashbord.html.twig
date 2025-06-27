@@ -588,7 +588,7 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                 </div>
-                <div class="stat-value">{{ totalVentes|number_format(0, ',', ' ') }}FCFA</div>
+                <div class="stat-value">{{ format_price(totalVentes)|raw }}</div>
                 <div class="stat-label">Chiffre d'affaires total</div>
                 <div class="stat-change positive">
                     <i class="fas fa-arrow-up"></i> Commandes livrées
@@ -627,7 +627,7 @@
                         <i class="fas fa-wallet"></i>
                     </div>
                 </div>
-                <div class="stat-value">{{ revenusMois|number_format(0, ',', ' ') }}FCFA</div>
+                <div class="stat-value">{{ format_price(revenusMois)|raw }}</div>
                 <div class="stat-label">Revenus du mois</div>
                 <div class="stat-change positive">
                     <i class="fas fa-arrow-up"></i> Paiements complétés
@@ -685,7 +685,7 @@
                                 <tr>
                                     <td><strong>#{{ commande.id }}</strong></td>
                                     <td>{{ commande.client.prenom }} {{ commande.client.nom }}</td>
-                                    <td>{{ commande.montantTotal|number_format(0, ',', ' ') }}FCFA</td>
+                                    <td>{{ format_price(commande.montantTotal)|raw }}</td>
                                     <td>{{ commande.dateCommande|date('d/m/Y H:i') }}</td>
                                     <td>
                                         <span class="status-badge {{ commande.statut|lower }}">
@@ -720,7 +720,7 @@
         data: {
             labels: stats7Jours.map(d => d.date),
             datasets: [{
-                label: 'Ventes (₦)',
+                label: 'Ventes (FCFA)',
                 data: stats7Jours.map(d => d.ventes),
                 borderColor: '#667eea',
                 backgroundColor: 'rgba(102, 126, 234, 0.1)',

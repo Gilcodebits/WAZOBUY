@@ -19,6 +19,7 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFunction('image_exists', [$this, 'imageExists']),
+            new TwigFunction('format_price', [$this, 'formatPrice']),
         ];
     }
 
@@ -54,5 +55,11 @@ class AppExtension extends AbstractExtension
     {
         $fullPath = dirname(__DIR__, 2) . '/public/' . $imagePath;
         return file_exists($fullPath);
+    }
+
+    public function formatPrice(float $amount, string $currency = 'FCFA'): string
+    {
+        $formattedAmount = number_format($amount, 0, ',', ' ');
+        return $formattedAmount . ' <span class="currency">' . $currency . '</span>';
     }
 } 

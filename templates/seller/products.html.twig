@@ -177,6 +177,7 @@
 
         .badge.new { background: var(--success-color); color: white; }
         .badge.sale { background: var(--warning-color); color: black; }
+        .badge.promotion { background: var(--danger-color); color: white; font-weight: bold; }
         .badge.out-of-stock { background: var(--danger-color); color: white; }
 
         .product-actions {
@@ -236,15 +237,36 @@
         .product-price {
             font-size: 1.25rem;
             font-weight: 700;
-            color: var(--success-color);
-            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
-        .product-old-price {
-            text-decoration: line-through;
+        .price-promo {
+            color: var(--danger-color);
+            font-weight: 700;
+        }
+
+        .price-original {
             color: #6c757d;
-            font-size: 0.9rem;
-            margin-left: 0.5rem;
+            text-decoration: line-through;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .price-normal {
+            color: var(--dark-color);
+            font-weight: 700;
+        }
+
+        .currency {
+            font-size: 0.8em;
+            font-weight: 500;
+            opacity: 0.8;
+            margin-left: 0.2rem;
         }
 
         .product-stock {
@@ -395,11 +417,11 @@
                 <div class="product-card">
                     <div class="product-image" style="background-image: url('{% if produit.image and image_exists('uploads/products/' ~ produit.image) %}{{ asset('uploads/products/' ~ produit.image) }}{% else %}{{ asset('images/product-placeholder.jpg') }}{% endif %}')">
                         <div class="product-badges">
+                            {% if produit.enPromotion and produit.pourcentagePromotion %}
+                                <span class="badge promotion">-{{ produit.pourcentagePromotion }}%</span>
+                            {% endif %}
                             {% if produit.nouveau %}
                                 <span class="badge new">Nouveau</span>
-                            {% endif %}
-                            {% if produit.enPromotion %}
-                                <span class="badge sale">Promo</span>
                             {% endif %}
                             {% if produit.stock == 0 %}
                                 <span class="badge out-of-stock">Rupture</span>
@@ -424,9 +446,11 @@
                         <div class="product-category">{{ produit.categorie }}</div>
                         
                         <div class="product-price">
-                            ₦{{ produit.prix|number_format(0, ',', ' ') }}
-                            {% if produit.prixOriginal and produit.prixOriginal > produit.prix %}
-                                <span class="product-old-price">{{ produit.prixOriginal|number_format(0, ',', ' ') }}FCFA</span>
+                            {% if produit.enPromotion and produit.prixOriginal and produit.prixOriginal > produit.prix %}
+                                <span class="price-promo">{{ format_price(produit.prix)|raw }}</span>
+                                <span class="price-original">{{ format_price(produit.prixOriginal)|raw }}</span>
+                            {% else %}
+                                <span class="price-normal">{{ format_price(produit.prix)|raw }}</span>
                             {% endif %}
                         </div>
                         

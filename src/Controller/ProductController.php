@@ -49,8 +49,22 @@ class ProductController extends AbstractController
                 // Initialiser les champs par défaut
                 $produit->setVendeur($this->getUser());
                 $produit->setPrixOriginal($produit->getPrix());
+                
+                // Gérer la promotion
+                if ($produit->isEnPromotion() && $produit->getPourcentagePromotion()) {
+                    $pourcentage = $produit->getPourcentagePromotion();
+                    $prixOriginal = $produit->getPrix();
+                    $reduction = ($prixOriginal * $pourcentage) / 100;
+                    $prixPromo = $prixOriginal - $reduction;
+                    
+                    $produit->setPrix($prixPromo);
+                    $produit->setPrixOriginal($prixOriginal);
+                } else {
+                    $produit->setEnPromotion(false);
+                    $produit->setPourcentagePromotion(null);
+                }
+                
                 $produit->setNouveau(true);
-                $produit->setEnPromotion(false);
                 $produit->setNote(0);
                 $produit->setNombreAvis(0);
                 $produit->setCaracteristiques([]);

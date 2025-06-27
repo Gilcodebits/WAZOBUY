@@ -10,9 +10,11 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Range;
 
 class ProductType extends AbstractType
 {
@@ -63,6 +65,30 @@ class ProductType extends AbstractType
                     'placeholder' => '0',
                     'min' => 0,
                     'class' => 'wazobuy-input'
+                ]
+            ])
+            ->add('enPromotion', CheckboxType::class, [
+                'label' => 'Mettre en promotion',
+                'required' => false,
+                'attr' => [
+                    'class' => 'promotion-checkbox'
+                ]
+            ])
+            ->add('pourcentagePromotion', NumberType::class, [
+                'label' => 'Pourcentage de réduction (%)',
+                'required' => false,
+                'constraints' => [
+                    new Range([
+                        'min' => 1,
+                        'max' => 90,
+                        'notInRangeMessage' => 'La réduction doit être comprise entre 1% et 90%'
+                    ])
+                ],
+                'attr' => [
+                    'placeholder' => '10',
+                    'min' => 1,
+                    'max' => 90,
+                    'class' => 'wazobuy-input promotion-field'
                 ]
             ])
             ->add('images', FileType::class, [
