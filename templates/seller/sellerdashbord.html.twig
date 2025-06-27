@@ -5,7 +5,8 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary-color: #667eea;
@@ -19,6 +20,12 @@
             --border-radius: 12px;
             --box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
@@ -42,11 +49,13 @@
             height: 100vh;
             overflow-y: auto;
             z-index: 1000;
+            transition: var(--transition);
         }
 
         .sidebar .logo {
-            padding: 0 2rem 2rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 2rem;
         }
 
@@ -70,6 +79,7 @@
             border-radius: var(--border-radius);
             margin-bottom: 0.5rem;
             transition: var(--transition);
+            font-weight: 500;
         }
 
         .nav-item:hover, .nav-item.active {
@@ -81,6 +91,8 @@
         .nav-item-icon {
             margin-right: 1rem;
             font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
         }
 
         /* Main Content */
@@ -88,6 +100,7 @@
             flex: 1;
             margin-left: 280px;
             padding: 2rem;
+            transition: var(--transition);
         }
 
         /* Header */
@@ -108,192 +121,72 @@
             background: var(--light-color);
             border-radius: 25px;
             padding: 0.75rem 1.5rem;
+            flex: 1;
+            max-width: 400px;
+            margin: 0 2rem;
         }
 
         .search-input {
             border: none;
             background: none;
             outline: none;
+            width: 100%;
+            font-size: 0.9rem;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 1rem;
         }
 
-        /* Notification Icon */
-        .notification-icon {
+        .notification-icon, .message-icon {
             position: relative;
-            width: 45px;
-            height: 45px;
-            background: var(--light-color);
+            width: 48px;
+            height: 48px;
+            background: #fff;
+            border: 2px solid var(--primary-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.10);
             cursor: pointer;
-            transition: var(--transition);
-            border: 2px solid transparent;
+            transition: box-shadow 0.2s, border-color 0.2s;
         }
 
-        .notification-icon:hover {
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        .notification-icon:hover, .message-icon:hover {
+            box-shadow: 0 4px 16px rgba(102,126,234,0.18);
+            border-color: var(--secondary-color);
         }
 
-        .notification-icon i {
-            font-size: 1.2rem;
-            color: var(--dark-color);
-            transition: var(--transition);
+        .notification-icon i, .message-icon i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            transition: color 0.2s;
         }
 
-        .notification-icon:hover i {
-            color: white;
+        .notification-icon:hover i, .message-icon:hover i {
+            color: var(--secondary-color);
         }
 
-        .notification-badge {
+        .notification-badge, .message-badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
+            top: 4px;
+            right: 4px;
             background: var(--danger-color);
-            color: white;
+            color: #fff;
             border-radius: 50%;
             width: 20px;
             height: 20px;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
-            font-size: 0.7rem;
-            font-weight: 600;
-            border: 2px solid white;
-        }
-
-        /* Message Icon */
-        .message-icon {
-            position: relative;
-            width: 45px;
-            height: 45px;
-            background: var(--light-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 2px solid transparent;
-        }
-
-        .message-icon:hover {
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
-        .message-icon i {
-            font-size: 1.2rem;
-            color: var(--dark-color);
-            transition: var(--transition);
-        }
-
-        .message-icon:hover i {
-            color: white;
-        }
-
-        .message-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--warning-color);
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: 600;
-            border: 2px solid white;
-        }
-
-        /* User Profile Dropdown */
-        .user-profile {
-            position: relative;
-        }
-        
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        
-        .profile-dropdown {
-            position: absolute;
-            top: 120%;
-            right: 0;
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            width: 250px;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: var(--transition);
-        }
-
-        .profile-dropdown.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1.5rem;
-            color: var(--dark-color);
-            text-decoration: none;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-        }
-
-        /* Table Card */
-        .table-card {
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 2rem;
-        }
-        
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .table th, .table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(220,53,69,0.10);
+            z-index: 2;
         }
 
         .btn-add-product {
@@ -307,111 +200,308 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
-            transition: var(--transition);
             text-decoration: none;
-        }
-        .btn-add-product:hover {
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
         }
 
-        /* Notifications/messages dropdown améliorés */
-        .notification-dropdown, .message-dropdown {
+        .btn-add-product:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .user-profile {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 3px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .user-avatar:hover {
+            border-color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .profile-dropdown {
             position: absolute;
-            top: 120%;
+            top: 100%;
             right: 0;
             background: white;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            min-width: 320px;
+            min-width: 250px;
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transform: translateY(10px);
+            transform: translateY(-10px);
             transition: var(--transition);
-            border: 1px solid #e9ecef;
-            display: block;
-            pointer-events: none;
         }
-        .notification-icon.open .notification-dropdown,
-        .message-icon.open .message-dropdown {
+
+        .profile-dropdown.show {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
-            pointer-events: auto;
         }
-        .dropdown-title {
+
+        .dropdown-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e3e6f0;
+            text-align: center;
+        }
+
+        .dropdown-header h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--dark-color);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
             padding: 1rem 1.5rem;
-            border-bottom: 1px solid #e9ecef;
+            color: var(--dark-color);
+            text-decoration: none;
+            transition: var(--transition);
+            gap: 0.75rem;
+        }
+
+        .dropdown-item:hover {
             background: var(--light-color);
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 1rem;
         }
-        .dropdown-content {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .notification-item, .message-item {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #f1f3f4;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-        .notification-item.unread, .message-item.unread {
-            background: rgba(102, 126, 234, 0.05);
-        }
-        .notification-content, .message-content {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-        }
-        .notification-icon-small, .message-icon-small {
-            width: 35px;
-            height: 35px;
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
+            font-size: 1.5rem;
             color: white;
-            flex-shrink: 0;
-            background: var(--primary-color);
         }
-        .message-icon-small { background: var(--warning-color); }
-        .notification-text, .message-text { flex: 1; }
-        .notification-text h5, .message-text h5 {
-            margin: 0 0 0.25rem 0;
-            font-size: 0.85rem;
-            font-weight: 600;
+
+        .stat-icon.sales { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .stat-icon.orders { background: linear-gradient(135deg, #28a745, #20c997); }
+        .stat-icon.products { background: linear-gradient(135deg, #ffc107, #fd7e14); }
+        .stat-icon.revenue { background: linear-gradient(135deg, #17a2b8, #6f42c1); }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
             color: var(--dark-color);
+            margin-bottom: 0.5rem;
         }
-        .notification-text p, .message-text p {
-            margin: 0;
-            font-size: 0.8rem;
+
+        .stat-label {
+            font-size: 1rem;
             color: #6c757d;
-            line-height: 1.4;
+            margin-bottom: 1rem;
+            font-weight: 500;
         }
-        .notification-time, .message-time {
-            font-size: 0.75rem;
-            color: #6c757d;
-            margin-top: 0.25rem;
-        }
-        .dropdown-footer-simple {
-            padding: 1rem 1.5rem;
-            text-align: center;
-            border-top: 1px solid #e9ecef;
-            background: var(--light-color);
-            border-radius: 0 0 var(--border-radius) var(--border-radius);
-        }
-        .view-all-link {
-            color: var(--primary-color);
-            text-decoration: none;
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             font-size: 0.9rem;
             font-weight: 500;
+        }
+
+        .stat-change.positive { color: var(--success-color); }
+        .stat-change.negative { color: var(--danger-color); }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+        }
+
+        .chart-filters {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e3e6f0;
+            background: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Recent Orders Table */
+        .table-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+        }
+
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+        }
+
+        .view-all-btn {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .view-all-btn:hover {
+            color: var(--secondary-color);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: var(--light-color);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark-color);
+            border-bottom: 2px solid #e3e6f0;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-badge.pending { background: var(--warning-color); color: black; }
+        .status-badge.processing { background: var(--info-color); color: white; }
+        .status-badge.shipped { background: var(--primary-color); color: white; }
+        .status-badge.delivered { background: var(--success-color); color: white; }
+        .status-badge.cancelled { background: var(--danger-color); color: white; }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 {% endblock %}
@@ -424,25 +514,25 @@
             <a href="#" class="logo-text">WAZOBUY</a>
         </div>
         <nav>
-            <a href="#" class="nav-item active">
+            <a href="{{ path('app_seller_dashboard') }}" class="nav-item active">
                 <i class="fas fa-tachometer-alt nav-item-icon"></i> Tableau de bord
             </a>
-            <a href="#" class="nav-item">
+            <a href="{{ path('app_seller_products') }}" class="nav-item">
                 <i class="fas fa-box-open nav-item-icon"></i> Produits
             </a>
-            <a href="#" class="nav-item">
+            <a href="{{ path('app_seller_orders') }}" class="nav-item">
                 <i class="fas fa-shopping-cart nav-item-icon"></i> Commandes
             </a>
-            <a href="#" class="nav-item">
+            <a href="{{ path('app_seller_payments') }}" class="nav-item">
                 <i class="fas fa-wallet nav-item-icon"></i> Paiements
             </a>
-            <a href="#" class="nav-item">
+            <a href="{{ path('app_seller_reports') }}" class="nav-item">
                 <i class="fas fa-chart-line nav-item-icon"></i> Rapports
             </a>
-            <a href="#" class="nav-item">
+            <a href="{{ path('app_seller_settings') }}" class="nav-item">
                 <i class="fas fa-cog nav-item-icon"></i> Paramètres
-                    </a>
-                </nav>
+            </a>
+        </nav>
     </aside>
 
     <!-- Main Content -->
@@ -457,75 +547,23 @@
                 <!-- Notification Icon -->
                 <div class="notification-icon" onclick="toggleNotificationDropdown()">
                     <i class="fas fa-bell"></i>
-                    <div class="notification-badge">2</div>
-                    <div class="notification-dropdown" id="notificationDropdown">
-                        <div class="dropdown-title">
-                            <h4>Notifications</h4>
-                            <a href="#" class="mark-all-read">Marquer comme lu</a>
-                    </div>
-                        <div class="dropdown-content">
-                            <div class="notification-item unread">
-                                <div class="notification-content">
-                                    <div class="notification-icon-small"><i class="fas fa-shopping-cart"></i></div>
-                                    <div class="notification-text">
-                                        <h5>Nouvelle commande</h5>
-                                        <p>Commande #1234 reçue</p>
-                                        <div class="notification-time">Il y a 5 minutes</div>
-                </div>
-            </div>
-        </div>
-                            <div class="notification-item">
-                                <div class="notification-content">
-                                    <div class="notification-icon-small"><i class="fas fa-check-circle"></i></div>
-                                    <div class="notification-text">
-                                        <h5>Paiement reçu</h5>
-                                        <p>Paiement confirmé pour la commande #1228</p>
-                                        <div class="notification-time">Il y a 2 heures</div>
-                    </div>
-                    </div>
-                </div>
-                        </div>
-                        <div class="dropdown-footer-simple">
-                            <a href="#" class="view-all-link">Voir toutes les notifications</a>
-                        </div>
-                    </div>
+                    <div class="notification-badge" id="seller-notif-badge">0</div>
                 </div>
                 <!-- Message Icon -->
                 <div class="message-icon" onclick="toggleMessageDropdown()">
                     <i class="fas fa-envelope"></i>
-                    <div class="message-badge">1</div>
-                    <div class="message-dropdown" id="messageDropdown">
-                        <div class="dropdown-title">
-                            <h4>Messages</h4>
-                            <a href="#" class="mark-all-read">Marquer comme lu</a>
-                        </div>
-                        <div class="dropdown-content">
-                            <div class="message-item unread">
-                                <div class="message-content">
-                                    <div class="message-icon-small"><i class="fas fa-user"></i></div>
-                                    <div class="message-text">
-                                        <h5>Support Client</h5>
-                                        <p>Question concernant la livraison...</p>
-                                        <div class="message-time">Il y a 10 minutes</div>
-                    </div>
-                    </div>
-                </div>
-                        </div>
-                        <div class="dropdown-footer-simple">
-                            <a href="#" class="view-all-link">Voir tous les messages</a>
-                        </div>
-                    </div>
+                    <div class="message-badge" id="seller-message-badge">0</div>
                 </div>
                 <!-- Ajouter un produit -->
-                <a href="{{ path('seller_product_add') }}" class="btn btn-add-product">
-                    <i class="fas fa-plus"></i> Ajouter un produit
+                <a href="{{ path('seller_product_add') }}" class="btn-add-product">
+                    <i class="fas fa-plus"></i> Publier un produit
                 </a>
                 <!-- User Profile -->
                 <div class="user-profile" id="userProfile">
-                    <img src="https://i.pravatar.cc/150?u={{ user.email }}" alt="Avatar" class="user-avatar" onclick="toggleProfileDropdown()">
+                    <img src="https://i.pravatar.cc/150?u={{ app.user.email }}" alt="Avatar" class="user-avatar" onclick="toggleProfileDropdown()">
                     <div class="profile-dropdown" id="profileDropdown">
                         <div class="dropdown-header">
-                            <h4>{{ user.prenom }} {{ user.nom }}</h4>
+                            <h4>{{ app.user.prenom }} {{ app.user.nom }}</h4>
                             <p style="font-size: 0.85rem; color: #6c757d;">Vendeur</p>
                         </div>
                         <a href="#" class="dropdown-item">
@@ -542,51 +580,259 @@
             </div>
         </header>
 
-        <!-- Page Title -->
-        <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem;">Tableau de Bord</h1>
-
         <!-- Stats Grid -->
-        <div class="stats-grid" style="margin-bottom:2rem;">
+        <div class="stats-grid">
             <div class="stat-card">
-                <h3 style="font-size: 1rem; color: #6c757d;">Aucune statistique disponible</h3>
-            </div>
+                <div class="stat-header">
+                    <div class="stat-icon sales">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ totalVentes|number_format(0, ',', ' ') }}FCFA</div>
+                <div class="stat-label">Chiffre d'affaires total</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> Commandes livrées
+                </div>
             </div>
 
-        <!-- Recent Orders -->
-        <div class="table-card">
-            <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">Aucune commande récente</h2>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon orders">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ commandesMois }}</div>
+                <div class="stat-label">Commandes ce mois</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> Ce mois
+                </div>
             </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon products">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ produitsActifs }}</div>
+                <div class="stat-label">Produits actifs</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> En stock
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon revenue">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                </div>
+                <div class="stat-value">{{ revenusMois|number_format(0, ',', ' ') }}FCFA</div>
+                <div class="stat-label">Revenus du mois</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> Paiements complétés
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Évolution des ventes</h3>
+                    <div class="chart-filters">
+                        <button class="filter-btn active">7 jours</button>
+                        <button class="filter-btn">30 jours</button>
+                        <button class="filter-btn">3 mois</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Produits populaires</h3>
+                    <button class="filter-btn">Voir tout</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="productsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3 class="table-title">Commandes récentes</h3>
+                <a href="{{ path('app_seller_orders') }}" class="view-all-btn">Voir toutes les commandes</a>
+            </div>
+            <div class="table-responsive">
+                {% if commandesRecentes|length > 0 %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID Commande</th>
+                                <th>Client</th>
+                                <th>Total</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for commande in commandesRecentes %}
+                                <tr>
+                                    <td><strong>#{{ commande.id }}</strong></td>
+                                    <td>{{ commande.client.prenom }} {{ commande.client.nom }}</td>
+                                    <td>{{ commande.montantTotal|number_format(0, ',', ' ') }}FCFA</td>
+                                    <td>{{ commande.dateCommande|date('d/m/Y H:i') }}</td>
+                                    <td>
+                                        <span class="status-badge {{ commande.statut|lower }}">
+                                            {{ commande.statut }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div style="text-align: center; padding: 3rem; color: #6c757d;">
+                        <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <h4>Aucune commande récente</h4>
+                        <p>Vous n'avez pas encore reçu de commandes.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </main>
 </div>
 
 <script>
-    function toggleProfileDropdown() {
-        document.getElementById('profileDropdown').classList.toggle('show');
-    }
-    function toggleNotificationDropdown() {
-        document.querySelector('.notification-icon').classList.toggle('open');
-        document.querySelector('.message-icon').classList.remove('open');
-    }
-    function toggleMessageDropdown() {
-        document.querySelector('.message-icon').classList.toggle('open');
-        document.querySelector('.notification-icon').classList.remove('open');
-    }
-    window.onclick = function(event) {
-        if (!event.target.closest('.notification-icon')) {
-            document.querySelector('.notification-icon').classList.remove('open');
-        }
-        if (!event.target.closest('.message-icon')) {
-            document.querySelector('.message-icon').classList.remove('open');
-        }
-        if (!event.target.matches('.user-avatar')) {
-            var dropdowns = document.getElementsByClassName("profile-dropdown");
-            for (var i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
+    // Données réelles des ventes des 7 derniers jours
+    const stats7Jours = {{ stats7Jours|json_encode|raw }};
+    const produitsPopulaires = {{ produitsPopulaires|json_encode|raw }};
+
+    // Charts
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    const salesChart = new Chart(salesCtx, {
+        type: 'line',
+        data: {
+            labels: stats7Jours.map(d => d.date),
+            datasets: [{
+                label: 'Ventes (₦)',
+                data: stats7Jours.map(d => d.ventes),
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
                 }
             }
         }
+    });
+
+    const productsCtx = document.getElementById('productsChart').getContext('2d');
+    const productsChart = new Chart(productsCtx, {
+        type: 'doughnut',
+        data: {
+            labels: produitsPopulaires.map(p => p.nom),
+            datasets: [{
+                data: produitsPopulaires.map(p => p.stock),
+                backgroundColor: [
+                    '#667eea',
+                    '#764ba2',
+                    '#28a745',
+                    '#ffc107',
+                    '#17a2b8'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+
+    // Dropdown functions
+    function toggleProfileDropdown() {
+        document.getElementById('profileDropdown').classList.toggle('show');
     }
+
+    function toggleNotificationDropdown() {
+        // Implementation for notification dropdown
+        console.log('Toggle notifications');
+    }
+
+    function toggleMessageDropdown() {
+        // Implementation for message dropdown
+        console.log('Toggle messages');
+    }
+
+    // Gestion dynamique des badges avec données réelles
+    function updateNotificationBadge(count) {
+        const badge = document.getElementById('seller-notif-badge');
+        if (count > 0) {
+            badge.textContent = count;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function updateMessageBadge(count) {
+        const badge = document.getElementById('seller-message-badge');
+        if (count > 0) {
+            badge.textContent = count;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    // Fermer les dropdowns quand on clique ailleurs
+    document.addEventListener('click', function(event) {
+        const profileDropdown = document.getElementById('profileDropdown');
+        const userProfile = document.getElementById('userProfile');
+        
+        if (!userProfile.contains(event.target)) {
+            profileDropdown.classList.remove('show');
+        }
+    });
+
+    // Initialiser les badges (à remplacer par des données réelles)
+    updateNotificationBadge(3);
+    updateMessageBadge(1);
 </script>
 {% endblock %}

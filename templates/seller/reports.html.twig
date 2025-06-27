@@ -1,0 +1,520 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rapports - Dashboard Vendeur{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .period-selector {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .period-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .period-btn {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #e3e6f0;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .period-btn.active, .period-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .insight-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .insight-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .insight-icon.positive { background: var(--success-color); }
+        .insight-icon.negative { background: var(--danger-color); }
+        .insight-icon.neutral { background: var(--info-color); }
+
+        .insight-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+        }
+
+        .insight-description {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .export-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+
+        .export-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-export {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-export.pdf {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-export.excel {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-export.csv {
+            background: var(--info-color);
+            color: white;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 1200px) {
+            .charts-grid, .insights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .period-buttons {
+                justify-content: center;
+            }
+            
+            .export-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Rapports et Analyses</h1>
+        <p class="page-subtitle">Analysez vos performances et optimisez votre activité</p>
+    </div>
+
+    <!-- Period Selector -->
+    <div class="period-selector">
+        <div class="period-buttons">
+            <button class="period-btn active">7 jours</button>
+            <button class="period-btn">30 jours</button>
+            <button class="period-btn">3 mois</button>
+            <button class="period-btn">6 mois</button>
+            <button class="period-btn">1 an</button>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+        <div class="stat-card">
+            <div class="stat-value">₦{{ stats.totalVentes|number_format(0, ',', ' ') }}</div>
+            <div class="stat-label">Chiffre d'affaires total</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.totalCommandes }}</div>
+            <div class="stat-label">Nombre de commandes</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">₦{{ stats.moyennePanier|number_format(0, ',', ' ') }}</div>
+            <div class="stat-label">Panier moyen</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.produitsVendus }}</div>
+            <div class="stat-label">Produits vendus</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.tauxConversion }}%</div>
+            <div class="stat-label">Taux de conversion</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ stats.satisfactionClient|number_format(1) }}/5</div>
+            <div class="stat-label">Satisfaction client</div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">Évolution des ventes</h3>
+            </div>
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3 class="chart-title">Répartition par catégorie</h3>
+            </div>
+            <div class="chart-container">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insights Grid -->
+    <div class="insights-grid">
+        <div class="insight-card">
+            <div class="insight-header">
+                <div class="insight-icon positive">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <h4 class="insight-title">Croissance des ventes</h4>
+            </div>
+            <p class="insight-description">
+                Vos ventes ont augmenté de 15% ce mois par rapport au mois précédent. 
+                Continuez sur cette lancée en optimisant vos produits les plus populaires.
+            </p>
+        </div>
+
+        <div class="insight-card">
+            <div class="insight-header">
+                <div class="insight-icon neutral">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h4 class="insight-title">Performance des produits</h4>
+            </div>
+            <p class="insight-description">
+                3 de vos produits représentent 60% de vos ventes. 
+                Concentrez-vous sur ces produits vedettes pour maximiser vos revenus.
+            </p>
+        </div>
+
+        <div class="insight-card">
+            <div class="insight-header">
+                <div class="insight-icon positive">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4 class="insight-title">Satisfaction client</h4>
+            </div>
+            <p class="insight-description">
+                Vos clients sont très satisfaits avec une note moyenne de 4.5/5. 
+                Maintenez cette qualité de service pour fidéliser votre clientèle.
+            </p>
+        </div>
+
+        <div class="insight-card">
+            <div class="insight-header">
+                <div class="insight-icon negative">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h4 class="insight-title">Stock à surveiller</h4>
+            </div>
+            <p class="insight-description">
+                2 produits sont en rupture de stock et 3 autres ont un stock faible. 
+                Réapprovisionnez rapidement pour ne pas perdre de ventes.
+            </p>
+        </div>
+    </div>
+
+    <!-- Export Section -->
+    <div class="export-section">
+        <h3 class="export-title">Exporter vos rapports</h3>
+        <div class="export-buttons">
+            <button class="btn-export pdf">
+                <i class="fas fa-file-pdf"></i> Exporter en PDF
+            </button>
+            <button class="btn-export excel">
+                <i class="fas fa-file-excel"></i> Exporter en Excel
+            </button>
+            <button class="btn-export csv">
+                <i class="fas fa-file-csv"></i> Exporter en CSV
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Charts
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    const salesChart = new Chart(salesCtx, {
+        type: 'line',
+        data: {
+            labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+            datasets: [{
+                label: 'Ventes (₦)',
+                data: [45000, 52000, 48000, 61000, 55000, 67000, 72000],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    const categoryChart = new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Électronique', 'Mode', 'Maison', 'Beauté', 'Sport'],
+            datasets: [{
+                data: [40, 25, 20, 10, 5],
+                backgroundColor: [
+                    '#667eea',
+                    '#764ba2',
+                    '#28a745',
+                    '#ffc107',
+                    '#17a2b8'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+
+    // Period selector
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const period = this.textContent.trim();
+            console.log('Période sélectionnée:', period);
+            // TODO: Recharger les données selon la période
+        });
+    });
+
+    // Export buttons
+    document.querySelectorAll('.btn-export').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const format = this.classList.contains('pdf') ? 'PDF' : 
+                          this.classList.contains('excel') ? 'Excel' : 'CSV';
+            console.log(`Export en ${format}...`);
+            // TODO: Implémenter l'export
+        });
+    });
+</script>
+{% endblock %} 
