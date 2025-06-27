@@ -545,12 +545,12 @@
             </div>
             <div class="header-actions">
                 <!-- Notification Icon -->
-                <div class="notification-icon" onclick="toggleNotificationDropdown()">
+                <div class="notification-icon" onclick="window.location.href='{{ path('admin_notifications_index') }}'">
                     <i class="fas fa-bell"></i>
                     <div class="notification-badge" id="seller-notif-badge">0</div>
                 </div>
                 <!-- Message Icon -->
-                <div class="message-icon" onclick="toggleMessageDropdown()">
+                <div class="message-icon" onclick="window.location.href='{{ path('admin_chat_index') }}'">
                     <i class="fas fa-envelope"></i>
                     <div class="message-badge" id="seller-message-badge">0</div>
                 </div>
@@ -834,5 +834,35 @@
     // Initialiser les badges (à remplacer par des données réelles)
     updateNotificationBadge(3);
     updateMessageBadge(1);
+
+    // Charger les notifications non lues
+    function loadUnreadNotifications() {
+        fetch('{{ path("admin_notifications_unread_count") }}')
+            .then(r => r.json())
+            .then(data => {
+                updateNotificationBadge(data.count);
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des notifications:', error);
+            });
+    }
+
+    // Charger les messages non lus (à implémenter quand le système de messages sera prêt)
+    function loadUnreadMessages() {
+        // TODO: Implémenter quand le système de messages sera prêt
+        updateMessageBadge(0);
+    }
+
+    // Charger les données au chargement de la page
+    document.addEventListener('DOMContentLoaded', function() {
+        loadUnreadNotifications();
+        loadUnreadMessages();
+        
+        // Actualiser toutes les 30 secondes
+        setInterval(() => {
+            loadUnreadNotifications();
+            loadUnreadMessages();
+        }, 30000);
+    });
 </script>
 {% endblock %}

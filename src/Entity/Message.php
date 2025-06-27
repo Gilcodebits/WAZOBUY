@@ -11,11 +11,13 @@ class Message
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $expediteur;
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    #[ORM\JoinColumn(name: 'expediteur_id', referencedColumnName: 'id_utilisateur', nullable: false)]
+    private ?Utilisateur $expediteur = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $destinataire;
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    #[ORM\JoinColumn(name: 'destinataire_id', referencedColumnName: 'id_utilisateur', nullable: false)]
+    private ?Utilisateur $destinataire = null;
 
     #[ORM\Column(type: 'text')]
     private string $contenu;
@@ -30,10 +32,10 @@ class Message
     private ?string $conversationId = null;
 
     public function getId(): ?int { return $this->id; }
-    public function getExpediteur(): string { return $this->expediteur; }
-    public function setExpediteur(string $expediteur): self { $this->expediteur = $expediteur; return $this; }
-    public function getDestinataire(): string { return $this->destinataire; }
-    public function setDestinataire(string $destinataire): self { $this->destinataire = $destinataire; return $this; }
+    public function getExpediteur(): ?Utilisateur { return $this->expediteur; }
+    public function setExpediteur(?Utilisateur $expediteur): self { $this->expediteur = $expediteur; return $this; }
+    public function getDestinataire(): ?Utilisateur { return $this->destinataire; }
+    public function setDestinataire(?Utilisateur $destinataire): self { $this->destinataire = $destinataire; return $this; }
     public function getContenu(): string { return $this->contenu; }
     public function setContenu(string $contenu): self { $this->contenu = $contenu; return $this; }
     public function isEstLu(): bool { return $this->estLu; }

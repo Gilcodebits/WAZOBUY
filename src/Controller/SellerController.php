@@ -88,6 +88,14 @@ class SellerController extends AbstractController
             ->getQuery()
             ->getResult();
 
+        $produitsPopulairesData = [];
+        foreach ($produitsPopulaires as $produit) {
+            $produitsPopulairesData[] = [
+                'nom' => $produit->getNom(),
+                'stock' => $produit->getStock(),
+            ];
+        }
+
         // Statistiques des 7 derniers jours
         $stats7Jours = [];
         for ($i = 6; $i >= 0; $i--) {
@@ -120,7 +128,7 @@ class SellerController extends AbstractController
             'produitsActifs' => $produitsActifs,
             'revenusMois' => $revenusMois,
             'commandesRecentes' => $commandesRecentes,
-            'produitsPopulaires' => $produitsPopulaires,
+            'produitsPopulaires' => $produitsPopulairesData,
             'stats7Jours' => $stats7Jours
         ]);
     }
@@ -137,8 +145,47 @@ class SellerController extends AbstractController
             ->getQuery()
             ->getResult();
 
+        // Statistiques pour le dashboard commandes
+        $totalCommandes = $commandeRepository->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.vendeur = :seller')
+            ->setParameter('seller', $seller)
+            ->getQuery()
+            ->getSingleScalarResult() ?? 0;
+
+        $commandesMois = $commandeRepository->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.vendeur = :seller')
+            ->andWhere('c.dateCommande >= :debutMois')
+            ->setParameter('seller', $seller)
+            ->setParameter('debutMois', new \DateTimeImmutable('first day of this month'))
+            ->getQuery()
+            ->getSingleScalarResult() ?? 0;
+
+        $commandesLivrees = $commandeRepository->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.vendeur = :seller')
+            ->andWhere('c.statut = :statut')
+            ->setParameter('seller', $seller)
+            ->setParameter('statut', 'livree')
+            ->getQuery()
+            ->getSingleScalarResult() ?? 0;
+
+        $commandesAnnulees = $commandeRepository->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.vendeur = :seller')
+            ->andWhere('c.statut = :statut')
+            ->setParameter('seller', $seller)
+            ->setParameter('statut', 'annulee')
+            ->getQuery()
+            ->getSingleScalarResult() ?? 0;
+
         return $this->render('seller/orders.html.twig', [
-            'commandes' => $commandes
+            'commandes' => $commandes,
+            'totalCommandes' => $totalCommandes,
+            'commandesMois' => $commandesMois,
+            'commandesLivrees' => $commandesLivrees,
+            'commandesAnnulees' => $commandesAnnulees
         ]);
     }
 
@@ -171,8 +218,49 @@ class SellerController extends AbstractController
             ->getQuery()
             ->getResult();
 
+        // Statistiques pour le dashboard paiements
+        $totalRevenus = $paiementRepository->createQueryBuilder('p')
+            ->select('SUM(p.montant)')
+            ->where('p.client = :seller')
+            ->andWhere('p.statut = :statut')
+            ->setParameter('seller', $seller)
+            ->setParameter('statut', 'completed')
+            ->getQuery()
+            ->getSingleScalarResult() ?? 0;
+
+        $paiementsEnAttente = $paiementRepository->createQueryBuilder('p')
+            ->select('SUM(p.montant)')
+            ->where('p.client = :seller')
+            ->andWhere('p.statut = :statut')
+            ->setParameter('seller', $seller)
+            ->setParameter('statut', 'pending')
+            ->getQuery()
+            ->getSingleScalarResult() ?? 0;
+
+        $paiementsCompletes = $paiementRepository->createQueryBuilder('p')
+            ->select('SUM(p.montant)')
+            ->where('p.client = :seller')
+            ->andWhere('p.statut = :statut')
+            ->setParameter('seller', $seller)
+            ->setParameter('statut', 'completed')
+            ->getQuery()
+            ->getSingleScalarResult() ?? 0;
+
+        $paiementsEchoues = $paiementRepository->createQueryBuilder('p')
+            ->select('SUM(p.montant)')
+            ->where('p.client = :seller')
+            ->andWhere('p.statut = :statut')
+            ->setParameter('seller', $seller)
+            ->setParameter('statut', 'failed')
+            ->getQuery()
+            ->getSingleScalarResult() ?? 0;
+
         return $this->render('seller/payments.html.twig', [
-            'paiements' => $paiements
+            'paiements' => $paiements,
+            'totalRevenus' => $totalRevenus,
+            'paiementsEnAttente' => $paiementsEnAttente,
+            'paiementsCompletes' => $paiementsCompletes,
+            'paiementsEchoues' => $paiementsEchoues
         ]);
     }
 
@@ -186,8 +274,8 @@ class SellerController extends AbstractController
         
         // Statistiques annuelles
         $annee = date('Y');
-        $debutAnnee = new DateTimeImmutable("$annee-01-01");
-        $finAnnee = new DateTimeImmutable("$annee-12-31");
+        $debutAnnee = new \DateTimeImmutable("$annee-01-01");
+        $finAnnee = new \DateTimeImmutable("$annee-12-31");
 
         $ventesAnnuelles = $commandeRepository->createQueryBuilder('c')
             ->select('SUM(c.montantTotal)')
@@ -224,18 +312,72 @@ class SellerController extends AbstractController
             ->getQuery()
             ->getSingleScalarResult() ?? 0;
 
+        // Ventes par mois pour le graphique
+        $ventesParMois = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $start = new \DateTimeImmutable("$annee-" . str_pad($m, 2, '0', STR_PAD_LEFT) . "-01");
+            $end = $start->modify('last day of this month')->setTime(23,59,59);
+            $total = $commandeRepository->createQueryBuilder('c')
+                ->select('SUM(c.montantTotal)')
+                ->where('c.vendeur = :seller')
+                ->andWhere('c.dateCommande >= :debut')
+                ->andWhere('c.dateCommande <= :fin')
+                ->andWhere('c.statut = :statut')
+                ->setParameter('seller', $seller)
+                ->setParameter('debut', $start)
+                ->setParameter('fin', $end)
+                ->setParameter('statut', 'livree')
+                ->getQuery()
+                ->getSingleScalarResult() ?? 0;
+            $ventesParMois[] = (float)$total;
+        }
+
         return $this->render('seller/reports.html.twig', [
             'ventesAnnuelles' => $ventesAnnuelles,
             'commandesAnnuelles' => $commandesAnnuelles,
             'produitsVendus' => $produitsVendus,
-            'annee' => $annee
+            'annee' => $annee,
+            'ventesParMois' => $ventesParMois
         ]);
+    }
+
+    #[Route('/rapports/export-csv', name: 'app_seller_reports_export_csv')]
+    public function exportRapportCSV(CommandeRepository $commandeRepository): Response
+    {
+        $seller = $this->getUser();
+        $annee = date('Y');
+        $debutAnnee = new \DateTimeImmutable("$annee-01-01");
+        $finAnnee = new \DateTimeImmutable("$annee-12-31");
+        $commandes = $commandeRepository->createQueryBuilder('c')
+            ->where('c.vendeur = :seller')
+            ->andWhere('c.dateCommande >= :debut')
+            ->andWhere('c.dateCommande <= :fin')
+            ->setParameter('seller', $seller)
+            ->setParameter('debut', $debutAnnee)
+            ->setParameter('fin', $finAnnee)
+            ->getQuery()
+            ->getResult();
+        $csv = "ID;Date;Montant;Statut\n";
+        foreach ($commandes as $commande) {
+            $csv .= $commande->getId() . ";" . $commande->getDateCommande()->format('d/m/Y') . ";" . $commande->getMontantTotal() . ";" . $commande->getStatut() . "\n";
+        }
+        return new Response(
+            $csv,
+            200,
+            [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="rapport-commandes-$annee.csv"'
+            ]
+        );
     }
 
     #[Route('/parametres', name: 'app_seller_settings')]
     public function settings(): Response
     {
-        return $this->render('seller/settings.html.twig');
+        $utilisateur = $this->getUser();
+        return $this->render('seller/settings.html.twig', [
+            'utilisateur' => $utilisateur
+        ]);
     }
 
     // API pour les notifications

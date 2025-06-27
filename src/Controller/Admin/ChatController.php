@@ -2,112 +2,71 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Message;
+use App\Entity\Utilisateur;
+use App\Repository\MessageRepository;
+use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/chat')]
+#[IsGranted('ROLE_SELLER')]
 class ChatController extends AbstractController
 {
-    #[Route('/conversations', name: 'admin_chat_conversations', methods: ['GET'])]
-    public function conversations(EntityManagerInterface $em): JsonResponse
+    #[Route('/', name: 'admin_chat_index')]
+    public function index(UtilisateurRepository $utilisateurRepository): Response
     {
-        $user = $this->getUser();
-        $userId = $user->getUserIdentifier();
-        $repo = $em->getRepository(Message::class);
-        $userRepo = $em->getRepository(\App\Entity\Utilisateur::class);
-        // Récupérer toutes les conversations où l'utilisateur est impliqué
-        $convs = $repo->createQueryBuilder('m')
-            ->select('m.conversationId, MAX(m.dateEnvoi) as lastDate')
-            ->where('m.destinataire = :user OR m.expediteur = :user')
-            ->setParameter('user', $userId)
-            ->groupBy('m.conversationId')
-            ->orderBy('lastDate', 'DESC')
-            ->getQuery()->getResult();
-        $result = [];
-        foreach ($convs as $conv) {
-            $convId = $conv['conversationId'];
-            // Dernier message
-            $lastMsg = $repo->findOneBy(['conversationId' => $convId], ['dateEnvoi' => 'DESC']);
-            // Interlocuteur (autre que moi)
-            $otherEmail = $lastMsg->getExpediteur() === $userId ? $lastMsg->getDestinataire() : $lastMsg->getExpediteur();
-            $other = $userRepo->findOneBy(['email' => $otherEmail]);
-            // Nombre de non lus
-            $unread = $repo->count([
-                'conversationId' => $convId,
-                'destinataire' => $userId,
-                'estLu' => false
-            ]);
-            $result[] = [
-                'conversationId' => $convId,
-                'nom' => $other ? $other->getNom() : '',
-                'prenom' => $other ? $other->getPrenom() : '',
-                'photoProfil' => $other && $other->getPhotoProfil() ? '/' . $other->getPhotoProfil() : null,
-                'dernierMessage' => $lastMsg ? $lastMsg->getContenu() : '',
-                'dateDernierMessage' => $lastMsg ? $lastMsg->getDateEnvoi()->format('d/m/Y H:i') : '',
-                'unreadCount' => $unread
-            ];
-        }
-        return $this->json($result);
+        $utilisateurs = $utilisateurRepository->findAll();
+        return $this->render('admin/messages/index.html.twig', [
+            'utilisateurs' => $utilisateurs,
+        ]);
     }
 
-    #[Route('/messages/{conversationId}', name: 'admin_chat_messages', methods: ['GET'])]
-    public function messages(EntityManagerInterface $em, string $conversationId): JsonResponse
+    #[Route('/messages', name: 'admin_chat_messages', methods: ['GET'])]
+    public function getMessages(Request $request, MessageRepository $messageRepository, UtilisateurRepository $utilisateurRepository): JsonResponse
     {
         $user = $this->getUser();
-        $messages = $em->getRepository(Message::class)->findBy([
-            'conversationId' => $conversationId
-        ], ['dateEnvoi' => 'ASC']);
-        $userRepo = $em->getRepository(\App\Entity\Utilisateur::class);
-        $result = [];
-        foreach ($messages as $msg) {
-            $exp = $userRepo->findOneBy(['email' => $msg->getExpediteur()]);
-            $result[] = [
-                'id' => $msg->getId(),
-                'expediteur' => $msg->getExpediteur(),
-                'destinataire' => $msg->getDestinataire(),
-                'contenu' => $msg->getContenu(),
-                'dateEnvoi' => $msg->getDateEnvoi()->format('d/m/Y H:i'),
-                'isMe' => $msg->getExpediteur() === $user->getUserIdentifier(),
-                'nom' => $exp ? $exp->getNom() : '',
-                'prenom' => $exp ? $exp->getPrenom() : '',
-                'photoProfil' => $exp && $exp->getPhotoProfil() ? '/' . $exp->getPhotoProfil() : null,
+        $otherId = $request->query->get('user_id');
+        $other = $utilisateurRepository->find($otherId);
+        if (!$other) {
+            return new JsonResponse(['error' => 'Utilisateur non trouvé'], 404);
+        }
+        $messages = $messageRepository->findConversation($user, $other);
+        $data = [];
+        foreach ($messages as $message) {
+            $data[] = [
+                'id' => $message->getId(),
+                'from' => $message->getExpediteur()->getId(),
+                'to' => $message->getDestinataire()->getId(),
+                'content' => $message->getContenu(),
+                'date' => $message->getDateEnvoi()->format('Y-m-d H:i'),
+                'isMe' => $message->getExpediteur()->getId() === ($user instanceof \App\Entity\Utilisateur ? $user->getId() : null),
             ];
         }
-        return $this->json($result);
+        return new JsonResponse($data);
     }
 
-    #[Route('/message', name: 'admin_chat_send_message', methods: ['POST'])]
-    public function sendMessage(Request $request, EntityManagerInterface $em): JsonResponse
+    #[Route('/send', name: 'admin_chat_send', methods: ['POST'])]
+    public function sendMessage(Request $request, EntityManagerInterface $em, UtilisateurRepository $utilisateurRepository): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
         $user = $this->getUser();
+        $otherId = $request->request->get('user_id');
+        $content = $request->request->get('content');
+        $other = $utilisateurRepository->find($otherId);
+        if (!$other || !$content) {
+            return new JsonResponse(['error' => 'Paramètres manquants'], 400);
+        }
         $message = new Message();
-        $message->setExpediteur($user->getUserIdentifier());
-        $message->setDestinataire($data['destinataire']);
-        $message->setContenu($data['contenu']);
+        $message->setExpediteur($user);
+        $message->setDestinataire($other);
+        $message->setContenu($content);
         $message->setDateEnvoi(new \DateTimeImmutable());
-        $message->setConversationId($data['conversationId'] ?? null);
         $em->persist($message);
         $em->flush();
-        return $this->json(['success' => true, 'message' => $message]);
-    }
-
-    #[Route('/messages/read/{conversationId}', name: 'admin_chat_mark_read', methods: ['POST'])]
-    public function markRead(EntityManagerInterface $em, string $conversationId): JsonResponse
-    {
-        $user = $this->getUser();
-        $messages = $em->getRepository(Message::class)->findBy([
-            'conversationId' => $conversationId,
-            'destinataire' => $user->getUserIdentifier(),
-            'estLu' => false
-        ]);
-        foreach ($messages as $msg) {
-            $msg->setEstLu(true);
-        }
-        $em->flush();
-        return $this->json(['success' => true]);
+        return new JsonResponse(['success' => true]);
     }
 } 
