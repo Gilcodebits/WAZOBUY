@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="{{ asset('styles/admindashboard.css') }}">
     <style>
         :root {
-            --primary-color: #667eea;
+            --primary-color:#013c9a;
             --secondary-color: #764ba2;
             --success-color: #28a745;
             --warning-color: #ffc107;
@@ -49,9 +49,18 @@
         }
 
         .sidebar .logo {
-            padding: 0 2rem 2rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar .logo img {
+            height: 150px !important;
+            width: auto !important;
+            max-width: 200%;
+            display: block;
+            margin: 0 auto;
         }
 
         .logo-text {
@@ -214,6 +223,7 @@
             align-items: center;
             justify-content: center;
             font-weight: 600;
+            cursor: pointer;
         }
 
         /* Dashboard Content */
@@ -643,7 +653,9 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="logo">
-                <a href="{{ path('app_dashboard') }}" class="logo-text">WAZOBUY</a>
+                <a href="{{ path('app_dashboard') }}">
+                    <img src="{{ asset('images/logo.ico') }}" alt="Wazobuy Logo">
+                </a>
                 <span class="logo-subtitle">Administration Panel</span>
             </div>
             
