@@ -4,6 +4,7 @@ namespace App\Twig;
 
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension
 {
@@ -11,6 +12,13 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFilter('ago', [$this, 'ago']),
+        ];
+    }
+
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('image_exists', [$this, 'imageExists']),
         ];
     }
 
@@ -40,5 +48,11 @@ class AppExtension extends AbstractExtension
         }
         
         return 'À l\'instant';
+    }
+
+    public function imageExists(string $imagePath): bool
+    {
+        $fullPath = dirname(__DIR__, 2) . '/public/' . $imagePath;
+        return file_exists($fullPath);
     }
 } 

@@ -393,7 +393,7 @@
         <div class="products-grid">
             {% for produit in produits %}
                 <div class="product-card">
-                    <div class="product-image" style="background-image: url('{{ produit.image ? asset('uploads/products/' ~ produit.image) : asset('images/placeholder.jpg') }}')">
+                    <div class="product-image" style="background-image: url('{% if produit.image and image_exists('uploads/products/' ~ produit.image) %}{{ asset('uploads/products/' ~ produit.image) }}{% else %}{{ asset('images/product-placeholder.jpg') }}{% endif %}')">
                         <div class="product-badges">
                             {% if produit.nouveau %}
                                 <span class="badge new">Nouveau</span>
