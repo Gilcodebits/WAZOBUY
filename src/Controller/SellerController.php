@@ -378,11 +378,31 @@ class SellerController extends AbstractController
     }
 
     #[Route('/parametres', name: 'app_seller_settings')]
-    public function settings(): Response
+    public function settings(Request $request, EntityManagerInterface $entityManager): Response
     {
         $utilisateur = $this->getUser();
+        $form = $this->createForm(\App\Form\ProfileType::class, $utilisateur);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $photoFile = $form['photoProfil']->getData();
+            if ($photoFile) {
+                $uploadsDir = $this->getParameter('kernel.project_dir') . '/public/uploads/profile';
+                if (!is_dir($uploadsDir)) {
+                    mkdir($uploadsDir, 0777, true);
+                }
+                $newFilename = uniqid().'.'.$photoFile->guessExtension();
+                $photoFile->move($uploadsDir, $newFilename);
+                $utilisateur->setPhotoProfil('uploads/profile/' . $newFilename);
+            }
+            $entityManager->flush();
+            $this->addFlash('success', 'Profil mis à jour avec succès.');
+            return $this->redirectToRoute('app_seller_settings');
+        }
+
         return $this->render('seller/settings.html.twig', [
-            'utilisateur' => $utilisateur
+            'utilisateur' => $utilisateur,
+            'form' => $form->createView(),
         ]);
     }
 

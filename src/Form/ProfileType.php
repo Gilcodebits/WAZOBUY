@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\File;
+use App\Entity\Utilisateur;
 
 class ProfileType extends AbstractType
 {
@@ -60,7 +61,7 @@ class ProfileType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => null,
+            'data_class' => Utilisateur::class,
         ]);
     }
 }

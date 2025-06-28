@@ -429,12 +429,9 @@
                         </div>
                         
                         <div class="product-actions">
-                            <button class="action-btn view" title="Voir les détails">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn edit" title="Modifier">
+                            <a href="{{ path('seller_product_edit', {'id': produit.id}) }}" class="action-btn edit" title="Modifier">
                                 <i class="fas fa-edit"></i>
-                            </button>
+                            </a>
                             <button class="action-btn delete" title="Supprimer">
                                 <i class="fas fa-trash"></i>
                             </button>

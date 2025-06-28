@@ -92,4 +92,42 @@ class ProductController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/vendeur/produit/{id}/modifier', name: 'seller_product_edit')]
+    #[IsGranted('ROLE_VENDEUR')]
+    public function editProduct(Request $request, Produit $produit, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    {
+        $user = $this->getUser();
+        if ($produit->getVendeur() !== $user) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas le droit de modifier ce produit.');
+        }
+        $form = $this->createForm(ProductType::class, $produit);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('images')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                $imageFile->move($this->getParameter('products_directory'), $newFilename);
+                $produit->setImage($newFilename);
+            }
+            $em->flush();
+            $this->addFlash('success', 'Produit modifié avec succès !');
+            return $this->redirectToRoute('app_seller_products');
+        }
+        return $this->render('seller/product_edit.html.twig', [
+            'form' => $form->createView(),
+            'produit' => $produit
+        ]);
+    }
+
+    #[Route('/produit/{id}', name: 'product_show')]
+    public function showProduct(Produit $produit): Response
+    {
+        return $this->render('products/show.html.twig', [
+            'produit' => $produit
+        ]);
+    }
 } 
