@@ -20,15 +20,7 @@
             --transition: all 0.3s ease;
         }
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; }
-        .dashboard { display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; background: linear-gradient(180deg, var(--primary-color), var(--secondary-color)); color: #fff; padding: 2rem 0; position: fixed; height: 100vh; z-index: 1000; }
-        .sidebar .logo { display: flex; align-items: center; justify-content: center; margin-bottom: 2rem; }
-        .logo-text { font-size: 1.8rem; font-weight: 700; color: #fff; text-decoration: none; }
-        .sidebar nav { padding: 0 1rem; }
-        .nav-item { display: flex; align-items: center; padding: 1rem 1.5rem; color: rgba(255,255,255,0.8); text-decoration: none; border-radius: var(--border-radius); margin-bottom: 0.5rem; font-weight: 500; transition: var(--transition); }
-        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.15); color: #fff; transform: translateX(5px); }
-        .nav-item-icon { margin-right: 1rem; font-size: 1.2rem; width: 24px; text-align: center; }
-        .main-content { flex: 1; margin-left: 260px; padding: 2rem; }
+        .main-content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 1.5rem 2rem; background: #fff; border-radius: var(--border-radius); box-shadow: var(--box-shadow); }
         .page-title { font-size: 2rem; font-weight: 700; color: var(--dark-color); }
         .header-actions { display: flex; gap: 1rem; }
@@ -54,65 +46,59 @@
         .table th { background: #f8f9fa; padding: 1rem; text-align: left; font-weight: 600; color: var(--dark-color); border-bottom: 1px solid #e3e6f0; }
         .table td { padding: 1rem; border-bottom: 1px solid #e3e6f0; vertical-align: middle; }
         .table tbody tr:hover { background: #f8f9fa; }
-        @media (max-width: 900px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; } .stats-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .stats-grid { grid-template-columns: 1fr; } }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block body %}
-<div class="dashboard">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        {% include 'seller/_sidebar.html.twig' %}
-    </aside>
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Header -->
-        <header class="header">
-            <h1 class="page-title">Rapport Annuel {{ annee }}</h1>
-            <div class="header-actions">
-                <a href="{{ path('app_seller_reports_export_csv') }}" class="btn-primary"><i class="fas fa-file-csv"></i> Exporter CSV</a>
-                <a href="#" class="btn-primary" onclick="window.print(); return false;"><i class="fas fa-file-pdf"></i> Exporter PDF</a>
-            </div>
-        </header>
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card"><div class="stat-header"><div class="stat-icon ventes"><i class="fas fa-money-bill-wave"></i></div></div><div class="stat-value">{{ format_price(ventesAnnuelles)|raw }}</div><div class="stat-label">Ventes annuelles</div></div>
-            <div class="stat-card"><div class="stat-header"><div class="stat-icon commandes"><i class="fas fa-list"></i></div></div><div class="stat-value">{{ commandesAnnuelles }}</div><div class="stat-label">Commandes annuelles</div></div>
-            <div class="stat-card"><div class="stat-header"><div class="stat-icon produits"><i class="fas fa-box"></i></div></div><div class="stat-value">{{ produitsVendus }}</div><div class="stat-label">Produits vendus</div></div>
+<!-- Main Content -->
+<main class="main-content">
+    <!-- Header -->
+    <header class="header">
+        <h1 class="page-title">Rapport Annuel {{ annee }}</h1>
+        <div class="header-actions">
+            <a href="{{ path('app_seller_reports_export_csv') }}" class="btn-primary"><i class="fas fa-file-csv"></i> Exporter CSV</a>
+            <a href="#" class="btn-primary" onclick="window.print(); return false;"><i class="fas fa-file-pdf"></i> Exporter PDF</a>
         </div>
-        <!-- Graphique d'évolution -->
-        <div class="table-card">
-            <div class="table-header">
-                <h3 class="table-title">Évolution des ventes par mois</h3>
-            </div>
-            <div style="padding:2rem;">
-                <canvas id="salesChart" height="80"></canvas>
-            </div>
+    </header>
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-header"><div class="stat-icon ventes"><i class="fas fa-money-bill-wave"></i></div></div><div class="stat-value">{{ format_price(ventesAnnuelles)|raw }}</div><div class="stat-label">Ventes annuelles</div></div>
+        <div class="stat-card"><div class="stat-header"><div class="stat-icon commandes"><i class="fas fa-list"></i></div></div><div class="stat-value">{{ commandesAnnuelles }}</div><div class="stat-label">Commandes annuelles</div></div>
+        <div class="stat-card"><div class="stat-header"><div class="stat-icon produits"><i class="fas fa-box"></i></div></div><div class="stat-value">{{ produitsVendus }}</div><div class="stat-label">Produits vendus</div></div>
+    </div>
+    <!-- Graphique d'évolution -->
+    <div class="table-card">
+        <div class="table-header">
+            <h3 class="table-title">Évolution des ventes par mois</h3>
         </div>
-        <!-- Tableau récapitulatif -->
-        <div class="table-card">
-            <div class="table-header">
-                <h3 class="table-title">Résumé annuel</h3>
-            </div>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Statistique</th>
-                            <th>Valeur</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Ventes annuelles</td><td>{{ format_price(ventesAnnuelles)|raw }}</td></tr>
-                        <tr><td>Commandes annuelles</td><td>{{ commandesAnnuelles }}</td></tr>
-                        <tr><td>Produits vendus</td><td>{{ produitsVendus }}</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div style="padding:2rem;">
+            <canvas id="salesChart" height="80"></canvas>
         </div>
-    </main>
-</div>
+    </div>
+    <!-- Tableau récapitulatif -->
+    <div class="table-card">
+        <div class="table-header">
+            <h3 class="table-title">Résumé annuel</h3>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Statistique</th>
+                        <th>Valeur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Ventes annuelles</td><td>{{ format_price(ventesAnnuelles)|raw }}</td></tr>
+                    <tr><td>Commandes annuelles</td><td>{{ commandesAnnuelles }}</td></tr>
+                    <tr><td>Produits vendus</td><td>{{ produitsVendus }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
 <script>
     // Données réelles pour le graphique
     const ventesParMois = {{ ventesParMois|json_encode|raw }};

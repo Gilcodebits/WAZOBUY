@@ -4,6 +4,8 @@
 
 {% block stylesheets %}
     <style>
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; }
+        .main-content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
         .seller-notifications-list { max-width: 600px; margin: 2rem auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem; }
         .seller-notif-item { border-bottom: 1px solid #f0f0f0; padding: 1.2rem 0; cursor: pointer; transition: background 0.2s; }
         .seller-notif-item:last-child { border-bottom: none; }
@@ -19,6 +21,8 @@
 {% endblock %}
 
 {% block body %}
+<!-- Main Content -->
+<main class="main-content">
 <div class="container">
     <h1 style="text-align:center;margin:2rem 0 1.5rem 0;">Notifications</h1>
     <div class="seller-notifications-list" id="seller-notifications-list">Chargement des notifications...</div>
@@ -52,8 +56,5 @@ function displaySellerPageNotifications(notifs) {
 setInterval(loadSellerPageNotifications, 60000);
 document.addEventListener('DOMContentLoaded', loadSellerPageNotifications);
 </script>
-
-<aside class="sidebar">
-    {% include 'seller/_sidebar.html.twig' %}
-</aside>
+</main>
 {% endblock %} 

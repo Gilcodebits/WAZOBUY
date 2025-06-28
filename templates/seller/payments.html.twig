@@ -20,15 +20,7 @@
             --transition: all 0.3s ease;
         }
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; }
-        .dashboard { display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; background: linear-gradient(180deg, var(--primary-color), var(--secondary-color)); color: #fff; padding: 2rem 0; position: fixed; height: 100vh; z-index: 1000; }
-        .sidebar .logo { display: flex; align-items: center; justify-content: center; margin-bottom: 2rem; }
-        .logo-text { font-size: 1.8rem; font-weight: 700; color: #fff; text-decoration: none; }
-        .sidebar nav { padding: 0 1rem; }
-        .nav-item { display: flex; align-items: center; padding: 1rem 1.5rem; color: rgba(255,255,255,0.8); text-decoration: none; border-radius: var(--border-radius); margin-bottom: 0.5rem; font-weight: 500; transition: var(--transition); }
-        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.15); color: #fff; transform: translateX(5px); }
-        .nav-item-icon { margin-right: 1rem; font-size: 1.2rem; width: 24px; text-align: center; }
-        .main-content { flex: 1; margin-left: 260px; padding: 2rem; }
+        .main-content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 1.5rem 2rem; background: #fff; border-radius: var(--border-radius); box-shadow: var(--box-shadow); }
         .page-title { font-size: 2rem; font-weight: 700; color: var(--dark-color); }
         .header-actions { display: flex; gap: 1rem; }
@@ -65,86 +57,80 @@
         .status-badge.processing { background: rgba(23, 162, 184, 0.1); color: var(--info-color); }
         .filters-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: center; }
         .filters-bar input, .filters-bar select { padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid #e3e6f0; font-size: 1rem; }
-        @media (max-width: 900px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; } .stats-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .stats-grid { grid-template-columns: 1fr; } }
     </style>
 {% endblock %}
 
 {% block body %}
-<div class="dashboard">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        {% include 'seller/_sidebar.html.twig' %}
-    </aside>
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Header -->
-        <header class="header">
-            <h1 class="page-title">Mes Paiements</h1>
-            <div class="header-actions">
-                <a href="#" class="btn-primary"><i class="fas fa-download"></i> Exporter</a>
-            </div>
-        </header>
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card"><div class="stat-header"><div class="stat-icon revenue"><i class="fas fa-money-bill-wave"></i></div></div><div class="stat-value">{{ format_price(totalRevenus)|raw }}</div><div class="stat-label">Revenus totaux</div><div class="stat-change positive"><i class="fas fa-arrow-up"></i> +15% ce mois</div></div>
-            <div class="stat-card"><div class="stat-header"><div class="stat-icon pending"><i class="fas fa-clock"></i></div></div><div class="stat-value">{{ format_price(paiementsEnAttente)|raw }}</div><div class="stat-label">Paiements en attente</div><div class="stat-change positive"><i class="fas fa-arrow-up"></i> 3 nouveaux</div></div>
-            <div class="stat-card"><div class="stat-header"><div class="stat-icon completed"><i class="fas fa-check-circle"></i></div></div><div class="stat-value">{{ format_price(paiementsCompletes)|raw }}</div><div class="stat-label">Paiements complétés</div><div class="stat-change positive"><i class="fas fa-arrow-up"></i> Ce mois</div></div>
-            <div class="stat-card"><div class="stat-header"><div class="stat-icon failed"><i class="fas fa-times-circle"></i></div></div><div class="stat-value">{{ format_price(paiementsEchoues)|raw }}</div><div class="stat-label">Paiements échoués</div><div class="stat-change negative"><i class="fas fa-arrow-down"></i> -2% ce mois</div></div>
+<!-- Main Content -->
+<main class="main-content">
+    <!-- Header -->
+    <header class="header">
+        <h1 class="page-title">Mes Paiements</h1>
+        <div class="header-actions">
+            <a href="#" class="btn-primary"><i class="fas fa-download"></i> Exporter</a>
         </div>
-        <!-- Filtres et recherche -->
-        <form class="filters-bar" method="get">
-            <input type="text" name="search" placeholder="Rechercher un paiement..." value="{{ app.request.get('search') }}">
-            <select name="statut">
-                <option value="">Tous les statuts</option>
-                <option value="completed" {% if app.request.get('statut') == 'completed' %}selected{% endif %}>Complété</option>
-                <option value="pending" {% if app.request.get('statut') == 'pending' %}selected{% endif %}>En attente</option>
-                <option value="failed" {% if app.request.get('statut') == 'failed' %}selected{% endif %}>Échoué</option>
-            </select>
-            <input type="date" name="date_debut" value="{{ app.request.get('date_debut') }}">
-            <input type="date" name="date_fin" value="{{ app.request.get('date_fin') }}">
-            <button type="submit" class="btn-primary"><i class="fas fa-filter"></i> Filtrer</button>
-        </form>
-        <!-- Paiements Table -->
-        <div class="table-card">
-            <div class="table-header">
-                <h3 class="table-title">Historique des paiements</h3>
-                <a href="#" class="view-all-btn">Voir tous les paiements</a>
-            </div>
-            <div class="table-responsive">
-                {% if paiements|length > 0 %}
-                    <table class="table">
-                        <thead>
+    </header>
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card"><div class="stat-header"><div class="stat-icon revenue"><i class="fas fa-money-bill-wave"></i></div></div><div class="stat-value">{{ format_price(totalRevenus)|raw }}</div><div class="stat-label">Revenus totaux</div><div class="stat-change positive"><i class="fas fa-arrow-up"></i> +15% ce mois</div></div>
+        <div class="stat-card"><div class="stat-header"><div class="stat-icon pending"><i class="fas fa-clock"></i></div></div><div class="stat-value">{{ format_price(paiementsEnAttente)|raw }}</div><div class="stat-label">Paiements en attente</div><div class="stat-change positive"><i class="fas fa-arrow-up"></i> 3 nouveaux</div></div>
+        <div class="stat-card"><div class="stat-header"><div class="stat-icon completed"><i class="fas fa-check-circle"></i></div></div><div class="stat-value">{{ format_price(paiementsCompletes)|raw }}</div><div class="stat-label">Paiements complétés</div><div class="stat-change positive"><i class="fas fa-arrow-up"></i> Ce mois</div></div>
+        <div class="stat-card"><div class="stat-header"><div class="stat-icon failed"><i class="fas fa-times-circle"></i></div></div><div class="stat-value">{{ format_price(paiementsEchoues)|raw }}</div><div class="stat-label">Paiements échoués</div><div class="stat-change negative"><i class="fas fa-arrow-down"></i> -2% ce mois</div></div>
+    </div>
+    <!-- Filtres et recherche -->
+    <form class="filters-bar" method="get">
+        <input type="text" name="search" placeholder="Rechercher un paiement..." value="{{ app.request.get('search') }}">
+        <select name="statut">
+            <option value="">Tous les statuts</option>
+            <option value="completed" {% if app.request.get('statut') == 'completed' %}selected{% endif %}>Complété</option>
+            <option value="pending" {% if app.request.get('statut') == 'pending' %}selected{% endif %}>En attente</option>
+            <option value="failed" {% if app.request.get('statut') == 'failed' %}selected{% endif %}>Échoué</option>
+        </select>
+        <input type="date" name="date_debut" value="{{ app.request.get('date_debut') }}">
+        <input type="date" name="date_fin" value="{{ app.request.get('date_fin') }}">
+        <button type="submit" class="btn-primary"><i class="fas fa-filter"></i> Filtrer</button>
+    </form>
+    <!-- Paiements Table -->
+    <div class="table-card">
+        <div class="table-header">
+            <h3 class="table-title">Historique des paiements</h3>
+            <a href="#" class="view-all-btn">Voir tous les paiements</a>
+        </div>
+        <div class="table-responsive">
+            {% if paiements|length > 0 %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID Paiement</th>
+                            <th>Commande</th>
+                            <th>Montant</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                            <th>Méthode</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for paiement in paiements %}
                             <tr>
-                                <th>ID Paiement</th>
-                                <th>Commande</th>
-                                <th>Montant</th>
-                                <th>Date</th>
-                                <th>Statut</th>
-                                <th>Méthode</th>
+                                <td><strong>#{{ paiement.id }}</strong></td>
+                                <td>Commande #{{ paiement.commande.id }}</td>
+                                <td>{{ format_price(paiement.montant)|raw }}</td>
+                                <td>{{ paiement.datePaiement|date('d/m/Y H:i') }}</td>
+                                <td><span class="status-badge {{ paiement.statut|lower }}">{{ paiement.statut }}</span></td>
+                                <td>{{ paiement.methodePaiement }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {% for paiement in paiements %}
-                                <tr>
-                                    <td><strong>#{{ paiement.id }}</strong></td>
-                                    <td>Commande #{{ paiement.commande.id }}</td>
-                                    <td>{{ format_price(paiement.montant)|raw }}</td>
-                                    <td>{{ paiement.datePaiement|date('d/m/Y H:i') }}</td>
-                                    <td><span class="status-badge {{ paiement.statut|lower }}">{{ paiement.statut }}</span></td>
-                                    <td>{{ paiement.methodePaiement }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <div style="text-align: center; padding: 3rem; color: #6c757d;">
-                        <i class="fas fa-wallet" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                        <h4>Aucun paiement trouvé</h4>
-                        <p>Vous n'avez pas encore reçu de paiements.</p>
-                    </div>
-                {% endif %}
-            </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div style="text-align: center; padding: 3rem; color: #6c757d;">
+                    <i class="fas fa-wallet" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <h4>Aucun paiement trouvé</h4>
+                    <p>Vous n'avez pas encore reçu de paiements.</p>
+                </div>
+            {% endif %}
         </div>
-    </main>
-</div>
+    </div>
+</main>
 {% endblock %}
