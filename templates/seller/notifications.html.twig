@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .seller-notifications-list { max-width: 600px; margin: 2rem auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); padding: 2rem; }
+        .seller-notif-item { border-bottom: 1px solid #f0f0f0; padding: 1.2rem 0; cursor: pointer; transition: background 0.2s; }
+        .seller-notif-item:last-child { border-bottom: none; }
+        .seller-notif-item.unread { background: #f0f6ff; }
+        .seller-notif-title { font-weight: 600; font-size: 1.1rem; }
+        .seller-notif-date { color: #888; font-size: 13px; margin-bottom: 4px; }
+        .seller-notif-message { font-size: 0.98rem; color: #444; margin-bottom: 6px; }
+        .seller-notif-badge { display: inline-block; background: #e74c3c; color: #fff; border-radius: 50%; font-size: 11px; padding: 2px 7px; margin-left: 8px; }
+        @media (max-width: 700px) {
+            .seller-notifications-list { padding: 1rem; }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 style="text-align:center;margin:2rem 0 1.5rem 0;">Notifications</h1>
+    <div class="seller-notifications-list" id="seller-notifications-list">Chargement des notifications...</div>
+</div>
+<!-- Réutilise le modal déjà présent dans le dashboard vendeur -->
+<script>
+let sellerPageNotifications = [];
+function loadSellerPageNotifications() {
+    fetch('{{ path('app_seller_api_notifications') }}')
+        .then(response => response.json())
+        .then(data => {
+            sellerPageNotifications = data;
+            displaySellerPageNotifications(data);
+        });
+}
+function displaySellerPageNotifications(notifs) {
+    const list = document.getElementById('seller-notifications-list');
+    if (notifs.length === 0) {
+        list.innerHTML = '<div style="text-align:center;color:#888;padding:2rem;">Aucune notification</div>';
+        return;
+    }
+    list.innerHTML = notifs.map(n => `
+        <div class="seller-notif-item${n.estLue ? '' : ' unread'}" onclick="openSellerNotificationDetail(${n.id})">
+            <div class="seller-notif-title">${n.titre} ${!n.estLue ? '<span class=\'seller-notif-badge\'>Nouveau</span>' : ''}</div>
+            <div class="seller-notif-date">${n.dateCreation}</div>
+            <div class="seller-notif-message">${n.message.length > 120 ? n.message.slice(0,120)+'...' : n.message}</div>
+        </div>
+    `).join('');
+}
+// Recharge la liste toutes les 60s
+setInterval(loadSellerPageNotifications, 60000);
+document.addEventListener('DOMContentLoaded', loadSellerPageNotifications);
+</script>
+
+<aside class="sidebar">
+    {% include 'seller/_sidebar.html.twig' %}
+</aside>
+{% endblock %} 

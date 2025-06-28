@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #667eea;
+            --primary-color: #013c9a;
             --secondary-color: #764ba2;
             --success-color: #28a745;
             --warning-color: #ffc107;
@@ -73,17 +73,7 @@
 <div class="dashboard">
     <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="logo">
-            <a href="#" class="logo-text">WAZOBUY</a>
-        </div>
-        <nav>
-            <a href="{{ path('app_seller_dashboard') }}" class="nav-item"><i class="fas fa-tachometer-alt nav-item-icon"></i> Tableau de bord</a>
-            <a href="{{ path('app_seller_products') }}" class="nav-item"><i class="fas fa-box-open nav-item-icon"></i> Produits</a>
-            <a href="{{ path('app_seller_orders') }}" class="nav-item active"><i class="fas fa-shopping-cart nav-item-icon"></i> Commandes</a>
-            <a href="{{ path('app_seller_payments') }}" class="nav-item"><i class="fas fa-wallet nav-item-icon"></i> Paiements</a>
-            <a href="{{ path('app_seller_reports') }}" class="nav-item"><i class="fas fa-chart-line nav-item-icon"></i> Rapports</a>
-            <a href="{{ path('app_seller_settings') }}" class="nav-item"><i class="fas fa-cog nav-item-icon"></i> Paramètres</a>
-        </nav>
+        {% include 'seller/_sidebar.html.twig' %}
     </aside>
     <!-- Main Content -->
     <main class="main-content">

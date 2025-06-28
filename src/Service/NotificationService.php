@@ -100,7 +100,7 @@ class NotificationService
         $vendeurs = $this->entityManager->getRepository(Utilisateur::class)
             ->createQueryBuilder('u')
             ->where('u.roles LIKE :role')
-            ->setParameter('role', '%ROLE_SELLER%')
+            ->setParameter('role', '%ROLE_VENDEUR%')
             ->getQuery()
             ->getResult();
 

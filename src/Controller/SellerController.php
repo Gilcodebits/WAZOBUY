@@ -20,10 +20,16 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use DateTimeImmutable;
 
 #[Route('/vendeur')]
-#[IsGranted('ROLE_VENDEUR')]
 class SellerController extends AbstractController
 {
+    #[Route('/inscription', name: 'app_become_seller')]
+    public function register(): Response
+    {
+        return $this->render('seller/register.html.twig');
+    }
+
     #[Route('/dashboard', name: 'app_seller_dashboard')]
+    #[IsGranted('ROLE_VENDEUR')]
     public function dashboard(
         CommandeRepository $commandeRepository,
         ProduitRepository $produitRepository,
@@ -422,5 +428,11 @@ class SellerController extends AbstractController
         ];
 
         return new JsonResponse($messages);
+    }
+
+    #[Route('/notifications', name: 'app_seller_notifications')]
+    public function notifications(): Response
+    {
+        return $this->render('seller/notifications.html.twig');
     }
 }

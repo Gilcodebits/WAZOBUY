@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary-color: #667eea;
+            --primary-color: #013c9a;
             --secondary-color: #764ba2;
             --success-color: #28a745;
             --warning-color: #ffc107;
@@ -503,6 +503,54 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .notification-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -6px; right: -6px;
+            background: #e74c3c;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 12px;
+            padding: 2px 6px;
+            min-width: 18px;
+            text-align: center;
+            z-index: 2;
+        }
+        .notification-popup {
+            position: absolute;
+            right: 0; top: 40px;
+            width: 350px;
+            background: #fff;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            max-height: 400px;
+            min-width: 320px;
+            display: none;
+        }
+        .popup-header { padding: 12px 16px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .popup-list { overflow-y: auto; max-height: 260px; }
+        .popup-item { padding: 12px 16px; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
+        .popup-item.unread { background: #f0f6ff; }
+        .popup-item:last-child { border-bottom: none; }
+        .popup-footer { padding: 10px 16px; text-align: center; border-top: 1px solid #eee; }
+        .mark-all-btn { background: none; border: none; color: #3498db; cursor: pointer; font-size: 13px; }
+        #seller-notif-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.3); display: none; align-items: center; justify-content: center; z-index: 2000;
+        }
+        #seller-notif-modal-content {
+            background: #fff; padding: 32px 24px; border-radius: 10px; max-width: 400px; min-width: 320px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); position: relative;
+        }
+        #seller-notif-modal-content button.close {
+            position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 20px; cursor: pointer;
+        }
     </style>
 {% endblock %}
 
@@ -510,29 +558,7 @@
 <div class="dashboard">
     <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="logo">
-            <a href="#" class="logo-text">WAZOBUY</a>
-        </div>
-        <nav>
-            <a href="{{ path('app_seller_dashboard') }}" class="nav-item active">
-                <i class="fas fa-tachometer-alt nav-item-icon"></i> Tableau de bord
-            </a>
-            <a href="{{ path('app_seller_products') }}" class="nav-item">
-                <i class="fas fa-box-open nav-item-icon"></i> Produits
-            </a>
-            <a href="{{ path('app_seller_orders') }}" class="nav-item">
-                <i class="fas fa-shopping-cart nav-item-icon"></i> Commandes
-            </a>
-            <a href="{{ path('app_seller_payments') }}" class="nav-item">
-                <i class="fas fa-wallet nav-item-icon"></i> Paiements
-            </a>
-            <a href="{{ path('app_seller_reports') }}" class="nav-item">
-                <i class="fas fa-chart-line nav-item-icon"></i> Rapports
-            </a>
-            <a href="{{ path('app_seller_settings') }}" class="nav-item">
-                <i class="fas fa-cog nav-item-icon"></i> Paramètres
-            </a>
-        </nav>
+        {% include 'seller/_sidebar.html.twig' %}
     </aside>
 
     <!-- Main Content -->
@@ -544,10 +570,24 @@
                 <input type="text" class="search-input" placeholder="Rechercher des produits, commandes...">
             </div>
             <div class="header-actions">
-                <!-- Notification Icon -->
-                <div class="notification-icon" onclick="window.location.href='{{ path('admin_notifications_index') }}'">
-                    <i class="fas fa-bell"></i>
-                    <div class="notification-badge" id="seller-notif-badge">0</div>
+                <!-- Notification Icon & Popup -->
+                <div class="notification-dropdown">
+                    <div class="notification-icon" id="seller-notif-bell" style="position:relative;">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="seller-notif-badge" style="display:none;">0</span>
+                    </div>
+                    <div class="notification-popup" id="seller-notif-popup">
+                        <div class="popup-header">
+                            <span>Notifications</span>
+                            <button class="mark-all-btn" onclick="markAllAsReadFromPopup(event)">Tout marquer comme lu</button>
+                        </div>
+                        <div class="popup-list" id="seller-popup-list">
+                            <div class="loading">Chargement...</div>
+                        </div>
+                        <div class="popup-footer">
+                            <a href="#" onclick="window.location.href='{{ path('app_seller_notifications') }}'">Voir toutes les notifications</a>
+                        </div>
+                    </div>
                 </div>
                 <!-- Message Icon -->
                 <div class="message-icon" onclick="window.location.href='{{ path('admin_chat_index') }}'">
@@ -566,13 +606,13 @@
                             <h4>{{ app.user.prenom }} {{ app.user.nom }}</h4>
                             <p style="font-size: 0.85rem; color: #6c757d;">Vendeur</p>
                         </div>
-                        <a href="#" class="dropdown-item">
+                        <a href="{{ path('app_seller_settings') }}" class="dropdown-item">
                             <i class="fas fa-user-circle"></i> Mon Profil
                         </a>
-                        <a href="#" class="dropdown-item">
+                        <a href="{{ path('app_boutique') }}" class="dropdown-item">
                             <i class="fas fa-store"></i> Ma Boutique
                         </a>
-                        <a href="/logout" class="dropdown-item">
+                        <a href="{{ path('app_logout') }}" class="dropdown-item">
                             <i class="fas fa-sign-out-alt"></i> Se déconnecter
                         </a>
                     </div>
@@ -611,7 +651,7 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <div class="stat-icon products">
-                        <i class="fas fa-box-open"></i>
+                        <i class="fas fa-box-open" style="font-size:1.5rem;"></i>
                     </div>
                 </div>
                 <div class="stat-value">{{ produitsActifs }}</div>
@@ -706,6 +746,17 @@
             </div>
         </div>
     </main>
+</div>
+
+<!-- Modal de détail notification -->
+<div id="seller-notif-modal">
+    <div id="seller-notif-modal-content">
+        <button class="close" onclick="closeSellerNotifModal()">&times;</button>
+        <h3 id="seller-notif-modal-title"></h3>
+        <div id="seller-notif-modal-date" style="color:#888;font-size:13px;margin-bottom:8px;"></div>
+        <div id="seller-notif-modal-message" style="margin-bottom:12px;"></div>
+        <div id="seller-notif-modal-link"></div>
+    </div>
 </div>
 
 <script>
@@ -864,5 +915,99 @@
             loadUnreadMessages();
         }, 30000);
     });
+
+    let sellerPopupNotifications = [];
+    let sellerPopupUnreadCount = 0;
+
+    function toggleSellerNotificationPopup(event) {
+        event.stopPropagation();
+        const popup = document.getElementById('seller-notif-popup');
+        popup.style.display = (popup.style.display === 'none' || popup.style.display === '') ? 'block' : 'none';
+        if (popup.style.display === 'block') {
+            loadSellerPopupNotifications();
+            document.addEventListener('click', closeSellerPopupOnClickOutside);
+        }
+    }
+
+    document.getElementById('seller-notif-bell').addEventListener('click', toggleSellerNotificationPopup);
+
+    function closeSellerPopupOnClickOutside(e) {
+        const popup = document.getElementById('seller-notif-popup');
+        const bell = document.getElementById('seller-notif-bell');
+        if (!popup.contains(e.target) && !bell.contains(e.target)) {
+            popup.style.display = 'none';
+            document.removeEventListener('click', closeSellerPopupOnClickOutside);
+        }
+    }
+
+    function loadSellerPopupNotifications() {
+        fetch('{{ path('app_seller_api_notifications') }}')
+            .then(response => response.json())
+            .then(data => {
+                sellerPopupNotifications = data;
+                sellerPopupUnreadCount = data.filter(n => !n.estLue).length;
+                updateSellerPopupBadge();
+                displaySellerPopupNotifications(data);
+            });
+    }
+
+    function updateSellerPopupBadge() {
+        const badge = document.getElementById('seller-notif-badge');
+        if (sellerPopupUnreadCount > 0) {
+            badge.textContent = sellerPopupUnreadCount;
+            badge.style.display = '';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function displaySellerPopupNotifications(notifs) {
+        const list = document.getElementById('seller-popup-list');
+        if (notifs.length === 0) {
+            list.innerHTML = '<div class="empty">Aucune notification</div>';
+            return;
+        }
+        list.innerHTML = notifs.slice(0, 8).map(n => `
+            <div class="popup-item${n.estLue ? '' : ' unread'}" onclick="openSellerNotificationDetail(${n.id})">
+                <div><strong>${n.titre}</strong></div>
+                <div style="font-size:12px;color:#888;">${n.dateCreation}</div>
+                <div style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${n.message}</div>
+                ${!n.estLue ? '<span class="notification-badge" style="position:static;float:right;">•</span>' : ''}
+            </div>
+        `).join('');
+    }
+
+    function markAllAsReadFromPopup(event) {
+        event.stopPropagation();
+        fetch('{{ path('app_seller_api_notifications') }}/mark-all-read', { method: 'POST' })
+            .then(() => loadSellerPopupNotifications());
+    }
+
+    function openSellerNotificationDetail(id) {
+        const notif = sellerPopupNotifications.find(n => n.id === id);
+        if (!notif) return;
+        showSellerNotificationModal(notif);
+        if (!notif.estLue) {
+            fetch(`{{ path('app_seller_api_notifications') }}/mark-read/${id}`, { method: 'POST' })
+                .then(() => loadSellerPopupNotifications());
+        }
+    }
+
+    function showSellerNotificationModal(notif) {
+        let modal = document.getElementById('seller-notif-modal');
+        document.getElementById('seller-notif-modal-title').textContent = notif.titre;
+        document.getElementById('seller-notif-modal-date').textContent = notif.dateCreation;
+        document.getElementById('seller-notif-modal-message').textContent = notif.message;
+        document.getElementById('seller-notif-modal-link').innerHTML = notif.lien ? `<a href="${notif.lien}" target="_blank">Voir plus</a>` : '';
+        modal.style.display = 'flex';
+    }
+    function closeSellerNotifModal() {
+        const modal = document.getElementById('seller-notif-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    // Actualisation auto du badge toutes les 60s
+    setInterval(loadSellerPopupNotifications, 60000);
+    document.addEventListener('DOMContentLoaded', loadSellerPopupNotifications);
 </script>
 {% endblock %}
