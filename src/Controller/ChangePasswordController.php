@@ -46,7 +46,7 @@ class ChangePasswordController extends AbstractController
 
             $this->addFlash('success', 'Votre mot de passe a été modifié avec succès.');
             
-            return $this->redirectToRoute('app_client_dashboard');
+            return $this->redirectToRoute('client_home');
         }
 
         return $this->render('security/change_password.html.twig', [

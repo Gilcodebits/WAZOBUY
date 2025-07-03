@@ -82,6 +82,10 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'vendeur', targetEntity: Produit::class)]
     private Collection $produits;
 
+    #[ORM\ManyToMany(targetEntity: Produit::class)]
+    #[ORM\JoinTable(name: 'utilisateur_favoris')]
+    private Collection $favoris;
+
     public function __construct()
     {
         $this->dateCreation = new \DateTimeImmutable();
@@ -89,6 +93,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->commandes = new ArrayCollection();
         $this->ventes = new ArrayCollection();
         $this->produits = new ArrayCollection();
+        $this->favoris = new ArrayCollection();
     }
 
     // Getters et Setters
@@ -291,6 +296,25 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function getProduits(): Collection
     {
         return $this->produits;
+    }
+
+    public function getFavoris(): Collection
+    {
+        return $this->favoris;
+    }
+
+    public function addFavori(Produit $produit): static
+    {
+        if (!$this->favoris->contains($produit)) {
+            $this->favoris[] = $produit;
+        }
+        return $this;
+    }
+
+    public function removeFavori(Produit $produit): static
+    {
+        $this->favoris->removeElement($produit);
+        return $this;
     }
 }
 ?>

@@ -1,44 +1,84 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon profil - WAZOBUY{% endblock %}
+{% block title %}Mon Profil - WazoBuy{% endblock %}
 
 {% block body %}
-    <div class="profile-container">
-        <h1>Mon profil</h1>
-
-        <div class="profile-form">
-            {{ form_start(form, {'attr': {'class': 'profile-form'}}) }}
-            
-            <div class="form-group">
-                {{ form_label(form.prenom) }}
-                {{ form_widget(form.prenom) }}
-                {{ form_errors(form.prenom) }}
-            </div>
-
-            <div class="form-group">
-                {{ form_label(form.nom) }}
-                {{ form_widget(form.nom) }}
-                {{ form_errors(form.nom) }}
-            </div>
-
-            <div class="form-group">
-                {{ form_label(form.email) }}
-                {{ form_widget(form.email) }}
-                {{ form_errors(form.email) }}
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Sauvegarder les modifications
-                </button>
-            </div>
-
-            {{ form_end(form) }}
+<style>
+    .profile-container {
+        max-width: 500px;
+        margin: 2.5rem auto;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+        padding: 2.5rem 2rem 2rem 2rem;
+        text-align: center;
+    }
+    .profile-avatar {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: linear-gradient(135deg, #0072ce 0%, #00b388 100%);
+        margin: 0 auto 1.2rem auto;
+        border: 4px solid #fff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    .profile-name {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #0072ce;
+        margin-bottom: 0.3rem;
+    }
+    .profile-email {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 1.2rem;
+    }
+    .profile-info {
+        text-align: left;
+        margin: 1.5rem 0 2rem 0;
+        font-size: 1.08rem;
+    }
+    .profile-info label {
+        color: #00b388;
+        font-weight: 600;
+        margin-right: 0.5em;
+    }
+    .profile-edit-btn {
+        display: inline-block;
+        background: linear-gradient(90deg, #0072ce 0%, #00b388 100%);
+        color: white;
+        font-weight: bold;
+        font-size: 1.1rem;
+        padding: 0.7em 2.2em;
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        cursor: pointer;
+        transition: background 0.2s, box-shadow 0.2s;
+        margin-top: 1.2rem;
+    }
+    .profile-edit-btn:hover {
+        background: linear-gradient(90deg, #00b388 0%, #0072ce 100%);
+        box-shadow: 0 4px 16px rgba(0,114,206,0.12);
+    }
+</style>
+<div class="profile-container">
+    {% if app.user %}
+        <img src="{{ app.user.image ? asset('uploads/profile/' ~ app.user.image) : asset('images/profile-placeholder.jpg') }}" class="profile-avatar" alt="Avatar">
+        <div class="profile-name">{{ app.user.nom|default('Utilisateur') }}</div>
+        <div class="profile-email">{{ app.user.email }}</div>
+        <div class="profile-info">
+            <div><label>Téléphone :</label> {{ app.user.telephone|default('Non renseigné') }}</div>
+            <div><label>Adresse :</label> {{ app.user.adresse|default('Non renseignée') }}</div>
+            <div><label>Date d'inscription :</label> {{ app.user.createdAt ? app.user.createdAt|date('d/m/Y') : 'N/A' }}</div>
         </div>
-    </div>
-{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('styles/profile.css') }}">
-{% endblock %}
+        <a href="{{ path('client_profile_edit') }}" class="profile-edit-btn">Modifier mon profil</a>
+    {% else %}
+        <div style="color:#e63946; font-size:1.2rem; margin:2rem 0;">
+            Vous devez être connecté pour accéder à votre profil.<br>
+            <a href="{{ path('app_login') }}" style="color:#0072ce; text-decoration:underline;">Se connecter</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

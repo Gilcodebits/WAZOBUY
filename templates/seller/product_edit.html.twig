@@ -248,6 +248,26 @@
             </div>
 
             <div class="form-group">
+                {{ form_label(form.condition) }}
+                {{ form_widget(form.condition, {'attr': {'class': 'form-input'}}) }}
+                {{ form_errors(form.condition) }}
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    {{ form_widget(form.promotion) }}
+                    {{ form_label(form.promotion) }}
+                </div>
+                {{ form_errors(form.promotion) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.pourcentagePromotion) }}
+                {{ form_widget(form.pourcentagePromotion, {'attr': {'class': 'form-input', 'placeholder': 'Pourcentage de réduction'}}) }}
+                {{ form_errors(form.pourcentagePromotion) }}
+            </div>
+
+            <div class="form-group">
                 {{ form_label(form.categorie) }}
                 {{ form_widget(form.categorie, {'attr': {'class': 'form-input'}}) }}
                 {{ form_errors(form.categorie) }}
@@ -258,20 +278,6 @@
                 {{ form_widget(form.images, {'attr': {'class': 'form-input'}}) }}
                 {{ form_errors(form.images) }}
                 <small style="color: #6c757d; font-size: 0.85rem;">Laissez vide pour conserver l'image actuelle</small>
-            </div>
-
-            <div class="form-group">
-                <div class="checkbox-group">
-                    {{ form_widget(form.enPromotion) }}
-                    {{ form_label(form.enPromotion) }}
-                </div>
-                {{ form_errors(form.enPromotion) }}
-            </div>
-
-            <div class="form-group">
-                {{ form_label(form.pourcentagePromotion) }}
-                {{ form_widget(form.pourcentagePromotion, {'attr': {'class': 'form-input', 'placeholder': 'Pourcentage de réduction'}}) }}
-                {{ form_errors(form.pourcentagePromotion) }}
             </div>
 
             <div class="form-actions">

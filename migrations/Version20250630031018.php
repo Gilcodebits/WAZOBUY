@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250627035706 extends AbstractMigration
+final class Version20250630031018 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,13 +21,13 @@ final class Version20250627035706 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE message ADD expediteur_id INT NOT NULL, ADD destinataire_id INT NOT NULL, DROP expediteur, DROP destinataire
+            CREATE TABLE categorie (id INT AUTO_INCREMENT NOT NULL, nom VARCHAR(255) NOT NULL, slug VARCHAR(255) NOT NULL, emoji VARCHAR(10) DEFAULT NULL, UNIQUE INDEX UNIQ_497DD634989D9B62 (slug), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE message ADD CONSTRAINT FK_B6BD307F10335F61 FOREIGN KEY (expediteur_id) REFERENCES utilisateurs (id)
+            ALTER TABLE message ADD CONSTRAINT FK_B6BD307F10335F61 FOREIGN KEY (expediteur_id) REFERENCES utilisateurs (id_utilisateur)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE message ADD CONSTRAINT FK_B6BD307FA4F84F6E FOREIGN KEY (destinataire_id) REFERENCES utilisateurs (id)
+            ALTER TABLE message ADD CONSTRAINT FK_B6BD307FA4F84F6E FOREIGN KEY (destinataire_id) REFERENCES utilisateurs (id_utilisateur)
         SQL);
         $this->addSql(<<<'SQL'
             CREATE INDEX IDX_B6BD307F10335F61 ON message (expediteur_id)
@@ -39,10 +39,10 @@ final class Version20250627035706 extends AbstractMigration
             ALTER TABLE notification ADD destinataire_id INT NOT NULL, ADD auteur_id INT DEFAULT NULL, DROP destinataire, DROP auteur, CHANGE est_lu est_lue TINYINT(1) NOT NULL
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE notification ADD CONSTRAINT FK_BF5476CAA4F84F6E FOREIGN KEY (destinataire_id) REFERENCES utilisateurs (id)
+            ALTER TABLE notification ADD CONSTRAINT FK_BF5476CAA4F84F6E FOREIGN KEY (destinataire_id) REFERENCES utilisateurs (id_utilisateur)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE notification ADD CONSTRAINT FK_BF5476CA60BB6FE6 FOREIGN KEY (auteur_id) REFERENCES utilisateurs (id)
+            ALTER TABLE notification ADD CONSTRAINT FK_BF5476CA60BB6FE6 FOREIGN KEY (auteur_id) REFERENCES utilisateurs (id_utilisateur)
         SQL);
         $this->addSql(<<<'SQL'
             CREATE INDEX IDX_BF5476CAA4F84F6E ON notification (destinataire_id)
@@ -56,6 +56,9 @@ final class Version20250627035706 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
+            DROP TABLE categorie
+        SQL);
+        $this->addSql(<<<'SQL'
             ALTER TABLE message DROP FOREIGN KEY FK_B6BD307F10335F61
         SQL);
         $this->addSql(<<<'SQL'
@@ -66,9 +69,6 @@ final class Version20250627035706 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             DROP INDEX IDX_B6BD307FA4F84F6E ON message
-        SQL);
-        $this->addSql(<<<'SQL'
-            ALTER TABLE message ADD expediteur VARCHAR(255) NOT NULL, ADD destinataire VARCHAR(255) NOT NULL, DROP expediteur_id, DROP destinataire_id
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE notification DROP FOREIGN KEY FK_BF5476CAA4F84F6E

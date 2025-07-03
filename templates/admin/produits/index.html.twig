@@ -56,7 +56,7 @@
             </thead>
             <tbody>
                 {% for produit in produits %}
-                <tr data-statut="{{ produit.enPromotion ? 'promo' : 'normal' }}">
+                <tr data-statut="{{ produit.promotion ? 'promo' : 'normal' }}">
                     <td>{{ loop.index }}</td>
                     <td>{{ produit.nom }}</td>
                     <td>{{ produit.prix|number_format(2, ',', ' ') }} €</td>
@@ -83,7 +83,7 @@
                         {% endif %}
                     </td>
                     <td>
-                        {% if produit.enPromotion %}
+                        {% if produit.promotion %}
                             <span class="badge bg-success">En promotion</span>
                         {% else %}
                             <span class="badge bg-secondary">Normal</span>
@@ -93,7 +93,7 @@
                         <a href="{{ path('app_admin_produit_show', {'id': produit.id}) }}" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Voir le produit">
                             <i class="fas fa-eye"></i>
                         </a>
-                        {% if produit.enPromotion %}
+                        {% if produit.promotion %}
                             <a href="{{ path('app_admin_produit_desactiver', {'id': produit.id}) }}" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Retirer promotion" onclick="return confirm('Êtes-vous sûr de vouloir retirer ce produit de la promotion ?')">
                                 <i class="fas fa-times-circle"></i>
                             </a>

@@ -67,7 +67,19 @@ class ProductType extends AbstractType
                     'class' => 'wazobuy-input'
                 ]
             ])
-            ->add('enPromotion', CheckboxType::class, [
+            ->add('condition', ChoiceType::class, [
+                'label' => 'État',
+                'choices' => [
+                    'Neuf' => 'neuf',
+                    'Occasion' => 'occasion',
+                ],
+                'placeholder' => 'Sélectionner l\'état',
+                'required' => true,
+                'attr' => [
+                    'class' => 'wazobuy-input'
+                ]
+            ])
+            ->add('promotion', CheckboxType::class, [
                 'label' => 'Mettre en promotion',
                 'required' => false,
                 'attr' => [

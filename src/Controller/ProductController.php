@@ -51,7 +51,7 @@ class ProductController extends AbstractController
                 $produit->setPrixOriginal($produit->getPrix());
                 
                 // Gérer la promotion
-                if ($produit->isEnPromotion() && $produit->getPourcentagePromotion()) {
+                if ($produit->isPromotion() && $produit->getPourcentagePromotion()) {
                     $pourcentage = $produit->getPourcentagePromotion();
                     $prixOriginal = $produit->getPrix();
                     $reduction = ($prixOriginal * $pourcentage) / 100;
@@ -60,7 +60,7 @@ class ProductController extends AbstractController
                     $produit->setPrix($prixPromo);
                     $produit->setPrixOriginal($prixOriginal);
                 } else {
-                    $produit->setEnPromotion(false);
+                    $produit->setPromotion(false);
                     $produit->setPourcentagePromotion(null);
                 }
                 

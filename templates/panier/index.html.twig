@@ -1,0 +1,159 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier - WazoBuy{% endblock %}
+
+{% block body %}
+<style>
+    .cart-container {
+        max-width: 900px;
+        margin: 2.5rem auto;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+        padding: 2rem 1.5rem 1.5rem 1.5rem;
+    }
+    .cart-title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #0072ce;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    .cart-list {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+    }
+    .cart-list th, .cart-list td {
+        padding: 1rem 0.5rem;
+        text-align: left;
+    }
+    .cart-list th {
+        color: #00b388;
+        font-size: 1.1rem;
+        border-bottom: 2px solid #e0e0e0;
+    }
+    .cart-list td {
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
+    }
+    .cart-product-img {
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 10px;
+        background: #f5f5f5;
+    }
+    .cart-product-name {
+        font-weight: 600;
+        color: #222;
+    }
+    .cart-product-price {
+        color: #0072ce;
+        font-weight: bold;
+    }
+    .cart-qty-input {
+        width: 48px;
+        padding: 0.3em 0.5em;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 1rem;
+    }
+    .cart-remove-btn {
+        background: none;
+        border: none;
+        color: #e63946;
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .cart-remove-btn:hover {
+        color: #b71c1c;
+    }
+    .cart-summary {
+        text-align: right;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+    .cart-summary span {
+        color: #0072ce;
+        font-weight: bold;
+        font-size: 1.3rem;
+    }
+    .cart-checkout-btn {
+        display: inline-block;
+        background: linear-gradient(90deg, #0072ce 0%, #00b388 100%);
+        color: white;
+        font-weight: bold;
+        font-size: 1.1rem;
+        padding: 0.9em 2.2em;
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        cursor: pointer;
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .cart-checkout-btn:hover {
+        background: linear-gradient(90deg, #00b388 0%, #0072ce 100%);
+        box-shadow: 0 4px 16px rgba(0,114,206,0.12);
+    }
+    .cart-empty {
+        text-align: center;
+        color: #888;
+        font-size: 1.2rem;
+        margin: 3rem 0 2rem 0;
+    }
+    @media (max-width: 600px) {
+        .cart-container { padding: 1rem 0.2rem; }
+        .cart-list th, .cart-list td { padding: 0.7rem 0.2rem; font-size: 0.98rem; }
+        .cart-title { font-size: 1.3rem; }
+    }
+</style>
+<div class="cart-container">
+    <div class="cart-title">Mon Panier</div>
+    {% if produits|length == 0 %}
+        <div class="cart-empty">Votre panier est vide.<br>Découvrez nos <a href="/client/home" style="color:#00b388; text-decoration:underline;">produits</a> !</div>
+    {% else %}
+    <table class="cart-list">
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th>Prix</th>
+                <th>Quantité</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in produits %}
+            <tr>
+                <td style="display:flex; align-items:center; gap:0.7em;">
+                    <img src="{{ item.produit.image ? asset('uploads/products/' ~ item.produit.image) : asset('images/product-placeholder.jpg') }}" class="cart-product-img" alt="{{ item.produit.nom }}">
+                    <span class="cart-product-name">{{ item.produit.nom }}</span>
+                </td>
+                <td class="cart-product-price">{{ item.produit.prix|number_format(0, '.', ' ') }} FCFA</td>
+                <td>
+                    <form method="post" action="{{ path('panier_modifier', {'id': item.produit.id}) }}" style="display:inline;">
+                        <input type="number" name="quantite" class="cart-qty-input" value="{{ item.quantite }}" min="1" max="{{ item.produit.stock }}" onchange="this.form.submit()">
+                    </form>
+                </td>
+                <td class="cart-product-price">{{ (item.produit.prix * item.quantite)|number_format(0, '.', ' ') }} FCFA</td>
+                <td>
+                    <form method="post" action="{{ path('panier_supprimer', {'id': item.produit.id}) }}" style="display:inline;">
+                        <button type="submit" class="cart-remove-btn" title="Retirer du panier">✕</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="cart-summary">
+        Total&nbsp;: <span>{{ total|number_format(0, '.', ' ') }} FCFA</span>
+    </div>
+    <form method="post" action="{{ path('panier_commander') }}" style="text-align:right;">
+        <button type="submit" class="cart-checkout-btn">Commander</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %} 

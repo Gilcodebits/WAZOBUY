@@ -13,48 +13,6 @@ use App\Repository\CommandeRepository;
 
 class ProduitController extends AbstractController
 {
-    #[Route('/client/dashboard', name: 'app_client_dashboard')]
-    public function dashboard(Request $request, ProduitRepository $produitRepository, CommandeRepository $commandeRepository): Response
-    {
-        // Récupération des filtres depuis la requête
-        $filters = [
-            'categorie' => $request->query->get('categorie', null),
-            'prix_min' => $request->query->get('prix_min', null),
-            'prix_max' => $request->query->get('prix_max', null),
-            'note_min' => $request->query->get('note_min', null),
-            'tri' => $request->query->get('tri', 'popularite'),
-            'page' => $request->query->get('page', 1),
-            'search' => $request->query->get('search', ''),
-        ];
-
-        // Récupération des produits avec pagination
-        $produits = $produitRepository->findWithFilters($filters, 6); // 6 produits par page
-        $totalProduits = $produitRepository->count([]);
-        $totalPages = ceil($totalProduits / 6);
-
-        // Récupération du panier depuis la session
-        $panier = $this->getPanier($request);
-        $panierCount = count($panier);
-
-        $user = $this->getUser();
-        $commandesRecentes = [];
-        if ($user) {
-            $commandesRecentes = $commandeRepository->findRecentByClient($user, 5);
-        }
-
-        $produitsFavoris = [];
-
-        return $this->render('client/dashboard/index.html.twig', [
-            'produits' => $produits,
-            'filters' => $filters,
-            'totalProduits' => $totalProduits,
-            'totalPages' => $totalPages,
-            'panierCount' => $panierCount,
-            'commandesRecentes' => $commandesRecentes,
-            'produitsFavoris' => $produitsFavoris
-        ]);
-    }
-
     #[Route('/produits/{id}', name: 'app_produit_show')]
     public function show(Produit $produit): Response
     {
@@ -63,7 +21,6 @@ class ProduitController extends AbstractController
         ]);
     }
 
-    #[Route('/panier', name: 'app_panier')]
     #[Route('/panier', name: 'app_panier')]
     public function panier(Request $request): Response
     {
@@ -112,6 +69,17 @@ class ProduitController extends AbstractController
         }
         
         return $this->redirectToRoute('app_panier');
+    }
+
+    #[Route('/panier/count', name: 'app_panier_count', methods: ['GET'])]
+    public function countPanier(Request $request): Response
+    {
+        $panier = $this->getPanier($request);
+        $count = 0;
+        foreach ($panier as $item) {
+            $count += $item['quantite'] ?? 1;
+        }
+        return $this->json(['count' => $count]);
     }
 
     private function getPanier(Request $request): array

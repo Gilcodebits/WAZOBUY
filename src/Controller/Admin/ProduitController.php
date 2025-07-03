@@ -37,7 +37,7 @@ class ProduitController extends AbstractController
     #[Route('/admin/produits/{id}/activer', name: 'app_admin_produit_activer', requirements: ['id' => '\d+'])]
     public function activer(Produit $produit, EntityManagerInterface $entityManager): Response
     {
-        $produit->setEnPromotion(true);
+        $produit->setPromotion(true);
         $entityManager->flush();
 
         $this->addFlash('success', 'Le produit est maintenant en promotion.');
@@ -47,7 +47,7 @@ class ProduitController extends AbstractController
     #[Route('/admin/produits/{id}/desactiver', name: 'app_admin_produit_desactiver', requirements: ['id' => '\d+'])]
     public function desactiver(Produit $produit, EntityManagerInterface $entityManager): Response
     {
-        $produit->setEnPromotion(false);
+        $produit->setPromotion(false);
         $entityManager->flush();
 
         $this->addFlash('success', 'Le produit n\'est plus en promotion.');

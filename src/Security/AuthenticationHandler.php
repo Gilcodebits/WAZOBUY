@@ -50,7 +50,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 
         // Ajout pour les clients
         if (in_array('ROLE_CLIENT', $roles)) {
-            return new RedirectResponse($this->router->generate('app_client_dashboard'));
+            return new RedirectResponse($this->router->generate('client_home'));
         }
 
         if (in_array('ROLE_USER', $roles)) {

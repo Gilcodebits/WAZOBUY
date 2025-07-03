@@ -158,6 +158,14 @@
             background-size: cover;
             background-position: center;
             position: relative;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .product-badges {
@@ -339,6 +347,26 @@
             margin-bottom: 2rem;
         }
 
+        .product-condition-label {
+            display: inline-block;
+            font-size: 0.7em;
+            padding: 0.05em 0.18em;
+            border-radius: 12px;
+            color: #00b388;
+            background: #e8f5e8;
+            font-weight: 600;
+            margin-top: 0.05em;
+            margin-bottom: 0.05em;
+            width: auto;
+            min-width: 0;
+            max-width: none;
+            white-space: nowrap;
+            box-sizing: border-box;
+            text-align: center;
+            float: none;
+            align-self: flex-start;
+        }
+
         @media (max-width: 768px) {
             .page-header {
                 flex-direction: column;
@@ -352,7 +380,105 @@
             }
             
             .products-grid {
-                grid-template-columns: 1fr;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin-bottom: 0.7rem;
+                justify-content: space-between;
+            }
+            .product-card {
+                width: 48%;
+                background: #fff;
+                border-radius: 4px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+                margin-bottom: 0.5rem;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                position: relative;
+                min-height: 150px;
+                max-height: 210px;
+            }
+            .product-card .product-image,
+            .product-card .product-image img {
+                border-radius: 0;
+                object-fit: cover;
+                width: 100%;
+                height: 80px;
+                min-height: 80px;
+                max-height: 90px;
+                display: block;
+                background: #fff;
+            }
+            .product-badges {
+                position: absolute;
+                top: 6px;
+                left: 6px;
+                background: none;
+                gap: 0.06em;
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .badge {
+                background: #fff;
+                color: #222;
+                font-size: 0.62em;
+                font-weight: 600;
+                border-radius: 4px;
+                padding: 0.07em 0.32em;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+                z-index: 2;
+                margin-right: 0.06em;
+                margin-bottom: 0.06em;
+            }
+            .product-info {
+                padding: 0.3em 0.4em 0.4em 0.4em;
+                display: flex;
+                flex-direction: column;
+                gap: 0.08em;
+            }
+            .product-name {
+                font-size: 0.82em;
+                font-weight: 400;
+                margin-bottom: 0.04em;
+                color: #222;
+                line-height: 1.1;
+            }
+            .product-price {
+                font-size: 0.9em;
+                font-weight: bold;
+                color: #222;
+                margin-bottom: 0.04em;
+                line-height: 1.1;
+            }
+            .product-desc {
+                font-size: 0.7em;
+                color: #666;
+                margin-bottom: 0.07em;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                line-height: 1.1;
+                font-weight: 400;
+            }
+            .product-condition-label {
+                display: inline-block !important;
+                font-size: 0.7em !important;
+                padding: 0.05em 0.18em !important;
+                border-radius: 12px !important;
+                color: #00b388 !important;
+                background: #e8f5e8 !important;
+                font-weight: 600 !important;
+                margin-top: 0.05em !important;
+                margin-bottom: 0.05em !important;
+                width: auto !important;
+                min-width: 0 !important;
+                max-width: none !important;
+                white-space: nowrap !important;
+                box-sizing: border-box !important;
+                text-align: center !important;
+                float: none !important;
+                align-self: flex-start !important;
             }
         }
     </style>
@@ -414,74 +540,51 @@
     {% if produits|length > 0 %}
         <div class="products-grid">
             {% for produit in produits %}
-                <div class="product-card">
-                    <div class="product-image" style="background-image: url('{% if produit.image and image_exists('uploads/products/' ~ produit.image) %}{{ asset('uploads/products/' ~ produit.image) }}{% else %}{{ asset('images/product-placeholder.jpg') }}{% endif %}')">
-                        <div class="product-badges">
-                            {% if produit.enPromotion and produit.pourcentagePromotion %}
-                                <span class="badge promotion">-{{ produit.pourcentagePromotion }}%</span>
-                            {% endif %}
-                            {% if produit.nouveau %}
-                                <span class="badge new">Nouveau</span>
-                            {% endif %}
-                            {% if produit.stock == 0 %}
-                                <span class="badge out-of-stock">Rupture</span>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="product-actions">
-                            <a href="{{ path('seller_product_edit', {'id': produit.id}) }}" class="action-btn edit" title="Modifier">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button class="action-btn delete" title="Supprimer">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
+                <div class="product-card" onclick="window.location.href='{{ path('seller_product_edit', {'id': produit.id}) }}'" style="cursor:pointer;">
+                    <div class="product-badges">
+                        {% if produit.condition == 'occasion' %}
+                            <span class="badge">Used</span>
+                        {% elseif produit.condition == 'neuf' %}
+                            <span class="badge">New</span>
+                        {% endif %}
+                        {% if produit.nouveau %}
+                            <span class="badge new">Nouveau</span>
+                        {% endif %}
+                        {% if produit.promotion %}
+                            <span class="badge promotion">Promo</span>
+                        {% endif %}
                     </div>
-                    
+                    <div class="product-actions">
+                        <button class="action-btn edit" onclick="event.stopPropagation(); window.location.href='{{ path('seller_product_edit', {'id': produit.id}) }}'">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete" onclick="event.stopPropagation(); deleteProduct({{ produit.id }}, '{{ produit.nom }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="product-image">
+                        <img src="{% if produit.image and image_exists('uploads/products/' ~ produit.image) %}{{ asset('uploads/products/' ~ produit.image) }}{% else %}{{ asset('images/product-placeholder.jpg') }}{% endif %}" alt="{{ produit.nom }}">
+                    </div>
                     <div class="product-info">
-                        <h3 class="product-name">{{ produit.nom }}</h3>
-                        <div class="product-category">{{ produit.categorie }}</div>
-                        
-                        <div class="product-price">
-                            {% if produit.enPromotion and produit.prixOriginal and produit.prixOriginal > produit.prix %}
-                                <span class="price-promo">{{ format_price(produit.prix)|raw }}</span>
-                                <span class="price-original">{{ format_price(produit.prixOriginal)|raw }}</span>
+                        <div class="product-price" style="font-weight:bold;">
+                            {% if produit.promotion and produit.pourcentagePromotion %}
+                                <span style="text-decoration:line-through; color:#888; font-size:0.8em;">
+                                    {{ produit.prix|number_format(0, '.', ' ') }} FCFA
+                                </span>
+                                <span style="color:#e63946; font-weight:bold;">
+                                    {{ (produit.prix * (1 - produit.pourcentagePromotion/100))|number_format(0, '.', ' ') }} FCFA
+                                </span>
                             {% else %}
-                                <span class="price-normal">{{ format_price(produit.prix)|raw }}</span>
+                                {{ produit.prix|number_format(0, '.', ' ') }} FCFA
                             {% endif %}
                         </div>
-                        
-                        <div class="product-stock">
-                            <div class="stock-indicator 
-                                {% if produit.stock == 0 %}out-of-stock
-                                {% elseif produit.stock <= 5 %}low-stock
-                                {% else %}in-stock{% endif %}">
+                        <div class="product-name">{{ produit.nom }}</div>
+                        <div class="product-desc">{{ produit.description|striptags|slice(0, 40) }}{% if produit.description|length > 40 %}...{% endif %}</div>
+                        {% if produit.condition == 'neuf' or produit.condition == 'occasion' %}
+                            <div class="product-condition-label" style="margin-top:0.2em; font-size:0.85em; color:#0072ce; font-weight:600; text-align:left;">
+                                {{ produit.condition == 'neuf' ? 'Neuf' : 'Occasion' }}
                             </div>
-                            <span class="stock-text">
-                                {% if produit.stock == 0 %}
-                                    Rupture de stock
-                                {% elseif produit.stock <= 5 %}
-                                    Plus que {{ produit.stock }} en stock
-                                {% else %}
-                                    {{ produit.stock }} en stock
-                                {% endif %}
-                            </span>
-                        </div>
-                        
-                        <div class="product-stats">
-                            <div class="stat">
-                                <div class="stat-value">{{ produit.note|number_format(1) }}</div>
-                                <div class="stat-label">Note</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-value">{{ produit.nombreAvis }}</div>
-                                <div class="stat-label">Avis</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-value">{{ produit.stock }}</div>
-                                <div class="stat-label">Stock</div>
-                            </div>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}

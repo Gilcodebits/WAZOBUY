@@ -36,7 +36,7 @@ class AuthenticationSuccessHandler extends DefaultAuthenticationSuccessHandler
             // Le rôle est stocké sous la forme 'ROLE_CLIENT', 'ROLE_ADMIN', etc.
             if (in_array('ROLE_CLIENT', $roles)) {
                 return new Response(null, 302, [
-                    'Location' => $this->router->generate('app_client_dashboard')
+                    'Location' => $this->router->generate('client_home')
                 ]);
             }
 

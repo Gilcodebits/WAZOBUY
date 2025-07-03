@@ -36,11 +36,11 @@ class Produit
     #[ORM\Column(length: 255)]
     private ?string $categorie = null;
 
-    #[ORM\Column]
-    private ?bool $nouveau = false;
+    #[ORM\Column(type: 'boolean')]
+    private bool $nouveau = false;
 
-    #[ORM\Column]
-    private ?bool $enPromotion = false;
+    #[ORM\Column(type: 'boolean')]
+    private bool $promotion = false;
 
     #[ORM\Column(nullable: true)]
     private ?float $pourcentagePromotion = null;
@@ -64,12 +64,15 @@ class Produit
     #[ORM\JoinColumn(name: 'id_vendeur', referencedColumnName: 'id_utilisateur', nullable: false)]
     private ?Utilisateur $vendeur = null;
 
+    #[ORM\Column(name: "`condition`", type: 'string', length: 50, nullable: true)]
+    private ?string $condition = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
         $this->nouveau = true;
-        $this->enPromotion = false;
+        $this->promotion = false;
         $this->note = 0;
         $this->nombreAvis = 0;
         $this->caracteristiques = [];
@@ -206,7 +209,7 @@ class Produit
         return $this;
     }
 
-    public function isNouveau(): ?bool
+    public function isNouveau(): bool
     {
         return $this->nouveau;
     }
@@ -217,14 +220,14 @@ class Produit
         return $this;
     }
 
-    public function isEnPromotion(): ?bool
+    public function isPromotion(): bool
     {
-        return $this->enPromotion;
+        return $this->promotion;
     }
 
-    public function setEnPromotion(bool $enPromotion): self
+    public function setPromotion(bool $promotion): self
     {
-        $this->enPromotion = $enPromotion;
+        $this->promotion = $promotion;
         return $this;
     }
 
@@ -247,6 +250,17 @@ class Produit
     public function setVendeur(?Utilisateur $vendeur): self
     {
         $this->vendeur = $vendeur;
+        return $this;
+    }
+
+    public function getCondition(): ?string
+    {
+        return $this->condition;
+    }
+
+    public function setCondition(?string $condition): self
+    {
+        $this->condition = $condition;
         return $this;
     }
 }

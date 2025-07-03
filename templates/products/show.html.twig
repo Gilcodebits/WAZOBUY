@@ -305,7 +305,7 @@
                 <h1 class="product-title">{{ produit.nom }}</h1>
                 
                 <div class="product-price">
-                    {% if produit.enPromotion and produit.pourcentagePromotion %}
+                    {% if produit.promotion and produit.pourcentagePromotion %}
                         <span class="price-current">{{ format_price(produit.prix)|raw }}</span>
                         <span class="price-original">{{ format_price(produit.prix + (produit.prix * produit.pourcentagePromotion / 100))|raw }}</span>
                         <span class="price-discount">-{{ produit.pourcentagePromotion }}%</span>
