@@ -13,12 +13,22 @@ class ClientHomeController extends AbstractController
     public function index(ProduitRepository $produitRepo, CategorieRepository $categorieRepo): Response
     {
         $categories = $categorieRepo->findAll();
-        $produits = $produitRepo->findBy([], ['createdAt' => 'DESC'], 12);
+        $categoriesWithProducts = [];
+        foreach ($categories as $categorie) {
+            $produits = $produitRepo->findBy(
+                ['categorie' => $categorie],
+                ['id' => 'DESC'],
+                4 // Limite à 4 produits par catégorie
+            );
+            $categoriesWithProducts[] = [
+                'categorie' => $categorie,
+                'produits' => $produits
+            ];
+        }
         $user = $this->getUser();
-        
         return $this->render('client/home.html.twig', [
+            'categoriesWithProducts' => $categoriesWithProducts,
             'categories' => $categories,
-            'produits' => $produits,
             'user' => $user,
         ]);
     }

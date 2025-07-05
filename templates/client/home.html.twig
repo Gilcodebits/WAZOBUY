@@ -9,8 +9,6 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #f5f5f5;
             color: #333;
-            overflow: hidden;
-            height: 100%;
             width: 100%;
         }
         .header {
@@ -19,13 +17,13 @@
             margin-right: 0;
             background: linear-gradient(135deg, #1a365d 0%, #013c9a 50%, #4a5568 100%);
             color: white;
-            padding: 2rem 1rem 2rem 1rem;
+            padding: 1.3rem 1rem 1.3rem 1rem;
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
+            box-shadow: none;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
         }
         .header-content {
             max-width: 1200px;
@@ -825,80 +823,101 @@
                 </div>
             {% endfor %}
         </div>
-        <section class="section">
-            <div class="section-header">
-                <h2 class="section-title">Tous les produits</h2>
+        {% set hasProducts = false %}
+        {% for bloc in categoriesWithProducts %}
+            {% if bloc.produits|length > 0 %}
+                {% set hasProducts = true %}
+            {% endif %}
+        {% endfor %}
+
+        {% if not hasProducts %}
+            <div style="color:#888; text-align:center; width:100%; padding:2em 0; font-size:1.2em;">
+                Aucun produit disponible pour le moment.
             </div>
-            <div class="products-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:5vw;">
-                {% for produit in produits %}
-                    <div class="product-card" 
-                        onclick="goToProduct('{{ produit.id }}')"
-                        data-id="{{ produit.id }}"
-                        data-nom="{{ produit.nom }}"
-                        data-prix="{{ produit.prix|number_format(0, '.', ' ') }} FCFA"
-                        data-description="{{ produit.description|e('js') }}"
-                        data-image="{{ produit.image ? asset('uploads/products/' ~ produit.image) : '' }}"
-                        data-vendeur="{{ produit.vendeur.nom }}"
-                        style="position:relative;"
-                    >
-                        <div class="product-badges">
-                            {% if produit.nouveau %}
-                                <span class="badge badge-new">Nouveau</span>
-                            {% endif %}
-                            {% if produit.promotion %}
-                                <span class="badge badge-promo">Promo</span>
-                            {% endif %}
-                        </div>
-                        <div class="product-image" style="flex:0 0 55%; height:55%; width:100%; object-fit:contain; background:#f5f5f5;">
-                            {% if produit.image %}
-                                <img src="{{ asset('uploads/products/' ~ produit.image) }}" alt="{{ produit.nom }}">
-                            {% else %}
-                                <div style="width: 100%; height: 100%; background: linear-gradient(45deg, #0072ce, #00b388); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
-                                    <i class="fa-solid fa-image"></i>
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="product-info" style="flex:1 1 40%; height:40%; padding:0.5em 0.7em 0.7em 0.7em; display:flex; flex-direction:column; justify-content:space-between;">
-                            <div class="product-price">
-                                {% if produit.promotion and produit.pourcentagePromotion %}
-                                    <span style="text-decoration:line-through; color:#888;">
-                                        {{ produit.prix|number_format(0, '.', ' ') }} FCFA
-                                    </span>
-                                    <span style="color:#e63946; font-weight:bold;">
-                                        {{ (produit.prix * (1 - produit.pourcentagePromotion/100))|number_format(0, '.', ' ') }} FCFA
-                                    </span>
-                                {% else %}
-                                    {{ produit.prix|number_format(0, '.', ' ') }} FCFA
-                                {% endif %}
-                            </div>
-                            <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-                                <div class="product-name">{{ produit.nom }}</div>
-                                <button class="favorite-btn" onclick="event.stopPropagation(); toggleFavorite(this, '{{ produit.id }}')" title="Ajouter aux favoris">
-                                    <span class="favorite-icon">♡</span>
-                                </button>
-                            </div>
-                            <div class="product-description">
-                                {{ produit.description|striptags|slice(0, 120) }}{% if produit.description|length > 120 %}...{% endif %}
-                            </div>
-                            <div class="product-condition-badges" style="display:flex;gap:0.3em;margin-bottom:0.7em;">
-                                {% if produit.condition %}
-                                    {% if produit.condition|lower == 'neuf' %}
-                                        <span class="condition-badge condition-neuf">Neuf</span>
-                                    {% elseif produit.condition|lower == 'occasion' %}
-                                        <span class="condition-badge condition-occasion">Occasion</span>
+        {% endif %}
+
+        {# Affichage par catégorie #}
+        {% for bloc in categoriesWithProducts %}
+            <section class="section">
+                <div class="section-header" style="display:flex;justify-content:space-between;align-items:center;">
+                    <h2 class="section-title">{{ bloc.categorie.nom }}</h2>
+                    <a href="/client/category/{{ bloc.categorie.slug|default(bloc.categorie.id) }}" class="see-all-link" style="font-size:1em;color:#0072ce;text-decoration:none;font-weight:500;">Voir plus</a>
+                </div>
+                <div class="products-grid">
+                    {% if bloc.produits is empty %}
+                        <div style="color:#888; text-align:center; width:100%; padding:1em 0;">Aucun produit dans cette catégorie.</div>
+                    {% else %}
+                        {% for produit in bloc.produits %}
+                            <div class="product-card" 
+                                onclick="goToProduct('{{ produit.id }}')"
+                                data-id="{{ produit.id }}"
+                                data-nom="{{ produit.nom }}"
+                                data-prix="{{ produit.prix|number_format(0, '.', ' ') }} FCFA"
+                                data-description="{{ produit.description|e('js') }}"
+                                data-image="{{ produit.image ? asset('uploads/products/' ~ produit.image) : '' }}"
+                                data-vendeur="{{ produit.vendeur.nom }}"
+                                style="position:relative;"
+                            >
+                                <div class="product-badges">
+                                    {% if produit.nouveau %}
+                                        <span class="badge badge-new">Nouveau</span>
                                     {% endif %}
-                                {% endif %}
+                                    {% if produit.promotion %}
+                                        <span class="badge badge-promo">Promo</span>
+                                    {% endif %}
+                                </div>
+                                <div class="product-image" style="flex:0 0 55%; height:55%; width:100%; object-fit:contain; background:#f5f5f5;">
+                                    {% if produit.image %}
+                                        <img src="{{ asset('uploads/products/' ~ produit.image) }}" alt="{{ produit.nom }}">
+                                    {% else %}
+                                        <div style="width: 100%; height: 100%; background: linear-gradient(45deg, #0072ce, #00b388); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                            <i class="fa-solid fa-image"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="product-info" style="flex:1 1 45%; height:45%; padding:0.5em 0.7em 0.7em 0.7em; display:flex; flex-direction:column; justify-content:space-between;">
+                                    <div class="product-price">
+                                        {% if produit.promotion and produit.pourcentagePromotion %}
+                                            <span style="text-decoration:line-through; color:#888;">
+                                                {{ produit.prix|number_format(0, '.', ' ') }} FCFA
+                                            </span>
+                                            <span style="color:#e63946; font-weight:bold;">
+                                                {{ (produit.prix * (1 - produit.pourcentagePromotion/100))|number_format(0, '.', ' ') }} FCFA
+                                            </span>
+                                        {% else %}
+                                            {{ produit.prix|number_format(0, '.', ' ') }} FCFA
+                                        {% endif %}
+                                    </div>
+                                    <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                                        <div class="product-name">{{ produit.nom }}</div>
+                                        <button class="favorite-btn" onclick="event.stopPropagation(); toggleFavorite(this, '{{ produit.id }}')" title="Ajouter aux favoris">
+                                            <span class="favorite-icon">♡</span>
+                                        </button>
+                                    </div>
+                                    <div class="product-description">
+                                        {{ produit.description|striptags|slice(0, 120) }}{% if produit.description|length > 120 %}...{% endif %}
+                                    </div>
+                                    <div class="product-condition-badges" style="display:flex;gap:0.3em;margin-bottom:0.7em;">
+                                        {% if produit.condition %}
+                                            {% if produit.condition|lower == 'neuf' %}
+                                                <span class="condition-badge condition-neuf">Neuf</span>
+                                            {% elseif produit.condition|lower == 'occasion' %}
+                                                <span class="condition-badge condition-occasion">Occasion</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="product-actions-center" style="display:flex;justify-content:center;margin-top:0.4em;width:100%;">
+                                        <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('{{ produit.id }}')">
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="product-actions-center" style="display:flex;justify-content:center;margin-top:0.4em;width:100%;">
-                                <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('{{ produit.id }}')">
-                                    <i class="fa-solid fa-cart-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </section>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </section>
+        {% endfor %}
     </div>
     <!-- Footer navigation -->
     <nav class="bottom-nav">
