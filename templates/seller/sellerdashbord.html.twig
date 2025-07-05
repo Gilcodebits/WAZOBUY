@@ -492,9 +492,27 @@
             }
         }
 
+        @media (min-width: 769px) {
+            .sidebar {
+                display: block !important;
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 280px;
+                height: 100vh;
+                z-index: 1000;
+                background: linear-gradient(180deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+                box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+                overflow-y: auto;
+            }
+            .main-content {
+                margin-left: 280px;
+            }
+        }
+
         @media (max-width: 768px) {
             .sidebar {
-                transform: translateX(-100%);
+                display: none !important;
             }
             .main-content {
                 margin-left: 0;

@@ -32,4 +32,32 @@ class FavoriController extends AbstractController
         }
         return $this->json(['favori' => $isFavori]);
     }
+
+    #[Route('/api/favoris/count', name: 'api_favoris_count', methods: ['GET'])]
+    public function countFavoris(): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) return $this->json(['count' => 0]);
+        $count = $user->getFavoris()->count();
+        return $this->json(['count' => $count]);
+    }
+
+    #[Route('/api/favoris/liste', name: 'api_favoris_liste', methods: ['GET'])]
+    public function listeFavoris(): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) return $this->json(['favoris' => []]);
+        $favoris = $user->getFavoris();
+        $data = [];
+        foreach ($favoris as $produit) {
+            $data[] = [
+                'id' => $produit->getId(),
+                'nom' => $produit->getNom(),
+                'prix' => $produit->getPrix(),
+                'image' => $produit->getImage(),
+                'description' => $produit->getDescription(),
+            ];
+        }
+        return $this->json(['favoris' => $data]);
+    }
 } 

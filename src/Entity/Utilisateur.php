@@ -83,7 +83,15 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $produits;
 
     #[ORM\ManyToMany(targetEntity: Produit::class)]
-    #[ORM\JoinTable(name: 'utilisateur_favoris')]
+    #[ORM\JoinTable(
+        name: 'utilisateur_favoris',
+        joinColumns: [
+            new ORM\JoinColumn(name: 'utilisateur_id', referencedColumnName: 'id_utilisateur')
+        ],
+        inverseJoinColumns: [
+            new ORM\JoinColumn(name: 'produit_id', referencedColumnName: 'id')
+        ]
+    )]
     private Collection $favoris;
 
     public function __construct()
